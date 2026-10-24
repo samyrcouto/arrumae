@@ -8,6 +8,7 @@
  */
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { chromium } from "playwright";
+import sharp from "sharp";
 
 const OUT = "vitrine";
 const PASSWORD = "demo-senha-123";
@@ -134,6 +135,26 @@ export async function captureVitrine(base) {
   const pro1Href = await adminPage.getByRole("link", { name: /Carlos Eletricista/ }).first().getAttribute("href");
   await adminPage.context().close();
   const ids = { open, openForPro, done: doneHref.split("/").pop(), pro1: pro1Href.split("/").pop() };
+
+  // --- Capturas para o site (molduras de celular na página inicial) ---
+  // Sem a faixa de "ambiente de desenvolvimento"; dados continuam sendo DEMO.
+  mkdirSync("public/marketing", { recursive: true });
+  const marketing = [
+    { file: "app-pedido", as: "cliente", path: "/pedir?categoria=pequenos-reparos" },
+    { file: "app-propostas", as: "cliente", path: `/cliente/solicitacoes/${ids.open}`, scrollTo: "Propostas (2)" },
+    { file: "app-acompanhamento", as: "cliente", path: `/cliente/solicitacoes/${ids.done}` },
+  ];
+  for (const m of marketing) {
+    const ctx = await contextFor(m.as, { width: 390, height: 780 });
+    const page = await ctx.newPage();
+    await page.goto(`${base}${m.path}`, { waitUntil: "networkidle" });
+    await page.addStyleTag({ content: ".tape-band{display:none!important} header{position:static!important}" });
+    if (m.scrollTo) await page.getByRole("heading", { name: m.scrollTo }).evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 12));
+    const png = await page.screenshot();
+    await sharp(png).webp({ quality: 82 }).toFile(`public/marketing/${m.file}.webp`);
+    await ctx.close();
+    console.log(`  📱 public/marketing/${m.file}.webp`);
+  }
 
   // --- Capturas ---
   const groups = screens(ids);

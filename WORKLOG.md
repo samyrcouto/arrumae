@@ -49,3 +49,12 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - **Vitrine estática** para GitHub Pages: `npm run vitrine` gera 38 capturas reais (19 telas × celular/computador) com dados DEMO; `npm run vitrine:publicar` publica no branch `gh-pages`.
 - **GitHub Codespaces**: `.devcontainer/` com Node 22 + PostgreSQL 16, setup automático e site iniciado sozinho. `allowedOrigins`/`allowedDevOrigins` para `*.app.github.dev` só quando `CODESPACES=true`.
 - Testado: typecheck, lint, 49 testes, build, e2e. **Não testado:** o Codespace em si (sem Docker neste ambiente) e o e2e no Windows.
+
+## 2026-10-24 — Redesenho visual (branch `redesign-visual`)
+
+- Logo novo (símbolo casinha + trena; "ê" com telhado), favicon, cabeçalho com navegação para visitantes, rodapé escuro com faixa de trena.
+- Ilustrações SVG próprias: cena da home, 5 serviços, profissional. Novas cores de apoio (terracota, madeira, água, folha).
+- Home refeita: entrada por serviço no topo, faixa de promessas, cards de serviço, 3 passos com telas reais do app, cartão "Combinado", transparência sobre verificação, seção de profissionais, regiões, FAQ e CTA final.
+- Landings de serviço, formulário de pedido e página de profissionais com as ilustrações.
+- `npm run vitrine` agora também gera `public/marketing/*.webp` (telas reais para as molduras de celular).
+- Sites dos concorrentes não puderam ser abertos daqui (rede bloqueada); a referência veio de pesquisa e de padrões do segmento (D‑016).

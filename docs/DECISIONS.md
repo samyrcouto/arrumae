@@ -48,3 +48,8 @@ Nenhuma automação aprova profissional. Aprovação exige documento de identida
 
 ### D‑015 — Nome do MVP: "Arrumaê"
 O nome provisório "Desenrola Casa" foi trocado por **Arrumaê** a pedido do fundador (24/10/2026): marca, logo, ícone, textos, cookies, chaves de armazenamento local, nomes de banco e contas de demonstração. Centralizado em `src/config/brand.ts`. Ainda falta busca no INPI e verificação de domínio.
+
+### D‑016 — Identidade visual: ilustração própria + telas reais, sem fotos de banco
+Inspirado nos padrões do segmento (GetNinjas, Triider, Parafuzo: entrada por categoria no topo, cards de serviço com imagem, passos ilustrados, seção de confiança, chamada para profissionais), mas com identidade própria:
+logo com o acento do "ê" virando telhado e símbolo de casinha cujo chão é uma trena; ilustrações SVG feitas para a marca (paleta azul‑petróleo, amarelo‑trena e terracota); telas **reais** do app em molduras de celular (dados DEMO, com legenda); seção "o que conferimos e o que ainda não fazemos".
+Sem fotos de banco de imagens (genéricas e com licença a verificar) e sem números, avaliações ou depoimentos inventados. Próximo passo recomendado: fotos reais dos primeiros profissionais do piloto, com autorização de uso de imagem.

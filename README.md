@@ -131,7 +131,10 @@ Em produção, crie o admin com `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:c
 
 | O que mudar | Onde |
 |---|---|
-| Nome, slogan, logo (texto e monograma) | `src/config/brand.ts` |
+| Nome, slogan e textos da marca | `src/config/brand.ts` |
+| Logo (casinha com trena + "ê" com telhado) | `src/components/brand/logo.tsx` e `public/icon.svg` |
+| Ilustrações (cena da home, serviços, profissional) | `src/components/illustrations.tsx` |
+| Telas do app nas molduras de celular | `public/marketing/*.webp` (geradas por `npm run vitrine`) |
 | Cores, fontes, raio dos cantos, faixa "trena" | `src/app/globals.css` (bloco `@theme`) |
 | Botões, cartões, selos, alertas | `src/components/ui.tsx` |
 | Campos de formulário | `src/components/form.tsx` |

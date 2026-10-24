@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ProScene } from "@/components/illustrations";
 import { Card, LinkButton } from "@/components/ui";
 import { listCategories } from "@/server/services/catalog";
 
@@ -8,12 +9,19 @@ export const dynamic = "force-dynamic";
 export default async function ProLanding() {
   const categories = await listCategories();
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="text-4xl font-extrabold">Pedidos de verdade, sem pagar por contato</h1>
-      <p className="mt-3 text-lg text-ink-soft">
-        Você recebe solicitações da sua região e da sua especialidade, já com descrição e fotos. Só envia proposta para o que
-        quiser fazer — e não paga nada para ver o pedido.
-      </p>
+    <div className="mx-auto max-w-4xl">
+      <div className="grid items-center gap-8 rounded-[2rem] bg-tape p-6 sm:p-10 md:grid-cols-[1.3fr_1fr]">
+        <div>
+          <p className="font-semibold">Para profissionais</p>
+          <h1 className="mt-1 text-4xl font-extrabold leading-[1.05] sm:text-5xl">Pedidos de verdade, sem pagar por contato</h1>
+          <p className="mt-4 text-lg">
+            Você recebe solicitações da sua região e da sua especialidade, já com descrição e fotos. Só envia proposta para o que
+            quiser fazer — e não paga nada para ver o pedido.
+          </p>
+          <LinkButton href="/cadastro?tipo=profissional" className="mt-6 bg-ink hover:bg-ink/90">Começar cadastro</LinkButton>
+        </div>
+        <ProScene className="mx-auto w-full max-w-sm" />
+      </div>
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         {[
           ["Pedidos mais completos", "O cliente descreve o problema, envia fotos e informa a urgência antes de chegar até você."],

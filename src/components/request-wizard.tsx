@@ -5,7 +5,7 @@ import { useFormStatus } from "react-dom";
 import { createRequestAction } from "@/server/actions/requests";
 import { getUtm, track } from "./analytics";
 import { SignupFields } from "./auth-forms";
-import { CategoryIcon } from "./category-icon";
+import { CategoryArt } from "./illustrations";
 import { ChoiceGroup, Input, Textarea } from "./form";
 import { FormContextProvider } from "./form-context";
 import { Alert, Button, cx } from "./ui";
@@ -117,9 +117,7 @@ export function RequestWizard({
                       c.id === categoryId ? "border-brand bg-brand-soft ring-2 ring-brand/20" : "border-line",
                     )}
                   >
-                    <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
-                      <CategoryIcon slug={c.slug} className="size-6" />
-                    </span>
+                    <CategoryArt slug={c.slug} className="size-12 shrink-0" />
                     <span className="font-semibold">{c.name}</span>
                   </button>
                 ))}

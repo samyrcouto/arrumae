@@ -1,4 +1,4 @@
-import { CategoryIcon } from "./category-icon";
+import { CategoryArt } from "./illustrations";
 import { Card, LinkButton } from "./ui";
 
 type Category = { slug: string; name: string; shortDescription: string; examples: string[]; outOfScope: string[]; pricingMode: string };
@@ -11,14 +11,18 @@ export function CategoryLanding({ category, regionName, regions }: { category: C
   const where = regionName ? ` em ${regionName}` : " em São Paulo";
   const href = `/pedir?categoria=${category.slug}`;
   return (
-    <div className="mx-auto max-w-3xl">
-      <div className="flex items-center gap-3">
-        <span className="grid size-14 place-items-center rounded-2xl bg-brand-soft text-brand"><CategoryIcon slug={category.slug} className="size-8" /></span>
-        <p className="font-semibold text-brand">{category.name}</p>
+    <div className="mx-auto max-w-4xl">
+      <div className="grid items-center gap-8 md:grid-cols-[1.4fr_1fr]">
+        <div>
+          <p className="inline-flex items-center gap-2 rounded-full border border-tape/70 bg-tape-soft px-3 py-1 text-sm font-semibold">
+            <span className="size-2 rounded-full bg-clay" /> {category.name}
+          </p>
+          <h1 className="mt-4 text-4xl font-extrabold leading-[1.05] sm:text-5xl">{category.name}{where}, com preço antes de agendar</h1>
+          <p className="mt-4 text-lg text-ink-soft">{category.shortDescription} Descreva o que precisa e receba até 4 propostas de profissionais com documentos conferidos{regionName ? ` que atendem ${regionName}` : ""}.</p>
+          <LinkButton href={href} className="mt-6 w-full text-lg sm:w-auto">Pedir orçamento grátis</LinkButton>
+        </div>
+        <CategoryArt slug={category.slug} className="mx-auto block size-56 sm:size-72" />
       </div>
-      <h1 className="mt-4 text-4xl font-extrabold sm:text-5xl">{category.name}{where}, com preço antes de agendar</h1>
-      <p className="mt-3 text-lg text-ink-soft">{category.shortDescription} Descreva o que precisa e receba até 4 propostas de profissionais com documentos conferidos{regionName ? ` que atendem ${regionName}` : ""}.</p>
-      <LinkButton href={href} className="mt-6 w-full text-lg sm:w-auto">Pedir orçamento grátis</LinkButton>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
         <Card>

@@ -24,6 +24,13 @@
   --color-tape: #f2b33d;
   --color-tape-soft: #fdf1d6;
 
+  /* Apoio das ilustrações: telha, madeira, água e folha */
+  --color-clay: #d9653b;
+  --color-clay-soft: #fbe4da;
+  --color-wood: #e3b47c;
+  --color-water: #6cc0d6;
+  --color-leaf: #3f8f6b;
+
   --color-ok: #1f7a4d;
   --color-ok-soft: #e2f3ea;
   --color-warn: #8a5a00;
@@ -40,6 +47,17 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  overflow-x: clip; /* permite seções de largura total sem rolagem lateral */
+}
+
+/* Seção que ocupa a largura toda da tela, mesmo dentro do contêiner central */
+.full-bleed {
+  margin-inline: calc(50% - 50vw);
 }
 
 body {
@@ -94,4 +112,23 @@ h3 {
 .stars-input label:hover,
 .stars-input label:hover ~ label {
   color: var(--color-tape);
+}
+
+/* Faixa "trena": régua amarela com marcações, usada como divisor de seção */
+.tape-measure {
+  height: 30px;
+  background-color: var(--color-tape);
+  background-image:
+    repeating-linear-gradient(90deg, var(--color-ink) 0 1.5px, transparent 1.5px 10px),
+    repeating-linear-gradient(90deg, var(--color-ink) 0 2px, transparent 2px 50px);
+  background-size: 100% 7px, 100% 14px;
+  background-repeat: no-repeat;
+  background-position: 0 0, 0 0;
+  border-block: 2px solid var(--color-ink);
+}
+
+/* Fundo pontilhado suave para áreas de destaque */
+.dot-grid {
+  background-image: radial-gradient(var(--color-line) 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
 }

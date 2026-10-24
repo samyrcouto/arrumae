@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { brand } from "@/config/brand";
+import { Logo } from "./brand/logo";
 import { getCurrentUser } from "@/server/auth/session";
 import { logoutAction } from "@/server/actions/auth";
 import { unreadCount } from "@/server/services/notifications";
@@ -27,20 +28,6 @@ const NAV = {
     { href: "/admin/financeiro", label: "Financeiro" },
   ],
 } as const;
-
-export function Logo() {
-  return (
-    <span className="flex items-center gap-2">
-      <span aria-hidden className="grid size-9 place-items-center rounded-xl bg-tape font-display text-lg font-extrabold text-ink">
-        {brand.monogram}
-      </span>
-      <span className="font-display text-xl font-bold tracking-tight">
-        {brand.logo.main}
-        <span className="text-brand">{brand.logo.accent}</span>
-      </span>
-    </span>
-  );
-}
 
 export async function SiteHeader() {
   const user = await getCurrentUser();
@@ -78,6 +65,17 @@ export async function SiteHeader() {
             </>
           ) : (
             <>
+              <nav aria-label="Principal" className="mr-2 hidden items-center gap-1 md:flex">
+                {[
+                  ["/#servicos", "Serviços"],
+                  ["/como-funciona", "Como funciona"],
+                  ["/seja-profissional", "Para profissionais"],
+                ].map(([href, label]) => (
+                  <Link key={href} href={href} className="rounded-full px-3 py-2 font-medium text-ink-soft hover:bg-brand-soft hover:text-ink">
+                    {label}
+                  </Link>
+                ))}
+              </nav>
               <Link href="/entrar" className="rounded-full px-4 py-2 font-semibold hover:bg-brand-soft">
                 Entrar
               </Link>
@@ -112,26 +110,28 @@ export async function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-line bg-card">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-3">
+    <footer className="mt-20 bg-ink text-white/80">
+      <div className="tape-measure" aria-hidden />
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <Logo />
-          <p className="mt-3 text-sm text-ink-soft">{brand.tagline}</p>
-          <p className="mt-2 text-xs text-ink-soft">Piloto em {brand.city}. Nome e marca provisórios.</p>
+          <Logo tone="light" />
+          <p className="mt-4 max-w-xs text-[0.95rem]">{brand.tagline}</p>
+          <p className="mt-3 text-xs text-white/50">Piloto em {brand.city}. Nome e marca provisórios.</p>
         </div>
         <nav aria-label="Institucional" className="text-[0.95rem]">
-          <p className="mb-2 font-semibold">Plataforma</p>
-          <ul className="space-y-1 text-ink-soft">
-            <li><Link href="/como-funciona" className="hover:text-ink">Como funciona e regras</Link></li>
-            <li><Link href="/seja-profissional" className="hover:text-ink">Seja um profissional</Link></li>
-            <li><Link href="/suporte" className="hover:text-ink">Ajuda e suporte</Link></li>
+          <p className="mb-3 font-semibold text-white">Plataforma</p>
+          <ul className="space-y-2">
+            <li><Link href="/#servicos" className="hover:text-tape">Serviços</Link></li>
+            <li><Link href="/como-funciona" className="hover:text-tape">Como funciona e regras</Link></li>
+            <li><Link href="/seja-profissional" className="hover:text-tape">Seja um profissional</Link></li>
+            <li><Link href="/suporte" className="hover:text-tape">Ajuda e suporte</Link></li>
           </ul>
         </nav>
         <nav aria-label="Legal" className="text-[0.95rem]">
-          <p className="mb-2 font-semibold">Legal</p>
-          <ul className="space-y-1 text-ink-soft">
-            <li><Link href="/termos" className="hover:text-ink">Termos de uso</Link></li>
-            <li><Link href="/privacidade" className="hover:text-ink">Privacidade (LGPD)</Link></li>
+          <p className="mb-3 font-semibold text-white">Legal</p>
+          <ul className="space-y-2">
+            <li><Link href="/termos" className="hover:text-tape">Termos de uso</Link></li>
+            <li><Link href="/privacidade" className="hover:text-tape">Privacidade (LGPD)</Link></li>
           </ul>
         </nav>
       </div>
