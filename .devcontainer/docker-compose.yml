@@ -1,0 +1,22 @@
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/javascript-node:22
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    # Compartilha a rede com o banco: "localhost:5432" funciona como no README.
+    network_mode: service:db
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: arrumae
+      POSTGRES_PASSWORD: arrumae_dev
+      POSTGRES_DB: arrumae_dev
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+
+volumes:
+  pgdata:

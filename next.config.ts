@@ -25,7 +25,12 @@ const securityHeaders = [
   },
 ];
 
+// GitHub Codespaces acessa o app por *.app.github.dev. Liberado SOMENTE
+// quando o app roda dentro de um Codespace (variável CODESPACES=true).
+const codespaceOrigins = process.env.CODESPACES === "true" ? ["*.app.github.dev"] : [];
+
 const nextConfig: NextConfig = {
+  allowedDevOrigins: codespaceOrigins,
   // Cache Components disabled on purpose: almost every page depends on the
   // session, and classic dynamic rendering keeps the MVP simpler.
   // See docs/DECISIONS.md (D-004).
@@ -37,6 +42,7 @@ const nextConfig: NextConfig = {
       // Photos/documents are uploaded through Server Actions. Files are also
       // validated individually in src/server/security/uploads.ts.
       bodySizeLimit: "26mb",
+      allowedOrigins: codespaceOrigins,
     },
   },
   turbopack: {

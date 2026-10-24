@@ -50,3 +50,6 @@ next-env.d.ts
 /playwright-report/
 .test-storage/
 .e2e-storage/
+
+# vitrine estática gerada (publicada no branch gh-pages)
+/vitrine/

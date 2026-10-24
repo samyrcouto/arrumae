@@ -1,0 +1,19 @@
+{
+  // Ambiente pronto para GitHub Codespaces: Node 22 + PostgreSQL 16, banco
+  // criado e populado com dados de DEMONSTRAÇÃO, site iniciado automaticamente.
+  "name": "Arrumaê",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "Arrumaê (site)", "onAutoForward": "openBrowser" }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postAttachCommand": "npm run dev",
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "bradlc.vscode-tailwindcss"]
+    }
+  }
+}

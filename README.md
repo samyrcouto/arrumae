@@ -4,6 +4,11 @@ Marketplace de serviços residenciais (eletricista, encanador, montagem de móve
 
 > **Estado:** MVP funcional em ambiente local. **Não está publicado** e **não processa pagamentos** (piloto com pagamento direto ao profissional). Veja [`docs/ROADMAP.md`](docs/ROADMAP.md) para o que falta antes do lançamento.
 
+## Ver o projeto sem instalar nada
+
+- **Vitrine (capturas reais de todas as telas):** https://samyrcouto.github.io/arrumae/
+- **Rodar e editar no navegador:** veja [GitHub Codespaces](#rodar-sem-instalar-nada-github-codespaces) abaixo.
+
 ## Documentação
 
 | Documento | Conteúdo |
@@ -87,6 +92,17 @@ npm run db:seed -- --demo
 npm run dev                         # http://localhost:3000
 ```
 
+## Rodar sem instalar nada (GitHub Codespaces)
+
+[![Abrir no GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/samyrcouto/arrumae)
+
+1. Clique no botão acima (precisa estar logado no GitHub) → **Create codespace**.
+2. Espere a preparação, que leva alguns minutos na primeira vez: ela instala as dependências, cria o banco e coloca os dados de demonstração.
+3. O site abre sozinho. Se não abrir, vá na aba **PORTS** e clique no globo da porta **3000**.
+4. Edite os arquivos no editor do próprio navegador: a página atualiza na hora.
+
+O plano gratuito do GitHub inclui algumas dezenas de horas de Codespaces por mês. Desligue o codespace quando terminar (github.com/codespaces → ⋯ → Stop).
+
 ## Como usar depois de rodar
 
 Contas de demonstração (senha `demo-senha-123` para todas):
@@ -111,6 +127,24 @@ Para criar pedidos, use CEPs que começam com 054, 050, 040, 041, 045 ou 014 (ex
 
 Em produção, crie o admin com `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:create-admin` e rode só `npm run db:seed` (sem `--demo`).
 
+## Para quem vai mudar o visual
+
+| O que mudar | Onde |
+|---|---|
+| Nome, slogan, logo (texto e monograma) | `src/config/brand.ts` |
+| Cores, fontes, raio dos cantos, faixa "trena" | `src/app/globals.css` (bloco `@theme`) |
+| Botões, cartões, selos, alertas | `src/components/ui.tsx` |
+| Campos de formulário | `src/components/form.tsx` |
+| Cabeçalho, menu e rodapé | `src/components/site-header.tsx` |
+| Página inicial | `src/app/page.tsx` |
+| Landing de serviço por bairro | `src/components/category-landing.tsx` |
+| Pedido de orçamento (3 etapas) | `src/components/request-wizard.tsx` |
+| Ícone do app | `public/icon.svg` |
+
+O estilo usa **Tailwind CSS 4**: as classes ficam direto no JSX (ex.: `bg-brand`, `rounded-card`), e as cores da marca são as variáveis `--color-*` do `globals.css`. Trocar uma cor ali muda o site inteiro.
+
+Antes de enviar mudanças, rode `npm run typecheck && npm run lint && npm test`. Para atualizar a vitrine depois de mudar o visual: `npm run vitrine && npm run vitrine:publicar`.
+
 ## Scripts
 
 | Comando | O que faz |
@@ -122,6 +156,7 @@ Em produção, crie o admin com `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:c
 | `npm run db:generate` | Gera migration a partir de `src/server/db/schema.ts` |
 | `npm run db:migrate` | Aplica migrations |
 | `npm run db:seed` | Catálogo base (`--demo` para dados de demonstração) |
+| `npm run vitrine` / `vitrine:publicar` | Gera capturas reais de todas as telas em `./vitrine` e publica no GitHub Pages (branch `gh-pages`) |
 | `npm run jobs` | Rotinas periódicas: expirar pedidos/propostas, confirmação automática, limpeza |
 
 As rotinas periódicas também podem ser disparadas por `POST /api/cron/maintenance` com `Authorization: Bearer $CRON_SECRET` (a cada 10–15 min).

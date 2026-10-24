@@ -40,3 +40,12 @@
 
 ### Próximo passo sugerido
 Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2FA admin, storage S3, validação dos CEPs e recrutamento de profissionais para 2 regiões.
+
+## 2026-10-24 — Sessão 1 (continuação): marca, repositório e vitrine
+
+- Marca renomeada para **Arrumaê** (D‑015); bancos locais recriados como `arrumae_*`.
+- Repositório publicado em https://github.com/samyrcouto/arrumae (histórico em commits por funcionalidade).
+- README com passo a passo no Windows (PowerShell/`npm.cmd`, SQL Shell) e problemas comuns; e2e multiplataforma.
+- **Vitrine estática** para GitHub Pages: `npm run vitrine` gera 38 capturas reais (19 telas × celular/computador) com dados DEMO; `npm run vitrine:publicar` publica no branch `gh-pages`.
+- **GitHub Codespaces**: `.devcontainer/` com Node 22 + PostgreSQL 16, setup automático e site iniciado sozinho. `allowedOrigins`/`allowedDevOrigins` para `*.app.github.dev` só quando `CODESPACES=true`.
+- Testado: typecheck, lint, 49 testes, build, e2e. **Não testado:** o Codespace em si (sem Docker neste ambiente) e o e2e no Windows.

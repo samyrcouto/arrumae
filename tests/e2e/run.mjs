@@ -3,6 +3,7 @@
  *
  *   npm run test:e2e            → build de produção + servidor em :3100 + fluxo
  *   npm run test:e2e -- --skip-build
+ *   npm run vitrine             → idem + gera a vitrine estática em ./vitrine
  *
  * Usa um banco separado (arrumae_e2e), recriado a cada execução.
  */
@@ -76,6 +77,11 @@ try {
   const { runFlow } = await import("./flow.mjs");
   await runFlow("http://localhost:3100");
   console.log("\n✅ E2E: fluxo completo aprovado");
+  if (process.argv.includes("--vitrine")) {
+    const { captureVitrine } = await import("./vitrine.mjs");
+    await captureVitrine("http://localhost:3100");
+    console.log("\n🖼️  Vitrine gerada em ./vitrine (publique com: npm run vitrine:publicar)");
+  }
 } catch (e) {
   console.error("\n❌ E2E falhou:", e);
   console.error("--- log do servidor (fim) ---\n" + serverLog.slice(-4000));
