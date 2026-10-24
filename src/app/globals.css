@@ -1,0 +1,97 @@
+@import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/inter";
+
+/*
+ * Tokens da marca (provisória). Paleta inspirada na trena e na fita de obra:
+ * azul-petróleo confiável + amarelo-fita para destaques, sobre fundo "papel".
+ * Contrastes verificados para WCAG AA no texto principal.
+ */
+@theme {
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #18202c;
+  --color-ink-soft: #4a5464;
+  --color-paper: #f7f3ec;
+  --color-card: #ffffff;
+  --color-line: #e3ddd2;
+
+  --color-brand: #0e4a57;
+  --color-brand-strong: #0a3640;
+  --color-brand-soft: #e3eef0;
+
+  --color-tape: #f2b33d;
+  --color-tape-soft: #fdf1d6;
+
+  --color-ok: #1f7a4d;
+  --color-ok-soft: #e2f3ea;
+  --color-warn: #8a5a00;
+  --color-warn-soft: #fff3d6;
+  --color-danger: #b42318;
+  --color-danger-soft: #fde8e6;
+
+  --radius-card: 1.1rem;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem; /* 17px: mais legível para quem tem pouca familiaridade digital */
+  line-height: 1.55;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-tape);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Assinatura visual: régua de trena usada como divisor */
+.tape-rule {
+  height: 10px;
+  background-image:
+    repeating-linear-gradient(90deg, var(--color-ink) 0 1.5px, transparent 1.5px 12px),
+    repeating-linear-gradient(90deg, var(--color-ink) 0 1.5px, transparent 1.5px 60px);
+  background-size: 100% 5px, 100% 10px;
+  background-repeat: no-repeat;
+  background-position: bottom, bottom;
+  opacity: 0.35;
+}
+
+.tape-band {
+  background: repeating-linear-gradient(-45deg, var(--color-tape) 0 18px, #1d1d1b 18px 36px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Nota por estrelas: rótulos em ordem inversa no DOM (5→1), exibidos 1→5. */
+.stars-input label:has(:checked),
+.stars-input label:has(:checked) ~ label,
+.stars-input label:hover,
+.stars-input label:hover ~ label {
+  color: var(--color-tape);
+}
