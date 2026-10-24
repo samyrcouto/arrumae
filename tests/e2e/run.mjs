@@ -7,6 +7,7 @@
  * Usa um banco separado (arrumae_e2e), recriado a cada execução.
  */
 import { execSync, spawn } from "node:child_process";
+import { createRequire } from "node:module";
 import { rmSync } from "node:fs";
 import { config } from "dotenv";
 import postgres from "postgres";
@@ -35,14 +36,22 @@ sh("npx tsx --conditions=react-server scripts/migrate.ts");
 sh("npx tsx --conditions=react-server scripts/seed.ts --demo");
 if (!process.argv.includes("--skip-build")) sh("npx next build");
 
-// Processo próprio (sem npx) em grupo separado, para encerrar também os filhos.
-const server = spawn("node_modules/.bin/next", ["start", "-p", "3100"], { env, stdio: ["ignore", "pipe", "pipe"], detached: true });
+// Processo próprio (sem npx), para conseguir encerrar também os filhos.
+// Funciona em Linux, Mac e Windows.
+const isWindows = process.platform === "win32";
+const nextBin = createRequire(import.meta.url).resolve("next/dist/bin/next");
+const server = spawn(process.execPath, [nextBin, "start", "-p", "3100"], {
+  env,
+  stdio: ["ignore", "pipe", "pipe"],
+  detached: !isWindows,
+});
 let serverLog = "";
 server.stdout.on("data", (d) => (serverLog += d));
 server.stderr.on("data", (d) => (serverLog += d));
 const stop = () => {
   try {
-    process.kill(-server.pid, "SIGTERM");
+    if (isWindows) execSync(`taskkill /pid ${server.pid} /T /F`, { stdio: "ignore" });
+    else process.kill(-server.pid, "SIGTERM");
   } catch {
     /* já encerrado */
   }
