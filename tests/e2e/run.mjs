@@ -4,7 +4,7 @@
  *   npm run test:e2e            → build de produção + servidor em :3100 + fluxo
  *   npm run test:e2e -- --skip-build
  *
- * Usa um banco separado (desenrola_e2e), recriado a cada execução.
+ * Usa um banco separado (arrumae_e2e), recriado a cada execução.
  */
 import { execSync, spawn } from "node:child_process";
 import { rmSync } from "node:fs";
@@ -12,8 +12,8 @@ import { config } from "dotenv";
 import postgres from "postgres";
 
 config({ path: ".env.local", quiet: true });
-const base = new URL(process.env.TEST_DATABASE_URL ?? "postgres://desenrola:desenrola_dev@localhost:5432/desenrola_test");
-const E2E_DB = "desenrola_e2e";
+const base = new URL(process.env.TEST_DATABASE_URL ?? "postgres://arrumae:arrumae_dev@localhost:5432/arrumae_test");
+const E2E_DB = "arrumae_e2e";
 const admin = postgres(base.toString(), { max: 1, onnotice: () => {} });
 await admin.unsafe(`drop database if exists ${E2E_DB} with (force)`);
 await admin.unsafe(`create database ${E2E_DB}`);

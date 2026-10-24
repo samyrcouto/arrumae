@@ -1,11 +1,15 @@
 /**
- * Identidade da marca centralizada. "Desenrola Casa" é um nome PROVISÓRIO:
- * ainda não houve busca no INPI nem verificação de domínio (docs/DECISIONS.md).
- * Trocar o nome = editar este arquivo e os tokens de cor em globals.css.
+ * Identidade da marca centralizada. Nome do MVP: "Arrumaê" (antes "Desenrola
+ * Casa"). Ainda sem busca no INPI nem verificação de domínio (docs/DECISIONS.md).
+ * Trocar o nome = editar este arquivo, os tokens de cor em globals.css e
+ * public/icon.svg.
  */
 export const brand = {
-  name: "Desenrola Casa",
-  shortName: "Desenrola",
+  name: "Arrumaê",
+  shortName: "Arrumaê",
+  // Logo em duas partes: o "ê" final ganha a cor da marca.
+  logo: { main: "Arruma", accent: "ê" },
+  monogram: "A",
   tagline: "O conserto da sua casa, sem enrolação.",
   description:
     "Peça pequenos reparos em casa, receba propostas com preço e horário de profissionais verificados e acompanhe tudo até o fim.",

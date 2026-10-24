@@ -3,8 +3,8 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
 
-const CONSENT_KEY = "dc_consent";
-const UTM_KEY = "dc_utm";
+const CONSENT_KEY = "arrumae_consent";
+const UTM_KEY = "arrumae_utm";
 
 type Utm = { utmSource?: string; utmMedium?: string; utmCampaign?: string };
 
@@ -29,10 +29,10 @@ export function getUtm(): Utm {
 function anonId(): string | null {
   if (readConsent() !== "analytics") return null;
   try {
-    let id = localStorage.getItem("dc_aid");
+    let id = localStorage.getItem("arrumae_aid");
     if (!id) {
       id = crypto.randomUUID();
-      localStorage.setItem("dc_aid", id);
+      localStorage.setItem("arrumae_aid", id);
     }
     return id;
   } catch {

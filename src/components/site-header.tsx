@@ -32,11 +32,11 @@ export function Logo() {
   return (
     <span className="flex items-center gap-2">
       <span aria-hidden className="grid size-9 place-items-center rounded-xl bg-tape font-display text-lg font-extrabold text-ink">
-        D
+        {brand.monogram}
       </span>
       <span className="font-display text-xl font-bold tracking-tight">
-        {brand.shortName}
-        <span className="text-brand">.casa</span>
+        {brand.logo.main}
+        <span className="text-brand">{brand.logo.accent}</span>
       </span>
     </span>
   );

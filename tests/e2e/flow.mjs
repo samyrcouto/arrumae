@@ -23,7 +23,7 @@ export async function runFlow(base) {
   const newPage = async () => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "pt-BR", timezoneId: "America/Sao_Paulo" });
     // Recusa analytics para o aviso de cookies não cobrir botões.
-    await ctx.addInitScript(() => localStorage.setItem("dc_consent", "essential"));
+    await ctx.addInitScript(() => localStorage.setItem("arrumae_consent", "essential"));
     const page = await ctx.newPage();
     page.on("pageerror", (e) => errors.push(String(e)));
     page.on("console", (m) => m.type() === "error" && !/Failed to load resource/.test(m.text()) && errors.push(m.text()));
@@ -73,7 +73,7 @@ export async function runFlow(base) {
     // B. Profissional convidado envia proposta
     step("profissional envia proposta");
     const pro = await newPage();
-    await login(pro, "pro1@demo.desenrola.invalid");
+    await login(pro, "pro1@demo.arrumae.invalid");
     await pro.goto(`${base}/profissional/oportunidades`);
     await pro.getByText("Instalar chuveiro novo").click();
     await pro.waitForURL(new RegExp(requestId));
@@ -119,7 +119,7 @@ export async function runFlow(base) {
     step("admin vê indicadores e financeiro");
     const adm = await newPage();
     await adm.setViewportSize({ width: 1280, height: 900 });
-    await login(adm, "admin@demo.desenrola.invalid");
+    await login(adm, "admin@demo.arrumae.invalid");
     await adm.goto(`${base}/admin`);
     await adm.getByRole("heading", { name: "Indicadores" }).waitFor();
     await adm.screenshot({ path: `${SHOTS}/06-admin.png`, fullPage: true });
@@ -131,7 +131,7 @@ export async function runFlow(base) {
     await client.goto(`${base}/admin`);
     await client.waitForURL(/sem-permissao/);
     const otherPro = await newPage();
-    await login(otherPro, "pro2@demo.desenrola.invalid");
+    await login(otherPro, "pro2@demo.arrumae.invalid");
     const res = await otherPro.goto(`${base}/profissional/oportunidades/${requestId}`);
     assert.equal(res.status(), 404, "profissional não convidado deve receber 404");
     const anon = await newPage();

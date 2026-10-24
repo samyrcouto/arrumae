@@ -51,7 +51,7 @@ export default async function Home() {
               <span className="size-2 rounded-full bg-tape" /> Piloto em {brand.city}
             </p>
             <h1 className="text-[2.6rem] font-extrabold leading-[1.05] sm:text-6xl">
-              Aquele reparo <span className="relative whitespace-nowrap">adiado<span aria-hidden className="absolute -bottom-1 left-0 h-3 w-full -rotate-1 bg-tape/70 -z-10" /></span> em casa, desenrolado.
+              Aquele reparo <span className="relative whitespace-nowrap">adiado<span aria-hidden className="absolute -bottom-1 left-0 h-3 w-full -rotate-1 bg-tape/70 -z-10" /></span> em casa, arrumado.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-ink-soft">
               Eletricista, encanador, montador e pequenos reparos. Você descreve, recebe propostas com preço e horário de

@@ -3,7 +3,7 @@
 Formato: contexto → decisão → consequências. Decisões reversíveis podem ser revistas com dados do piloto.
 
 ### D‑001 — Projeto novo, sem código a preservar (24/10/2026)
-O ambiente estava vazio (sem repositório, código ou infraestrutura). Projeto criado do zero em `desenrola-casa/`, com Git local. **Não há remoto configurado** — o fundador precisa criar o repositório e fazer o push.
+O ambiente estava vazio (sem repositório, código ou infraestrutura). Projeto criado do zero (pasta hoje chamada `arrumae/`), com Git local. **Não há remoto configurado** — o fundador precisa criar o repositório e fazer o push.
 
 ### D‑002 — Next.js + PostgreSQL próprio com Drizzle, em vez de Supabase completo
 **Contexto:** o prompt sugeria Supabase (banco + auth + storage + RLS). O Docker não está disponível no ambiente (o Supabase local depende dele); havia PostgreSQL 16 instalado.
@@ -46,5 +46,5 @@ Cliente e profissional usam contas separadas. Simplifica autorização no MVP.
 ### D‑014 — Verificação humana obrigatória
 Nenhuma automação aprova profissional. Aprovação exige documento de identidade e comprovante de endereço aceitos. Não fazemos checagem de antecedentes e não prometemos isso.
 
-### D‑015 — Nome "Desenrola Casa" provisório
-Centralizado em `src/config/brand.ts`. Sem busca INPI/domínio ainda.
+### D‑015 — Nome do MVP: "Arrumaê"
+O nome provisório "Desenrola Casa" foi trocado por **Arrumaê** a pedido do fundador (24/10/2026): marca, logo, ícone, textos, cookies, chaves de armazenamento local, nomes de banco e contas de demonstração. Centralizado em `src/config/brand.ts`. Ainda falta busca no INPI e verificação de domínio.

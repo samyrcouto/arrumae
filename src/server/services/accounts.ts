@@ -236,7 +236,7 @@ export async function deleteAccount(actor: Actor, password: string) {
     await tx
       .update(users)
       .set({
-        email: `removido+${u.id}@invalid.desenrola`,
+        email: `removido+${u.id}@invalid.arrumae`,
         name: "Usuário removido",
         phone: null,
         passwordHash: "!",

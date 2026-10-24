@@ -9,7 +9,7 @@ const schema = z.object({
   STORAGE_DRIVER: z.enum(["local"]).default("local"),
   STORAGE_LOCAL_DIR: z.string().default("./storage"),
   EMAIL_DRIVER: z.enum(["console"]).default("console"),
-  EMAIL_FROM: z.string().default("Desenrola Casa <nao-responda@exemplo.com.br>"),
+  EMAIL_FROM: z.string().default("Arrumaê <nao-responda@exemplo.com.br>"),
   PAYMENT_PROVIDER: z.enum(["offline"]).default("offline"),
 });
 

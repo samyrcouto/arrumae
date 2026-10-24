@@ -9,25 +9,25 @@ export type Database = PostgresJsDatabase<typeof schema>;
 export type Tx = Parameters<Parameters<Database["transaction"]>[0]>[0];
 export type DbOrTx = Database | Tx;
 
-const globalForDb = globalThis as unknown as { __desenrolaSql?: postgres.Sql; __desenrolaDb?: Database };
+const globalForDb = globalThis as unknown as { __arrumaeSql?: postgres.Sql; __arrumaeDb?: Database };
 
 function create(): Database {
   const sql =
-    globalForDb.__desenrolaSql ??
+    globalForDb.__arrumaeSql ??
     postgres(env().DATABASE_URL, {
       max: Number(process.env.DATABASE_POOL_MAX ?? 10),
       idle_timeout: 20,
       // Logs sem parâmetros: evita vazar dados pessoais.
       onnotice: () => {},
     });
-  globalForDb.__desenrolaSql = sql;
+  globalForDb.__arrumaeSql = sql;
   return drizzle(sql, { schema });
 }
 
-export const db: Database = globalForDb.__desenrolaDb ?? (globalForDb.__desenrolaDb = create());
+export const db: Database = globalForDb.__arrumaeDb ?? (globalForDb.__arrumaeDb = create());
 
 export async function closeDb() {
-  await globalForDb.__desenrolaSql?.end({ timeout: 5 });
-  globalForDb.__desenrolaSql = undefined;
-  globalForDb.__desenrolaDb = undefined;
+  await globalForDb.__arrumaeSql?.end({ timeout: 5 });
+  globalForDb.__arrumaeSql = undefined;
+  globalForDb.__arrumaeDb = undefined;
 }

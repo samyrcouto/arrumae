@@ -6,7 +6,7 @@ import type { Actor, UserRole } from "../domain/actor";
 import { isProduction } from "../env";
 import { createSession, revokeSessionToken, type SessionUser, validateSessionToken } from "../services/accounts";
 
-export const SESSION_COOKIE = "dc_session";
+export const SESSION_COOKIE = "arrumae_session";
 
 export async function startSession(userId: string) {
   const ua = (await headers()).get("user-agent");

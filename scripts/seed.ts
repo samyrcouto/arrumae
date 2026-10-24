@@ -6,7 +6,7 @@
  *
  * Dados de demonstração:
  * - nunca são criados com APP_ENV=production;
- * - usam nomes prefixados com "[DEMO]" e e-mails @demo.desenrola.invalid;
+ * - usam nomes prefixados com "[DEMO]" e e-mails @demo.arrumae.invalid;
  * - avaliações e serviços de demo são marcados e exibidos com aviso na interface.
  */
 import { config } from "dotenv";
@@ -142,7 +142,7 @@ async function seedDemo() {
 
   // Admin de demonstração (apenas desenvolvimento)
   await db.insert(schema.users).values({
-    email: "admin@demo.desenrola.invalid",
+    email: "admin@demo.arrumae.invalid",
     passwordHash: await hashPassword(DEMO_PASSWORD),
     name: "[DEMO] Admin",
     role: "admin",
@@ -154,7 +154,7 @@ async function seedDemo() {
   const client = await registerUser(
     {
       name: "[DEMO] Cliente Ana",
-      email: "cliente@demo.desenrola.invalid",
+      email: "cliente@demo.arrumae.invalid",
       phone: "11900000001",
       password: DEMO_PASSWORD,
       role: "client",
@@ -164,10 +164,10 @@ async function seedDemo() {
   );
 
   const pros = [
-    { name: "[DEMO] Carlos Eletricista", email: "pro1@demo.desenrola.invalid", cats: ["eletrica", "pequenos-reparos"], years: 12 },
-    { name: "[DEMO] Marta Hidráulica", email: "pro2@demo.desenrola.invalid", cats: ["encanador"], years: 8 },
-    { name: "[DEMO] João Montador", email: "pro3@demo.desenrola.invalid", cats: ["montagem-de-moveis", "pequenos-reparos"], years: 5 },
-    { name: "[DEMO] Rafa Climatização", email: "pro4@demo.desenrola.invalid", cats: ["ar-condicionado"], years: 6 },
+    { name: "[DEMO] Carlos Eletricista", email: "pro1@demo.arrumae.invalid", cats: ["eletrica", "pequenos-reparos"], years: 12 },
+    { name: "[DEMO] Marta Hidráulica", email: "pro2@demo.arrumae.invalid", cats: ["encanador"], years: 8 },
+    { name: "[DEMO] João Montador", email: "pro3@demo.arrumae.invalid", cats: ["montagem-de-moveis", "pequenos-reparos"], years: 5 },
+    { name: "[DEMO] Rafa Climatização", email: "pro4@demo.arrumae.invalid", cats: ["ar-condicionado"], years: 6 },
   ];
   const proIds: string[] = [];
   for (const [i, p] of pros.entries()) {
@@ -232,9 +232,9 @@ async function seedDemo() {
 
   console.log(`
 Dados de DEMONSTRAÇÃO criados (senha de todas as contas: ${DEMO_PASSWORD}):
-  admin@demo.desenrola.invalid    (admin)
-  cliente@demo.desenrola.invalid  (cliente)
-  pro1..pro4@demo.desenrola.invalid (profissionais aprovados)
+  admin@demo.arrumae.invalid    (admin)
+  cliente@demo.arrumae.invalid  (cliente)
+  pro1..pro4@demo.arrumae.invalid (profissionais aprovados)
 Use CEPs começando com 054, 050, 040, 041, 045 ou 014 para criar solicitações.`);
 }
 

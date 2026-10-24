@@ -1,4 +1,4 @@
-# Desenrola Casa (nome provisório)
+# Arrumaê (nome provisório)
 
 Marketplace de serviços residenciais (eletricista, encanador, montagem de móveis, pequenos reparos e ar‑condicionado) para um piloto em São Paulo. O cliente descreve o problema, recebe até 4 propostas com preço e horário de profissionais com documentos conferidos, agenda, acompanha e avalia — tudo pelo celular, sem instalar app.
 
@@ -31,14 +31,14 @@ npm install
 cp .env.example .env.local          # ajuste DATABASE_URL e APP_SECRET
 
 # banco (exemplo com Postgres local)
-createdb desenrola_dev && createdb desenrola_test
+createdb arrumae_dev && createdb arrumae_test
 
 npm run db:migrate                  # aplica as migrations versionadas (drizzle/)
 npm run db:seed -- --demo           # catálogo + DADOS DE DEMONSTRAÇÃO (bloqueado em produção)
 npm run dev                         # http://localhost:3000
 ```
 
-Contas de demonstração (senha `demo-senha-123`): `cliente@demo.desenrola.invalid`, `pro1@demo.desenrola.invalid` … `pro4@…`, `admin@demo.desenrola.invalid`. Para criar pedidos, use CEPs que começam com 054, 050, 040, 041, 045 ou 014 (ex.: `05422-010`).
+Contas de demonstração (senha `demo-senha-123`): `cliente@demo.arrumae.invalid`, `pro1@demo.arrumae.invalid` … `pro4@…`, `admin@demo.arrumae.invalid`. Para criar pedidos, use CEPs que começam com 054, 050, 040, 041, 045 ou 014 (ex.: `05422-010`).
 
 Em produção, crie o admin com `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:create-admin` e rode só `npm run db:seed` (sem `--demo`).
 
@@ -49,7 +49,7 @@ Em produção, crie o admin com `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:c
 | `npm run dev` / `build` / `start` | Next.js |
 | `npm run typecheck` / `lint` | TypeScript e ESLint |
 | `npm test` | Testes unitários + integração (Postgres real, banco de teste é **limpo** a cada execução) |
-| `npm run test:e2e` | Build de produção + navegador real (Playwright) percorrendo o fluxo completo, em banco separado `desenrola_e2e` |
+| `npm run test:e2e` | Build de produção + navegador real (Playwright) percorrendo o fluxo completo, em banco separado `arrumae_e2e` |
 | `npm run db:generate` | Gera migration a partir de `src/server/db/schema.ts` |
 | `npm run db:migrate` | Aplica migrations |
 | `npm run db:seed` | Catálogo base (`--demo` para dados de demonstração) |

@@ -1,5 +1,5 @@
 /**
- * Modelo de dados do Desenrola Casa.
+ * Modelo de dados do Arrumaê.
  *
  * Convenções:
  * - Valores monetários em centavos (integer) — nunca float.

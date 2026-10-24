@@ -16,7 +16,7 @@ export function proxy(req: NextRequest) {
     if (!origin || !host || new URL(origin).host !== host) return new NextResponse("Origem não permitida", { status: 403 });
   }
 
-  if (/^\/(cliente|profissional|admin|conta|notificacoes)(\/|$)/.test(pathname) && !req.cookies.has("dc_session")) {
+  if (/^\/(cliente|profissional|admin|conta|notificacoes)(\/|$)/.test(pathname) && !req.cookies.has("arrumae_session")) {
     const url = req.nextUrl.clone();
     url.pathname = "/entrar";
     url.search = `?next=${encodeURIComponent(pathname)}`;

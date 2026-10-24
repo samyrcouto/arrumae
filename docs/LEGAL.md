@@ -50,7 +50,7 @@ Fontes: https://judit.io/?p=13579 ; https://www.gov.br/pf/pt-br/acesso-a-informa
 
 ## 7. Marca
 
-- "Desenrola Casa" é **provisório**: não houve busca no INPI nem verificação de domínio. Antes de investir em marca: busca de anterioridade nas classes 35/37/42, depósito, registro de domínio `.com.br`. Tudo de marca está centralizado em `src/config/brand.ts` e nos tokens de `globals.css`.
+- "Arrumaê" é **provisório**: não houve busca no INPI nem verificação de domínio. Antes de investir em marca: busca de anterioridade nas classes 35/37/42, depósito, registro de domínio `.com.br`. Tudo de marca está centralizado em `src/config/brand.ts` e nos tokens de `globals.css`.
 
 ## Checklist para assessoria (antes do lançamento)
 
