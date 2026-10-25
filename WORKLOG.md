@@ -97,3 +97,8 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Técnica de ar-condicionado parecia careca: o cabelo cacheado era só uma coroa de cachos e a testa aparecia no alto da cabeça. Agora tem volume cobrindo a cabeça, cachos na linha da testa e textura.
 - Mãos redesenhadas com silhueta lisa e poucos traços (os "calombos" de cada nó deixavam a mão estranha).
 - Bug corrigido: a mão na cintura estava girada 180° (dedos voltados para o cotovelo). Agora o pulso dobra e os dedos apontam para baixo sobre o quadril, encostando no corpo; nos braços cruzados a mão segue o antebraço (`grip: "tuck"`).
+
+## 2026-10-25 — Dedos e braços
+
+- Braços mais grossos (braço 44, antebraço 38, manga 56) — estavam finos para o tronco.
+- Punho com os quatro nós dos dedos no contorno, dobra das falanges e polegar separado com unha envolvendo o cabo; mão na cintura com quatro pontas de dedos separadas (médio e anelar mais longos). Mãos 20–30% maiores, proporcionais ao novo antebraço.
