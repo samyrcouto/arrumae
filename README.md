@@ -17,7 +17,8 @@ Marketplace de serviços residenciais (eletricista, encanador, montagem de móve
 | [docs/BUSINESS.md](docs/BUSINESS.md) | Concorrência pesquisada, monetização, economia por transação, provedores de pagamento |
 | [docs/GROWTH.md](docs/GROWTH.md) | Funil, canais, métricas e plano de experimentos |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Stack, camadas, adaptadores trocáveis, como estender |
-| [docs/DATABASE.md](docs/DATABASE.md) | Modelo de dados e regras de integridade |
+| [docs/DATABASE.md](docs/DATABASE.md) | Modelo de dados, regras de integridade, relatórios em SQL e plano para produção |
+| [docs/AUTOMACOES.md](docs/AUTOMACOES.md) | Integração com n8n (eventos por webhook, API de leitura, workflows prontos) e plano de agentes de IA |
 | [docs/SECURITY.md](docs/SECURITY.md) | Controles implementados, riscos e pendências |
 | [docs/LEGAL.md](docs/LEGAL.md) | LGPD, CDC, tributário e pontos para advogado/contador |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Fases, critérios de conclusão e checklist de lançamento |
@@ -161,9 +162,9 @@ Antes de enviar mudanças, rode `npm run typecheck && npm run lint && npm test`.
 | `npm run db:migrate` | Aplica migrations |
 | `npm run db:seed` | Catálogo base (`--demo` para dados de demonstração) |
 | `npm run vitrine` / `vitrine:publicar` | Gera capturas reais de todas as telas em `./vitrine` e publica no GitHub Pages (branch `gh-pages`) |
-| `npm run jobs` | Rotinas periódicas: expirar pedidos/propostas, confirmação automática, limpeza |
+| `npm run jobs` | Rotinas periódicas: expirar pedidos/propostas, confirmação automática, alertas de pedido parado, envio dos webhooks de integração, limpeza |
 
-As rotinas periódicas também podem ser disparadas por `POST /api/cron/maintenance` com `Authorization: Bearer $CRON_SECRET` (a cada 10–15 min).
+As rotinas periódicas também podem ser disparadas por `POST /api/cron/maintenance` com `Authorization: Bearer $CRON_SECRET` (a cada 5–15 min) — por exemplo, pelo workflow `integrations/n8n/03-agendador-manutencao.json`. Integrações com n8n: [docs/AUTOMACOES.md](docs/AUTOMACOES.md).
 
 ## Estrutura
 

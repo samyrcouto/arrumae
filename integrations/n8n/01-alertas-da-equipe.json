@@ -1,0 +1,253 @@
+{
+  "name": "Arrumaê — 01 alertas da equipe",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "arrumae-eventos",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "4ec554a0-8066-5eb5-b712-2c7948e3f1eb",
+      "name": "Webhook Arrumaê",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "7a3f6c52-2b4e-4f2b-9d8e-0a1c2b3d4e5f"
+    },
+    {
+      "parameters": {
+        "action": "hmac",
+        "type": "SHA256",
+        "value": "={{ $json.headers['x-arrumae-timestamp'] + '.' + JSON.stringify($json.body) }}",
+        "dataPropertyName": "assinaturaCalculada",
+        "secret": "COLE_AQUI_O_INTEGRATION_WEBHOOK_SECRET",
+        "encoding": "hex"
+      },
+      "id": "92c4d182-077e-5e7d-bdad-bfa0c6df4209",
+      "name": "Calcular assinatura",
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Código do nó \"Conferir assinatura e montar alerta\" (n8n, Code node, modo \"Run Once for Each Item\").\n// Mantido aqui como fonte; o mesmo texto está dentro de 01-alertas-da-equipe.json.\nconst item = $input.item.json;\nconst h = item.headers || {};\nconst esperado = 'sha256=' + item.assinaturaCalculada;\nconst recebido = String(h['x-arrumae-signature'] || '');\nconst ts = Number(h['x-arrumae-timestamp']);\nfunction iguais(a, b) {\n  if (a.length !== b.length) return false;\n  let d = 0;\n  for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);\n  return d === 0;\n}\nconst recente = Number.isFinite(ts) && Math.abs(Date.now() / 1000 - ts) <= 300;\nif (!recente || !iguais(esperado, recebido)) return { json: { valido: false } };\n\nconst ev = item.body || {};\nconst d = ev.data || {};\nconst onde = [d.category && d.category.name, d.region && d.region.name].filter(Boolean).join(' em ');\nconst demo = d.isDemo ? '[DEMO] ' : '';\nconst link = d.adminUrl ? '\\n' + d.adminUrl : '';\nconst urg = { today: 'hoje', this_week: 'esta semana', flexible: 'flexível' }[d.urgency] || d.urgency || '';\nconst categoriaChamado = { question: 'dúvida', complaint: 'reclamação', payment: 'pagamento', safety: 'segurança', account: 'conta' };\nconst prioridade = { low: 'baixa', normal: 'normal', high: 'alta', urgent: 'URGENTE' };\nlet mensagem = null;\n\nswitch (ev.type) {\n  case 'request.created':\n    mensagem = `🆕 ${demo}Nova solicitação: ${onde} (urgência: ${urg}). Profissionais convidados: ${d.invitedPros}.`;\n    if (d.noEligiblePros) mensagem += '\\n⚠️ Nenhum profissional elegível — recrutar agora!';\n    break;\n  case 'request.stale':\n    mensagem = `⏰ ${demo}Solicitação há ${Math.round(d.minutesOpen / 60)} h sem proposta: ${onde}. Ligar para profissionais da região.`;\n    break;\n  case 'request.status_changed':\n    if (d.to === 'disputed') mensagem = `🚨 ${demo}Contestação aberta: ${onde}. Analisar com o histórico do pedido.`;\n    else if (d.to === 'cancelled') mensagem = `❌ ${demo}Solicitação cancelada (${d.action}): ${onde}.`;\n    else if (d.action === 'pro_cancel' || d.action === 'report_pro_no_show')\n      mensagem = `⚠️ ${demo}Profissional desistiu/faltou: ${onde}. A solicitação voltou a receber propostas.`;\n    break;\n  case 'pro.submitted_for_review':\n    mensagem = '👷 Novo profissional aguardando análise de documentos.';\n    break;\n  case 'support.ticket_opened':\n    mensagem = `${d.priority === 'urgent' ? '🚨' : '🎫'} Novo chamado: ${categoriaChamado[d.category] || d.category}, prioridade ${prioridade[d.priority] || d.priority}.`;\n    break;\n  case 'review.created':\n    if (d.rating <= 3) mensagem = `⭐ ${demo}Avaliação baixa: ${d.rating}/5. Vale ligar para o cliente.`;\n    break;\n}\nreturn { json: { valido: true, tipo: ev.type, notificar: !!mensagem, mensagem: mensagem ? mensagem + link : null } };\n"
+      },
+      "id": "325c5049-e607-59a4-b2af-2fe48d7fde73",
+      "name": "Conferir assinatura e montar alerta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "0d64cbbb-908d-5beb-bfaf-d81a02ca8af0",
+              "leftValue": "={{ $json.valido }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ebb17487-1aa1-5a71-b778-9734f310dec3",
+      "name": "Assinatura válida?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "ok",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "a93f6185-4054-5bc2-a3f8-3c22c2a8ea1a",
+      "name": "Responder 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "assinatura inválida",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "617e1f95-b898-5be6-bfcb-ae89f200dcd8",
+      "name": "Responder 401",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "04187b9d-dbc9-5cce-8a48-f4576bffac97",
+              "leftValue": "={{ $json.notificar }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "15a1fbfc-ba65-52eb-b329-9dc542bba9b8",
+      "name": "Avisar a equipe?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "COLE_AQUI_O_ID_DO_GRUPO_DA_EQUIPE",
+        "text": "={{ $json.mensagem }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "ec75c402-8b3e-53a5-8ce6-00a9399c280c",
+      "name": "Enviar para a equipe (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1320,
+        180
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Arrumaê": {
+      "main": [
+        [
+          {
+            "node": "Calcular assinatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular assinatura": {
+      "main": [
+        [
+          {
+            "node": "Conferir assinatura e montar alerta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conferir assinatura e montar alerta": {
+      "main": [
+        [
+          {
+            "node": "Assinatura válida?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assinatura válida?": {
+      "main": [
+        [
+          {
+            "node": "Responder 200",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder 401",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Responder 200": {
+      "main": [
+        [
+          {
+            "node": "Avisar a equipe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar a equipe?": {
+      "main": [
+        [
+          {
+            "node": "Enviar para a equipe (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Sao_Paulo"
+  },
+  "active": false,
+  "pinData": {}
+}

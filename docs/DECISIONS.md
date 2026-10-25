@@ -54,3 +54,14 @@ Inspirado nos padrões do segmento (GetNinjas, Triider, Parafuzo: entrada por ca
 logo com o acento do "ê" virando telhado e símbolo de casinha cujo chão é uma trena; ilustrações SVG feitas para a marca (paleta azul‑petróleo, amarelo‑trena e terracota); telas **reais** do app em molduras de celular (dados DEMO, com legenda); seção "o que conferimos e o que ainda não fazemos".
 Sem fotos de banco de imagens (genéricas e com licença a verificar) e sem números, avaliações ou depoimentos inventados. Próximo passo recomendado: fotos reais dos primeiros profissionais do piloto, com autorização de uso de imagem.
 Personagens desenhados (25/10/2026), refeitos em estilo **semi-realista** a pedido do fundador (sem contorno, sombreado suave, proporções naturais, segurando a ferramenta como nos sites de referência), com diversidade de gênero, tom de pele e cabelo, sobre fundo de casinha (eco do logo). Roupas sem logo da marca: profissionais são autônomos, não funcionários (LEGAL.md §3). Selos flutuantes só com fatos verdadeiros ("Documentos conferidos pela equipe", "Sem taxa para ver os pedidos") — nunca notas ou contagens inventadas.
+
+### D‑017 — Integrações por eventos (outbox + webhook assinado), nunca escrita direta no banco
+**Contexto:** o fundador quer usar n8n e automações. Ferramentas de automação costumam ser ligadas direto ao banco, o que pularia a máquina de estados, as permissões e a auditoria.
+**Decisão:** os serviços gravam eventos em `integration_events` na mesma transação da operação; um job os entrega por webhook com assinatura HMAC, re‑tentativas e painel em `/admin/integracoes`. Para leitura, uma API com token e views agregadas. Nenhuma integração escreve no banco ou muda status.
+**Consequências:** entrega "pelo menos uma vez" e sem ordem garantida (o receptor usa o `id`); atraso de até um ciclo do job (5 min com o workflow agendador); payloads sem dados pessoais, o que limita o que a automação pode fazer sozinha — de propósito.
+
+### D‑018 — Schema `reporting` com views sem dados pessoais + papel somente leitura
+Relatórios (n8n, planilhas, BI) leem só views agregadas/pseudonimizadas; o papel `arrumae_reporting` não enxerga as tabelas originais. Dados de demonstração ficam de fora. Toda migration que criar view nova termina com o bloco de GRANT condicional.
+
+### D‑019 — IA: chamada única com resposta estruturada, sugestão revisada por humano, rodando no app
+Triagem, resumos e sugestões serão chamadas únicas ao modelo com JSON validado — não agentes autônomos — e o resultado aparece como sugestão para a equipe. Itens que leem texto de usuários rodam no app (controle de dados pessoais, custo e falhas), não no n8n. Só serão implementados quando os gatilhos em [AUTOMACOES.md](AUTOMACOES.md) forem atingidos e com autorização de gasto. Nunca aprova, paga, verifica ou resolve disputas.

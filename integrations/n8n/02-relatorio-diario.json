@@ -1,0 +1,112 @@
+{
+  "name": "Arrumaê — 02 relatório diário",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "7618a121-1b5c-5deb-89ff-84b80172cef6",
+      "name": "Todo dia às 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://SEU-APP/api/integrations/v1/metrics?days=1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "1536c548-a4ff-55b9-8a9a-cd1f77e6521c",
+      "name": "Buscar indicadores",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Código do nó \"Montar relatório\" (n8n, Code node, modo \"Run Once for All Items\").\n// Mantido aqui como fonte; o mesmo texto está dentro de 02-relatorio-diario.json.\nconst m = $input.first().json;\nconst r = m.requests || {};\nconst brl = (c) => (Number(c || 0) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });\nconst cats = (m.byCategory || []).map((c) => `• ${c.name}: ${c.created}`).join('\\n') || '• nenhuma';\nconst pros = m.pros || {};\nconst chamados = (m.openTickets || []).reduce((s, t) => s + t.tickets, 0);\nconst parados = (m.staleOpenRequests || []).length;\nconst linhas = [\n  `📊 Arrumaê — resumo de ${m.periodDays === 1 ? 'hoje' : `${m.periodDays} dias`}`,\n  '',\n  `Solicitações: ${r.created} | com proposta: ${r.with_quote} | agendadas: ${r.booked} | concluídas: ${r.completed}`,\n  `Canceladas: ${r.cancelled} | expiradas: ${r.expired} | contestadas: ${r.disputed}`,\n  `Mediana até a 1ª proposta: ${r.median_minutes_to_first_quote ?? '—'} min`,\n  `Serviços concluídos: ${m.finance.services} | valor: ${brl(m.finance.grossCents)} | comissão: ${brl(m.finance.commissionCents)}`,\n  '',\n  'Por serviço:',\n  cats,\n  '',\n  `Profissionais aguardando análise: ${pros.pending_review || 0} | aprovados: ${pros.approved || 0}`,\n  `Chamados em aberto: ${chamados} | solicitações paradas (> 2 h sem proposta): ${parados}`,\n];\nif (m.integrationQueue && m.integrationQueue.failed > 0)\n  linhas.push(`⚠️ ${m.integrationQueue.failed} evento(s) de integração com falha — ver /admin/integracoes`);\nreturn [{ json: { mensagem: linhas.join('\\n') } }];\n"
+      },
+      "id": "b1ef5e28-15ce-54eb-8d29-8d902cc5aaf0",
+      "name": "Montar relatório",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "COLE_AQUI_O_ID_DO_GRUPO_DA_EQUIPE",
+        "text": "={{ $json.mensagem }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "ec75c402-8b3e-53a5-8ce6-00a9399c280c",
+      "name": "Enviar para a equipe (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Todo dia às 8h": {
+      "main": [
+        [
+          {
+            "node": "Buscar indicadores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar indicadores": {
+      "main": [
+        [
+          {
+            "node": "Montar relatório",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar relatório": {
+      "main": [
+        [
+          {
+            "node": "Enviar para a equipe (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Sao_Paulo"
+  },
+  "active": false,
+  "pinData": {}
+}

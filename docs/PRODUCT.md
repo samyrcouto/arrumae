@@ -155,6 +155,7 @@ O profissional **não** consegue alterar avaliações (trigger no banco), status
 | Cupons (cadastro) | implementada — **aplicação no checkout bloqueada** até haver pagamento integrado |
 | Configurações comerciais | testada |
 | Auditoria (append‑only) | testada |
+| Integrações (fila de eventos para n8n, entregas, falhas, reenvio) | testada (inclusive ponta a ponta com n8n 1.123 local) |
 
 ## 8. Fora do escopo do MVP (planejado)
 

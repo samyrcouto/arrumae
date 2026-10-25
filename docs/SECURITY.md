@@ -20,7 +20,9 @@
 | Adulteração de registros | `audit_logs` append‑only e conteúdo de avaliações imutável por trigger; acesso a CPF/documentos pelo admin é auditado | migration `0001` | sim |
 | Vazamento em logs | Erros inesperados logados só com nome/mensagem truncada; driver de e‑mail não loga conteúdo; analytics sem IP/PII | `actions/run.ts`, `adapters/email.ts` | — |
 | Segredos | Validação de env na inicialização; `APP_SECRET` de dev bloqueado em produção; `.env*` no `.gitignore` (exceto `.env.example`) | `server/env.ts` | — |
-| Rota de cron | Segredo ≥ 32 caracteres, comparação em tempo constante; sem segredo → 503 | `api/cron/maintenance` | — |
+| Rota de cron | Segredo ≥ 32 caracteres, comparação em tempo constante; sem segredo → 503 | `api/cron/maintenance`, `security/bearer.ts` | sim (manual: 401 sem token) |
+| Integrações (n8n) | Eventos sem dados pessoais (teste verifica); webhook assinado com HMAC‑SHA256 sobre timestamp + corpo, recusa > 5 min; `https` obrigatório em produção; sem seguir redirecionamentos; API de leitura com token ≥ 32 caracteres, rate limit e só views agregadas; nenhuma integração escreve no banco | `services/integrations.ts`, `api/integrations/v1/*` | sim |
+| Relatórios por SQL | Papel `arrumae_reporting` só lê o schema `reporting` (views sem PII), transações somente leitura, 3 conexões, 15 s por consulta | `scripts/sql/reporting-role.sql`, migration `0003` | sim (manual: "permission denied" em `users`) |
 | Indexação indevida | `robots.txt` bloqueia tudo fora de produção e áreas privadas em produção | `app/robots.ts` | — |
 
 ## Riscos conhecidos e pendências

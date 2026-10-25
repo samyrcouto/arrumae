@@ -29,7 +29,8 @@ Navegador ──► Next.js (Server Components + Server Actions + Route Handlers
 | Pagamentos | Adaptador `PaymentProvider`; só `offline` existe | Piloto sem cobrança; Asaas/MP plugáveis depois |
 | Rate limit | Tabela no Postgres (janela fixa, upsert atômico) | Funciona com várias instâncias sem Redis |
 | Analytics | Tabela própria, lista fechada de eventos | Sem terceiros; LGPD |
-| Jobs | Função `runMaintenance()` via script ou rota protegida | Qualquer agendador (cron do host, GitHub Actions, Vercel Cron) |
+| Jobs | Função `runMaintenance()` via script ou rota protegida | Qualquer agendador (cron do host, GitHub Actions, Vercel Cron, ou o próprio n8n) |
+| Integrações | Outbox `integration_events` gravada na transação + webhook assinado (HMAC) com re‑tentativas; API só leitura; schema `reporting` | n8n e similares recebem eventos e leem relatórios sem tocar nas regras de negócio nem em dados pessoais ([AUTOMACOES.md](AUTOMACOES.md)) |
 
 ## Fluxo de uma operação (exemplo: aceitar proposta)
 

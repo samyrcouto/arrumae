@@ -151,3 +151,15 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Novo `src/components/scenes.tsx`: cenários em SVG com cores suaves (sem contorno), montados com peças reutilizáveis (janela com cortina, quadro, luminária, sofá, planta, tomada, piso; armários, azulejos, bancada, torneira, panela).
 - `HeroPro`: o cômodo fica dentro da casinha (recortado pelo contorno), mantendo a moldura e o telhado amarelo. Cada profissional tem `scene` em `TRADES`: eletricista e montador na sala; encanador e pequenos reparos na cozinha. A home (eletricista) usa a sala.
 - `ProTeam`: painel largo com cozinha à esquerda e sala à direita atrás da equipe; o capacete do eletricista "sai" do painel.
+
+## 2026-10-25 — Banco para relatórios, integrações com n8n e plano de agentes
+
+- Fundador perguntou como ficam o banco (SQL), automações/agentes e o n8n, e pediu para avançar no que fosse possível sem gastar.
+- **Fila de eventos (outbox)**: tabela `integration_events` (migration `0002`). Os serviços gravam eventos na mesma transação da operação: `request.created`, `request.status_changed`, `request.stale` (pedido > 2 h sem proposta, uma vez), `quote.submitted`, `review.created`, `pro.submitted_for_review`, `pro.verification_decided`, `support.ticket_opened`. Sem dados pessoais (teste confere).
+- **Webhook assinado**: `dispatchIntegrationEvents` (no job de manutenção) envia com HMAC‑SHA256 sobre timestamp + corpo, re‑tenta 1, 2, 4… min até 6 h (8 tentativas), lease contra execução dupla; retenção de 30 dias. Painel `/admin/integracoes` com fila, falhas e "Reenviar".
+- **API só leitura**: `GET /api/integrations/v1/metrics?days=N` com `INTEGRATION_API_TOKEN` (401/503/429).
+- **Relatórios SQL**: schema `reporting` com 6 views sem PII (migration `0003`) + `scripts/sql/reporting-role.sql` (papel somente leitura). Testado: lê as views, "permission denied" em `users`, não cria tabela.
+- **n8n**: 3 workflows em `integrations/n8n/` (alertas da equipe com verificação de assinatura, relatório diário, agendador da manutenção). Testados ponta a ponta com n8n 1.123.87 local (a 2.x exige Node 24; instalação precisou forçar `xlsx@0.18.5` porque o CDN do SheetJS é bloqueado aqui) e um Telegram simulado.
+- Docs: novo `docs/AUTOMACOES.md` (arquitetura, catálogo de eventos, passo a passo do n8n, plano de agentes de IA com gatilhos, modelo e custo estimado); DATABASE (relatórios + plano de produção, alerta da Data API do Supabase), SECURITY, ARCHITECTURE, DECISIONS (D‑017 a D‑019), ROADMAP, PRODUCT, `.env.example`.
+- Testes: 57 (8 novos de integrações), typecheck, lint, e2e + vitrine (nova captura do painel de integrações).
+- **Não feito (depende do fundador):** hospedar o n8n (Cloud ou VPS), criar o bot do Telegram, contratar banco gerenciado, qualquer uso de IA (custo + revisão jurídica).

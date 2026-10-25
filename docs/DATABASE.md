@@ -29,7 +29,10 @@ users ─┬─< sessions
        ├─< notifications, outbound_messages
        ├─< support_tickets ──< ticket_messages
        └─< data_requests (LGPD)
-commercial_settings, coupons, audit_logs, rate_limits, analytics_events
+commercial_settings, coupons, audit_logs, rate_limits, analytics_events, integration_events
+
+schema reporting (só views, sem dados pessoais): requests, daily_kpis, settlements,
+                 pro_pipeline, open_tickets, stale_open_requests
 ```
 
 | Tabela | Papel | Regras de integridade relevantes |
@@ -51,6 +54,7 @@ commercial_settings, coupons, audit_logs, rate_limits, analytics_events
 | `audit_logs` | Ações sensíveis | **trigger bloqueia UPDATE/DELETE** (append‑only) |
 | `rate_limits` | Contadores | upsert atômico |
 | `analytics_events` | Funil | sem IP, sem dados pessoais |
+| `integration_events` | Fila de saída (outbox) para n8n/automações | gravado na mesma transação da operação; `dedupe_key` única (alerta não repete); status pending/delivered/failed, tentativas e próxima tentativa ([AUTOMACOES.md](AUTOMACOES.md)) |
 
 ## Por que algumas regras estão no banco
 
@@ -66,3 +70,28 @@ Exclusão de conta **anonimiza** (`users` vira "Usuário removido", e‑mail inv
 - Testar restauração mensalmente em banco separado e registrar no WORKLOG.
 - Arquivos (documentos/fotos): versionamento/replicação no bucket.
 - RPO alvo: ≤ 24h no piloto (≤ 5 min com PITR). RTO alvo: ≤ 4h.
+
+## Relatórios em SQL (schema `reporting`)
+
+Views criadas pela migration `0003_reporting_views.sql` para n8n, planilhas e BI: `reporting.requests`, `reporting.daily_kpis`, `reporting.settlements`, `reporting.pro_pipeline`, `reporting.open_tickets`, `reporting.stale_open_requests`. Nenhuma tem nome, e‑mail, telefone, endereço, CEP, título, descrição, CPF ou ids de cliente/profissional (um teste confere as colunas). Dados de demonstração ficam de fora. Ferramentas externas usam o papel `arrumae_reporting` (`scripts/sql/reporting-role.sql`), que só lê esse schema. Exemplos:
+
+```sql
+-- funil dos últimos 7 dias
+select * from reporting.daily_kpis where day >= current_date - 6 order by day;
+
+-- demanda por categoria e região no mês
+select category_name, region_name, count(*) from reporting.requests
+ where created_day >= date_trunc('month', current_date) group by 1, 2 order by 3 desc;
+```
+
+## Como vai ficar em produção
+
+| Tema | Plano |
+|---|---|
+| Provedor | Postgres gerenciado em São Paulo (`sa-east-1`): Supabase ou Neon. Versão 16+. **Requer sua autorização** (custo mensal). |
+| Usuários do banco | (1) dono/migrations — usado só para `npm run db:migrate`; (2) aplicação — `DATABASE_URL` do app; (3) `arrumae_reporting` — somente leitura das views. Senhas diferentes, guardadas só no provedor. |
+| Conexões | App serverless: usar a URL com *pooler* (porta de transação) e `DATABASE_POOL_MAX` baixo (ex.: 5); migrations pela URL direta. SSL obrigatório (`?sslmode=require`). |
+| Supabase: Data API | O Supabase expõe o schema `public` por uma API REST com chave anônima. **Desligue a Data API** (ou ative RLS em todas as tabelas): o app não usa essa API e ela não pode ficar aberta. |
+| Migrations | Só pelo pipeline/comando `npm run db:migrate`, nunca editar migration já aplicada; testar antes em banco de homologação. |
+| Backups | Diários + PITR, retenção ≥ 7 dias; teste de restauração mensal registrado no WORKLOG. |
+| Monitoramento | Alertas de CPU/conexões/armazenamento do provedor; consultas lentas pelo painel; fila de integrações em `/admin/integracoes`. |
