@@ -125,3 +125,7 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 ## 2026-10-25 — Polegar atrás do cabo
 
 - Fundador: o polegar devia ficar atrás do que está sendo segurado. Agora o polegar é desenhado antes da ferramenta (atrás do cabo); aparecem só a base, junto da palma, e a ponta do outro lado do cabo, acima do indicador — como na foto de referência.
+
+## 2026-10-25 — Polegar sem unha
+
+- Removida a unha da ponta do polegar (que aparece atrás do cabo) para ficar mais natural; as unhas dos outros dedos continuam na vista da palma.
