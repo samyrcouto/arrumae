@@ -7,6 +7,8 @@
  * apenas com fatos verdadeiros — nunca notas ou números inventados.
  */
 
+import { OpenPlanScene, RoomScene, type SceneKind } from "./scenes";
+
 type Tone = { base: string; shade: string; light: string; lip: string };
 type Cloth = { base: string; shade: string; light: string };
 
@@ -510,23 +512,27 @@ function TruthBadge({ x, y, w, title, sub }: { x: number; y: number; w: number; 
 /** Um profissional por serviço do piloto (a chave é o slug da categoria). */
 export const TRADES = {
   eletrica: {
+    scene: "sala",
     label: "Ilustração: eletricista sorridente de capacete segurando uma chave de fenda isolada",
     person: { skin: SKIN.brown, hair: "bun", hairColor: HAIR.black, headwear: "hardhat", shirt: CLOTH.petrol, earrings: true, tool: "screwdriver", pose: "ergue" },
   },
   encanador: {
+    scene: "cozinha",
     label: "Ilustração: encanador sorridente de boné segurando uma chave de grifo",
     person: { skin: SKIN.light, hair: "short", hairColor: HAIR.brown, headwear: "cap", capColor: CLOTH.leaf, shirt: CLOTH.sand, mustache: true, tool: "wrench", pose: "ergue-direita" },
   },
   "montagem-de-moveis": {
+    scene: "sala",
     label: "Ilustração: montador sorridente de boné segurando uma furadeira",
     shift: 22,
     person: { skin: SKIN.deep, hair: "short", hairColor: HAIR.black, headwear: "cap", capColor: CLOTH.petrol, beard: true, shirt: CLOTH.clay, tool: "drill", pose: "forca" },
   },
   "pequenos-reparos": {
+    scene: "cozinha",
     label: "Ilustração: profissional de pequenos reparos sorridente segurando um martelo",
     person: { skin: SKIN.tan, hair: "buzz", hairColor: HAIR.black, beard: true, shirt: CLOTH.ink, tool: "hammer", pose: "cruzados" },
   },
-} satisfies Record<string, { label: string; person: RealPersonProps; shift?: number }>;
+} satisfies Record<string, { label: string; person: RealPersonProps; scene: SceneKind; shift?: number }>;
 
 export type TradeSlug = keyof typeof TRADES;
 
@@ -549,6 +555,7 @@ export function HeroPro({ className, trade = "eletrica", badge = true, home = fa
   return (
     <svg viewBox="0 0 440 470" className={className} role="img" aria-label={t.label}>
       <path d="M50 470V226L220 84l170 142v244z" fill="var(--color-tape-soft)" stroke="var(--color-tape-soft)" strokeWidth="28" strokeLinejoin="round" />
+      <RoomScene kind={t.scene} clipId={`casa-${home ? "home" : trade}`} />
       <path d="M24 214 220 50l196 164" fill="none" stroke="var(--color-tape)" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
       <g transform={`translate(${"shift" in t ? t.shift : 46} -30)`}>
         <RealPerson {...t.person} />
@@ -564,11 +571,11 @@ export function TradeArt({ slug, className }: { slug: string; className?: string
   return <HeroPro trade={slug as TradeSlug} badge={false} className={className} />;
 }
 
-/** Equipe: encanador, eletricista e profissional de pequenos reparos, cada um numa pose. */
+/** Equipe: encanador, eletricista e profissional de pequenos reparos, cada um numa pose, com cozinha e sala ao fundo. */
 export function ProTeam({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 760 360" className={className} role="img" aria-label="Ilustração: encanador, eletricista e profissional de pequenos reparos sorridentes">
-      <ellipse cx="380" cy="352" rx="360" ry="22" fill="#18202c" opacity="0.08" />
+      <OpenPlanScene clipId="equipe-cenario" />
       <g transform="translate(-2 30) scale(0.66)">
         <RealPerson {...TRADES.encanador.person} pose="ergue" />
       </g>

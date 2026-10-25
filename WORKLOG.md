@@ -145,3 +145,9 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 
 - Fundador: só o martelo estava virado certo. Regra do martelo aplicada a todas: a ferramenta acompanha a mão (frente do lado das pontas dos dedos) e o topo inclina para o lado do pulso, para fora. Removido `toolFlip`, que espelhava a ferramenta sozinha (a furadeira ficava segurada ao contrário). Chave de fenda e chave de grifo agora inclinam para fora; furadeira aponta para cima com a empunhadura na mão.
 - Braços cruzados: a mão de baixo voltou a aparecer, segurando o braço do outro lado (`grip: "hold"`, costas da mão).
+
+## 2026-10-25 — Cenários de sala e cozinha
+
+- Novo `src/components/scenes.tsx`: cenários em SVG com cores suaves (sem contorno), montados com peças reutilizáveis (janela com cortina, quadro, luminária, sofá, planta, tomada, piso; armários, azulejos, bancada, torneira, panela).
+- `HeroPro`: o cômodo fica dentro da casinha (recortado pelo contorno), mantendo a moldura e o telhado amarelo. Cada profissional tem `scene` em `TRADES`: eletricista e montador na sala; encanador e pequenos reparos na cozinha. A home (eletricista) usa a sala.
+- `ProTeam`: painel largo com cozinha à esquerda e sala à direita atrás da equipe; o capacete do eletricista "sai" do painel.
