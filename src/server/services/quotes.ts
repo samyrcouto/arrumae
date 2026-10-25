@@ -22,6 +22,7 @@ import { enforceRateLimit, LIMITS } from "../security/rate-limit";
 import { fieldErrorsFrom } from "./accounts";
 import { trackServer } from "./analytics";
 import { notify } from "./notifications";
+import { emitIntegrationEvent, requestAdminUrl, requestRefs } from "./integrations";
 import { getSettings } from "./settings";
 
 const HOUR = 3600_000;
@@ -137,6 +138,15 @@ export async function submitQuote(actor: Actor, input: QuoteInput) {
       actorId: actor.id,
       actorRole: "pro",
       data: { quoteId },
+    });
+    await emitIntegrationEvent(tx, "quote.submitted", {
+      requestId: r.id,
+      quoteId,
+      kind: values.kind,
+      updated: !!existing,
+      amountCents: values.amountCents,
+      visitFeeCents: values.visitFeeCents,
+      adminUrl: requestAdminUrl(r.id),
     });
     await notify(
       tx,
@@ -266,6 +276,17 @@ export async function acceptQuote(actor: Actor, input: { quoteId: string; slotIn
       actorId: actor.id,
       actorRole: "client",
       data: { quoteId: fresh.id, slot },
+    });
+    await emitIntegrationEvent(tx, "request.status_changed", {
+      ...(await requestRefs(tx, updated[0])),
+      action: "accept_quote",
+      from: "open",
+      to: "scheduled",
+      actorRole: "client",
+      quoteId: fresh.id,
+      quoteKind: fresh.kind,
+      agreedAmountCents: agreed,
+      scheduledStart: slot.start,
     });
     await notify(
       tx,

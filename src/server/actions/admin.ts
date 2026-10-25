@@ -6,6 +6,7 @@ import { requireUser } from "../auth/session";
 import { invalid } from "../domain/errors";
 import { createCoupon, decideProVerification, reviewDocument, setUserStatus, toggleCoupon } from "../services/admin";
 import { saveCategory, saveRegion } from "../services/catalog";
+import { retryFailedIntegrationEvents } from "../services/integrations";
 import { moderateReview } from "../services/reviews";
 import { DEFAULT_SETTINGS, updateSettings, type CommercialSettings } from "../services/settings";
 import { bool, run, str } from "./run";
@@ -107,4 +108,13 @@ export async function updateSettingsAction(_: ActionResult, form: FormData): Pro
     }
     await updateSettings(actor, patch as Partial<CommercialSettings>);
   }, "Configurações salvas.");
+}
+
+export async function retryIntegrationsAction(_: ActionResult, form: FormData): Promise<ActionResult> {
+  void form;
+  return run(async () => {
+    const { actor } = await requireUser(["admin"]);
+    const n = await retryFailedIntegrationEvents(actor);
+    return { ok: true, message: n ? `${n} evento(s) voltaram para a fila.` : "Nenhum evento com falha." };
+  });
 }

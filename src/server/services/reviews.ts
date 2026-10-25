@@ -6,6 +6,7 @@ import type { Actor } from "../domain/actor";
 import { conflict, forbidden, invalid, notFound } from "../domain/errors";
 import { trackServer } from "./analytics";
 import { audit } from "./audit";
+import { emitIntegrationEvent } from "./integrations";
 import { notify } from "./notifications";
 
 /**
@@ -30,6 +31,13 @@ export async function createReview(actor: Actor, input: { requestId: string; rat
       .onConflictDoNothing({ target: reviews.requestId })
       .returning({ id: reviews.id });
     if (!inserted.length) throw conflict("Você já avaliou este serviço.");
+    await emitIntegrationEvent(tx, "review.created", {
+      requestId: r.id,
+      reviewId: inserted[0].id,
+      rating,
+      hasComment: comment.length > 0,
+      isDemo: r.isDemo,
+    });
     await notify(tx, r.proId, {
       type: "review_received",
       title: "Você recebeu uma avaliação",

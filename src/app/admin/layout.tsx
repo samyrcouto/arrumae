@@ -12,6 +12,7 @@ const LINKS = [
   ["/admin/financeiro", "Financeiro"],
   ["/admin/cupons", "Cupons"],
   ["/admin/configuracoes", "Configurações"],
+  ["/admin/integracoes", "Integrações"],
   ["/admin/auditoria", "Auditoria"],
 ];
 

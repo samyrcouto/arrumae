@@ -109,6 +109,7 @@ export const ticketPriority = pgEnum("ticket_priority", ["low", "normal", "high"
 export const discountType = pgEnum("discount_type", ["percent", "fixed"]);
 export const outboundStatus = pgEnum("outbound_status", ["queued", "sent", "failed", "skipped"]);
 export const dataRequestKind = pgEnum("data_request_kind", ["export", "deletion"]);
+export const integrationEventStatus = pgEnum("integration_event_status", ["pending", "delivered", "failed"]);
 
 // ---------------------------------------------------------------------------
 // Identidade e acesso
@@ -717,3 +718,32 @@ export const dataRequests = pgTable("data_requests", {
   completedAt: timestamp("completed_at", { withTimezone: true }),
   createdAt: createdAt(),
 });
+
+/**
+ * Fila de saída (outbox) de eventos para integrações externas (n8n etc.).
+ * O evento é gravado na MESMA transação da operação de negócio — se ela
+ * falhar, nada sai. Um job envia por webhook assinado (HMAC) e re-tenta com
+ * espera crescente. `payload` nunca leva dados pessoais (nome, e-mail,
+ * telefone, endereço, CPF ou texto livre do usuário): só ids e categorias.
+ */
+export const integrationEvents = pgTable(
+  "integration_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    type: text("type").notNull(),
+    payload: jsonb("payload").$type<Record<string, unknown>>().notNull().default({}),
+    /** Evita disparar o mesmo alerta duas vezes (ex.: "request.stale:<id>"). */
+    dedupeKey: text("dedupe_key"),
+    status: integrationEventStatus("status").notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    nextAttemptAt: timestamp("next_attempt_at", { withTimezone: true }).notNull().defaultNow(),
+    lastError: text("last_error"),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    uniqueIndex("integration_events_dedupe_idx").on(t.dedupeKey),
+    index("integration_events_due_idx").on(t.status, t.nextAttemptAt),
+    index("integration_events_created_idx").on(t.createdAt),
+  ],
+);

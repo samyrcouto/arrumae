@@ -42,6 +42,7 @@ import { audit } from "./audit";
 import { resolveRegionByCep } from "./catalog";
 import { findEligiblePros, statsForPros } from "./matching";
 import { notify } from "./notifications";
+import { emitIntegrationEvent, requestAdminUrl, requestRefs } from "./integrations";
 import { getSettings } from "./settings";
 
 type ServiceRequest = typeof serviceRequests.$inferSelect;
@@ -220,6 +221,16 @@ export async function createServiceRequest(actor: Actor, input: CreateRequestInp
             link: `/admin/solicitacoes/${requestId}`,
           });
       }
+      await emitIntegrationEvent(tx, "request.created", {
+        requestId,
+        category: { slug: category.slug, name: category.name },
+        region: { slug: region.slug, name: region.name },
+        urgency: data.urgency,
+        isDemo: false,
+        adminUrl: requestAdminUrl(requestId),
+        invitedPros: proIds.length,
+        noEligiblePros: proIds.length === 0,
+      });
       return { id: requestId, invited: proIds.length };
     });
 
@@ -626,6 +637,7 @@ export async function performRequestAction(
 
     if (def.to === "completed") await recordCompletion(tx, next, settings, action === "confirm" && !!payload.declaredPaid);
 
+    let disputeTicketId: string | undefined;
     if (action === "open_dispute") {
       const [ticket] = await tx
         .insert(supportTickets)
@@ -638,6 +650,7 @@ export async function performRequestAction(
         })
         .returning({ id: supportTickets.id });
       await tx.insert(ticketMessages).values({ ticketId: ticket.id, authorId: actorId(actor)!, body: reason });
+      disputeTicketId = ticket.id;
       const admins = await tx
         .select({ id: users.id })
         .from(users)
@@ -674,6 +687,16 @@ export async function performRequestAction(
             link: link("pro"),
           });
     }
+
+    await emitIntegrationEvent(tx, "request.status_changed", {
+      ...(await requestRefs(tx, next)),
+      action,
+      from: r.status,
+      to: def.to,
+      actorRole: actorRole(actor),
+      ...(disputeTicketId ? { ticketId: disputeTicketId } : {}),
+      ...(def.to === "completed" ? { finalAmountCents: next.finalAmountCents } : {}),
+    });
 
     if (actor.kind === "user" && actor.role === "admin")
       await audit(tx, actor, `request.${action}`, "service_request", r.id, eventData);

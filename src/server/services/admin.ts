@@ -16,6 +16,7 @@ import {
 import type { Actor } from "../domain/actor";
 import { forbidden, invalid, notFound } from "../domain/errors";
 import { audit } from "./audit";
+import { emitIntegrationEvent, proAdminUrl } from "./integrations";
 import { notify } from "./notifications";
 
 function requireAdmin(actor: Actor): asserts actor is Extract<Actor, { kind: "user" }> {
@@ -231,6 +232,12 @@ export async function decideProVerification(
       })
       .where(eq(proProfiles.userId, proId));
     await audit(tx, actor, `pro.verification.${decision}`, "pro_profile", proId, { notes, previous: p.verificationStatus });
+    await emitIntegrationEvent(tx, "pro.verification_decided", {
+      proId,
+      decision,
+      previous: p.verificationStatus,
+      adminUrl: proAdminUrl(proId),
+    });
     const messages = {
       approved: { title: "Perfil aprovado!", body: "Você já pode receber solicitações e enviar propostas." },
       rejected: { title: "Perfil precisa de ajustes", body: notes.trim() },

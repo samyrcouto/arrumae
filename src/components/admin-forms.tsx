@@ -4,6 +4,7 @@ import {
   createCouponAction,
   decideProAction,
   moderateReviewAction,
+  retryIntegrationsAction,
   reviewDocumentAction,
   saveCategoryAction,
   saveRegionAction,
@@ -184,6 +185,14 @@ export function TicketAdminForm({ ticketId, status }: { ticketId: string; status
       </div>
       <Checkbox name="assignToMe">Atribuir a mim</Checkbox>
       <SubmitButton variant="secondary">Atualizar chamado</SubmitButton>
+    </ActionForm>
+  );
+}
+
+export function RetryIntegrationsButton() {
+  return (
+    <ActionForm action={retryIntegrationsAction}>
+      <SubmitButton variant="ghost">Reenviar eventos com falha</SubmitButton>
     </ActionForm>
   );
 }

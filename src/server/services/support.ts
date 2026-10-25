@@ -8,6 +8,7 @@ import { forbidden, invalid, notFound } from "../domain/errors";
 import { enforceRateLimit, LIMITS } from "../security/rate-limit";
 import { fieldErrorsFrom } from "./accounts";
 import { audit } from "./audit";
+import { emitIntegrationEvent, ticketAdminUrl } from "./integrations";
 import { notify } from "./notifications";
 
 export const ticketSchema = z.object({
@@ -47,6 +48,14 @@ export async function openTicket(actor: Actor, input: z.input<typeof ticketSchem
       })
       .returning({ id: supportTickets.id });
     await tx.insert(ticketMessages).values({ ticketId: t.id, authorId: actor.id, body: d.body });
+    await emitIntegrationEvent(tx, "support.ticket_opened", {
+      ticketId: t.id,
+      category: d.category,
+      priority: priorityFor(d.category),
+      requestId: d.requestId ?? null,
+      openerRole: actor.role,
+      adminUrl: ticketAdminUrl(t.id),
+    });
     const admins = await tx
       .select({ id: users.id })
       .from(users)

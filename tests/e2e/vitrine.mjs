@@ -44,6 +44,7 @@ function screens(ids) {
       { slug: "admin-profissionais", title: "Fila de verificação", path: "/admin/profissionais?status=approved", as: "admin" },
       { slug: "admin-catalogo", title: "Categorias e regiões", path: "/admin/catalogo", as: "admin" },
       { slug: "admin-financeiro", title: "Financeiro", path: "/admin/financeiro", as: "admin" },
+      { slug: "admin-integracoes", title: "Integrações (n8n)", path: "/admin/integracoes", as: "admin" },
     ] },
   ];
 }

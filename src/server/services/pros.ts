@@ -26,6 +26,7 @@ import { processDocument, processImage } from "../security/uploads";
 import { audit } from "./audit";
 import { fieldErrorsFrom } from "./accounts";
 import { statsForPros } from "./matching";
+import { emitIntegrationEvent, proAdminUrl } from "./integrations";
 import { notify } from "./notifications";
 
 type ProActor = Extract<Actor, { kind: "user" }> & { role: "pro" };
@@ -227,6 +228,7 @@ export async function submitForReview(actor: Actor) {
       .returning({ id: proProfiles.userId });
     if (!updated.length) throw conflict("Seu perfil já foi enviado para análise.");
     await audit(tx, actor, "pro.submit_for_review", "pro_profile", actor.id);
+    await emitIntegrationEvent(tx, "pro.submitted_for_review", { proId: actor.id, adminUrl: proAdminUrl(actor.id) });
     const admins = await tx
       .select({ id: users.id })
       .from(users)
