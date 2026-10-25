@@ -91,3 +91,9 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Causa da mão estranha: o cabo passava na mesma direção do antebraço. Agora o punho é visto pelas costas (4 nós dos dedos + polegar do lado de fora), o cabo atravessa a mão perpendicular ao antebraço e a ponta da ferramenta sai pelo lado do polegar; a mão esquerda é o espelho da direita. Mão na cintura com 4 dedos e polegar escondido.
 - Poses (`POSES` em `people.tsx`): `ergue`, `ergue-direita`, `mostra`, `forca`, `cruzados`, `cintura`. Eletricista ergue a chave de fenda; encanador ergue a chave de grifo do outro lado com o braço solto; técnica de ar-condicionado mostra o manômetro na frente do peito; montador com a furadeira ao lado do ombro; pequenos reparos de braços cruzados com o martelo.
 - Cabelo agora aparece embaixo de boné/capacete para todos (costeletas); encanador ganhou bigode — antes parecia uma mulher careca.
+
+## 2026-10-25 — Cabelo cacheado e mãos mais naturais
+
+- Técnica de ar-condicionado parecia careca: o cabelo cacheado era só uma coroa de cachos e a testa aparecia no alto da cabeça. Agora tem volume cobrindo a cabeça, cachos na linha da testa e textura.
+- Mãos redesenhadas com silhueta lisa e poucos traços (os "calombos" de cada nó deixavam a mão estranha).
+- Bug corrigido: a mão na cintura estava girada 180° (dedos voltados para o cotovelo). Agora o pulso dobra e os dedos apontam para baixo sobre o quadril, encostando no corpo; nos braços cruzados a mão segue o antebraço (`grip: "tuck"`).

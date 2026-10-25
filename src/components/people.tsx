@@ -196,48 +196,36 @@ function Sleeve({ from, toward, shirt }: { from: Pt; toward: Pt; shirt: Cloth })
  * antebraço, como numa pegada de verdade. A mão esquerda é o espelho desta.
  */
 function Fist({ skin }: { skin: Tone }) {
-  const knuckles = [
-    { x: -13, r: 5.8 },
-    { x: -3.5, r: 6 },
-    { x: 6, r: 5.6 },
-    { x: 14.5, r: 4.6 },
-  ];
   return (
     <g>
-      {/* dorso da mão */}
-      <rect x="-21" y="-19" width="42" height="40" rx="13" fill={skin.base} />
-      <path d="M12 -17c6 2 9 7 9 12v13c0 6-4 11-9 13z" fill={skin.shade} opacity="0.45" />
-      {/* nós dos dedos */}
-      {knuckles.map(({ x, r }) => (
-        <g key={x}>
-          <circle cx={x} cy={-18} r={r} fill={skin.base} />
-          <ellipse cx={x - 0.5} cy={-20} rx={r * 0.55} ry="1.8" fill={skin.light} opacity="0.65" />
-        </g>
+      {/* silhueta única: nós dos dedos em cima, polegar à esquerda envolvendo o cabo, pulso embaixo */}
+      <path
+        d="M-11 24c-3-8-5-12-9-14-7-3-9-14-3-19 2-6 6-11 14-12 9-2 19 0 25 4 5 4 5 15 2 25-2 7-5 12-7 16z"
+        fill={skin.base}
+      />
+      <path d="M16 -17c5 4 5 15 2 25-2 7-5 12-7 16h-6c3-6 6-14 7-22 1-8 0-14 4-19z" fill={skin.shade} opacity="0.4" />
+      <path d="M-12 -18c8-3 18-2 25 2" fill="none" stroke={skin.light} strokeWidth="3" strokeLinecap="round" opacity="0.55" />
+      {/* divisão dos dedos dobrados */}
+      {[-5, 3, 10].map((x) => (
+        <path key={x} d={`M${x} -19q1 5 0 9`} fill="none" stroke={skin.shade} strokeWidth="1.7" strokeLinecap="round" opacity="0.75" />
       ))}
-      {[-8.2, 1.2, 10.4].map((x) => (
-        <path key={x} d={`M${x} -16v9`} stroke={skin.shade} strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
-      ))}
-      {/* polegar fechando o cabo do lado de fora */}
-      <path d="M-18 -11c-7 0-12 5-11 11 1 6 6 10 13 9z" fill={skin.base} />
-      <path d="M-25 2c2 3 5 5 9 5" fill="none" stroke={skin.shade} strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
+      {/* dobra do polegar */}
+      <path d="M-21 -5c4 3 6 8 5 14" fill="none" stroke={skin.shade} strokeWidth="1.7" strokeLinecap="round" opacity="0.75" />
     </g>
   );
 }
 
-/** Mão apoiada na cintura, vista pelas costas, dedos para baixo (+y); o polegar fica atrás, escondido. */
+/** Mão apoiada na cintura, vista pelas costas, dedos para baixo (+y) e juntos; o polegar fica atrás. */
 function HipHand({ skin }: { skin: Tone }) {
-  const fingers: [number, number][] = [[-16.5, 15], [-8.3, 19], [0, 20], [8.3, 16]];
   return (
     <g>
-      <path d="M-15 -16h30c2 8 3 15 2 22h-34c-1-7 0-14 2-22z" fill={skin.base} />
-      {fingers.map(([x, len]) => (
-        <rect key={x} x={x} y="1" width="8.4" height={len} rx="4.2" fill={skin.base} />
+      {/* dorso afinando até as pontas dos dedos, que se curvam sobre o quadril */}
+      <path d="M-13 -16c-1 10-3 19-2 27 1 9 5 17 12 19 7 2 14-2 16-10 3-9 2-23 0-36z" fill={skin.base} />
+      <path d="M10 -16c3 12 4 25 2 34-1 6-4 10-8 12 2-5 3-11 3-17 0-11 1-20 3-29z" fill={skin.shade} opacity="0.4" />
+      <path d="M-12 8q12 4 24 0" fill="none" stroke={skin.shade} strokeWidth="1.6" strokeLinecap="round" opacity="0.35" />
+      {[-5, 1, 7].map((x) => (
+        <path key={x} d={`M${x} 16q0.6 6 0 11`} fill="none" stroke={skin.shade} strokeWidth="1.6" strokeLinecap="round" opacity="0.65" />
       ))}
-      {[-8.3, 0, 8.3].map((x) => (
-        <path key={x} d={`M${x} 5v11`} stroke={skin.shade} strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
-      ))}
-      {fingers.map(([x]) => <ellipse key={x} cx={x + 4.2} cy="2" rx="2.8" ry="1.5" fill={skin.light} opacity="0.6" />)}
-      <path d="M13 -12c2 6 2 12 1 18" fill="none" stroke={skin.shade} strokeWidth="5" strokeLinecap="round" opacity="0.35" />
     </g>
   );
 }
@@ -249,11 +237,12 @@ const GRIP: Record<ToolName, string> = { screwdriver: SWAP, wrench: SWAP, hammer
 const SHOULDER: Record<"L" | "R", Pt> = { L: [124, 286], R: [276, 286] };
 
 /** Um braço da pose: cotovelo, mão e o que a mão faz. `twist` dobra o pulso (graus). */
-type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "hip" | "none"; twist?: number };
+/** grip: "tool" segura a ferramenta, "hip" apoia a mão no quadril (pulso dobrado, dedos para baixo), "tuck" segue a linha do antebraço (braços cruzados). */
+type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "hip" | "tuck" | "none"; twist?: number };
 type PoseSpec = { L: ArmSpec; R: ArmSpec; front: ("L" | "R")[] };
 
-const HIP_L: ArmSpec = { elbow: [64, 374], hand: [118, 438], grip: "hip" };
-const HIP_R: ArmSpec = { elbow: [336, 374], hand: [282, 438], grip: "hip" };
+const HIP_L: ArmSpec = { elbow: [64, 374], hand: [132, 444], grip: "hip" };
+const HIP_R: ArmSpec = { elbow: [336, 374], hand: [268, 444], grip: "hip" };
 const HANG_L: ArmSpec = { elbow: [90, 394], hand: [76, 540], grip: "none" };
 const HANG_R: ArmSpec = { elbow: [310, 394], hand: [324, 540], grip: "none" };
 
@@ -267,7 +256,7 @@ export const POSES = {
   /** braço dobrado para cima ao lado do ombro, mão na cintura */
   forca: { L: HIP_L, R: { elbow: [356, 346], hand: [314, 256], grip: "tool" }, front: ["L", "R"] },
   /** braços cruzados, ferramenta para cima */
-  cruzados: { L: { elbow: [94, 428], hand: [284, 390], grip: "hip" }, R: { elbow: [306, 430], hand: [132, 366], grip: "tool" }, front: ["L", "R"] },
+  cruzados: { L: { elbow: [94, 428], hand: [284, 390], grip: "tuck" }, R: { elbow: [306, 430], hand: [132, 366], grip: "tool" }, front: ["L", "R"] },
   /** as duas mãos na cintura */
   cintura: { L: HIP_L, R: HIP_R, front: ["L", "R"] },
 } satisfies Record<string, PoseSpec>;
@@ -302,10 +291,13 @@ function Forearm({ side, arm, skin, tool }: { side: "L" | "R"; arm: ArmSpec; ski
         <Fist skin={skin} />
       </g>
     );
-  } else if (arm.grip === "hip") {
-    const angle = deg(Math.atan2(vx / len, -vy / len)) + 180;
+  } else if (arm.grip === "hip" || arm.grip === "tuck") {
+    // no quadril o pulso dobra e os dedos apontam para baixo, um pouco para dentro
+    const angle = arm.grip === "hip" ? (side === "R" ? 20 : -20) : deg(Math.atan2(vx / len, -vy / len));
+    const a = (angle * Math.PI) / 180;
+    const ox = hx - 12 * Math.sin(a), oy = hy + 12 * Math.cos(a);
     hand = (
-      <g transform={`translate(${hx} ${hy}) rotate(${angle})${mirror}`}>
+      <g transform={`translate(${ox} ${oy}) rotate(${angle})${mirror}`}>
         <HipHand skin={skin} />
       </g>
     );
@@ -427,9 +419,16 @@ export function RealPerson({
       )}
       {hair === "curly" && headwear === "none" && (
         <g fill={hairColor}>
-          {[164, 180, 196, 212, 228].map((x, i) => (
-            <circle key={x} cx={x + (i % 2) * 2} cy={i % 2 ? 90 : 86} r="12" />
+          {/* volume cobrindo o alto da cabeça, com cachos na linha da testa e nas laterais */}
+          <path d="M146 130c-6-46 18-76 54-76s60 30 54 76c-6-18-14-28-26-33-18-6-38-6-56 0-12 5-20 15-26 33z" />
+          {[[164, 99, 10], [181, 94, 10], [200, 92, 10], [219, 94, 10], [236, 99, 10], [151, 114, 10], [249, 114, 10]].map(([x, y, r]) => (
+            <circle key={`f${x}-${y}`} cx={x} cy={y} r={r} />
           ))}
+          <g fill="none" stroke="#fff" strokeOpacity="0.14" strokeWidth="2.4" strokeLinecap="round">
+            {[[172, 72], [196, 64], [222, 70], [160, 90], [240, 88], [184, 84], [212, 82]].map(([x, y]) => (
+              <path key={`c${x}-${y}`} d={`M${x - 6} ${y + 2}a6 6 0 0 1 12 0`} />
+            ))}
+          </g>
         </g>
       )}
       {headwear !== "none" && (hair === "bun" || hair === "curly") && (
