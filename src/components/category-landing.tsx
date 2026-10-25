@@ -1,4 +1,5 @@
 import { CategoryArt } from "./illustrations";
+import { TRADES, TradeArt } from "./people";
 import { Card, LinkButton } from "./ui";
 
 type Category = { slug: string; name: string; shortDescription: string; examples: string[]; outOfScope: string[]; pricingMode: string };
@@ -21,7 +22,11 @@ export function CategoryLanding({ category, regionName, regions }: { category: C
           <p className="mt-4 text-lg text-ink-soft">{category.shortDescription} Descreva o que precisa e receba até 4 propostas de profissionais com documentos conferidos{regionName ? ` que atendem ${regionName}` : ""}.</p>
           <LinkButton href={href} className="mt-6 w-full text-lg sm:w-auto">Pedir orçamento grátis</LinkButton>
         </div>
-        <CategoryArt slug={category.slug} className="mx-auto block size-56 sm:size-72" />
+        {category.slug in TRADES ? (
+          <TradeArt slug={category.slug} className="mx-auto block w-full max-w-xs sm:max-w-sm" />
+        ) : (
+          <CategoryArt slug={category.slug} className="mx-auto block size-56 sm:size-72" />
+        )}
       </div>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">

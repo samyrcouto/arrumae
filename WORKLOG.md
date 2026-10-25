@@ -77,3 +77,10 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Fundador achou a mão da furadeira "torta/invertida" e os capacetes estranhos.
 - Mão redesenhada como um punho fechado no cabo (dedos por baixo, polegar por cima) e braço dobrado natural: braço junto ao corpo, cotovelo e antebraço em diagonal até a mão.
 - Capacete refeito: casco mais largo e arredondado, nervuras curvas e aba contínua com sombra na testa; coque ajustado para aparecer por baixo do capacete.
+
+## 2026-10-25 — Corpo, braços e profissionais por serviço
+
+- Fundador achou o corpo gigante e os braços "colados". Tronco afinado (ombros ~2,4 cabeças), braços desenhados como membros separados: a parte de cima sai da manga atrás do tronco e o antebraço vem na frente. Pose padrão: uma mão erguendo a ferramenta ao lado do ombro e a outra na cintura, com fundo aparecendo entre braço e corpo.
+- Punho novo com quatro dedos dobrados e polegar com unha; o mesmo punho, girado, faz a mão na cintura.
+- Um profissional por serviço (`TRADES` em `people.tsx`): eletricista (chave de fenda isolada), encanador (chave de grifo), técnica de ar-condicionado (manômetro), montador (furadeira) e pequenos reparos (martelo).
+- Landings `/servicos/[categoria]` mostram o profissional do serviço; a equipe da home virou eletricista + encanador + técnica de ar-condicionado. `HeroPro` agora recebe `trade` (slug) em vez de `variant`.

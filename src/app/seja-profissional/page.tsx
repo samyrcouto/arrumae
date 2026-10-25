@@ -20,7 +20,7 @@ export default async function ProLanding() {
           </p>
           <LinkButton href="/cadastro?tipo=profissional" className="mt-6 bg-ink hover:bg-ink/90">Começar cadastro</LinkButton>
         </div>
-        <HeroPro variant="montador" className="mx-auto -mb-px w-full max-w-sm" />
+        <HeroPro trade="montagem-de-moveis" className="mx-auto -mb-px w-full max-w-sm" />
       </div>
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         {[
