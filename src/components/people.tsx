@@ -36,9 +36,9 @@ export type RealPersonProps = {
   shirt: Cloth;
   beard?: boolean;
   earrings?: boolean;
-  /** Ferramenta erguida numa das mãos; sem ferramenta, as duas mãos ficam na cintura. */
+  /** Ferramenta erguida numa das mãos. */
   tool?: ToolName | "none";
-  /** Posição do corpo; sem ferramenta, o padrão é as duas mãos na cintura. */
+  /** Posição do corpo; sem ferramenta, o padrão é o joinha. */
   pose?: PoseName;
   mustache?: boolean;
 };
@@ -241,47 +241,51 @@ function Sleeve({ from, toward, shirt }: { from: Pt; toward: Pt; shirt: Cloth })
  * antebraço, como numa pegada de verdade. A mão esquerda é o espelho desta.
  */
 function Fist({ skin }: { skin: Tone }) {
-  const fingers: { x: number; top: number }[] = [
-    { x: -17.5, top: -24 },
-    { x: -8.4, top: -26 },
-    { x: 0.7, top: -25 },
-    { x: 9.6, top: -21 },
-  ];
   return (
     <g transform="scale(1.15)">
-      {/* dorso da mão, afinando até o pulso */}
-      <path d="M-15 -10c-1 10 0 20 3 32h25c3-10 5-20 5-32z" fill={skin.base} />
-      <path d="M10 -12h8c0 14-2 24-5 34h-5c3-11 3-22 2-34z" fill={skin.shade} opacity="0.4" />
-      {/* quatro dedos dobrados por cima do cabo */}
-      {fingers.map(({ x, top }) => (
-        <g key={x}>
-          <rect x={x} y={top} width="9" height={-6 - top} rx="4.5" fill={skin.base} />
-          <path d={`M${x + 2.4} ${top + 3}q2.1-1.8 4.2 0`} fill="none" stroke={skin.light} strokeWidth="1.6" strokeLinecap="round" opacity="0.75" />
-        </g>
+      {/* mão fechada: bloco compacto, sem nada saindo do contorno */}
+      <path d="M-16 -12c0-8 6-12 14-12h10c7 0 11 5 11 12v16c0 8-4 16-7 20h-23c-3-6-5-12-5-18z" fill={skin.base} />
+      <path d="M12 -23c4 2 7 6 7 11v16c0 8-4 16-7 20h-5c3-6 5-13 5-20z" fill={skin.shade} opacity="0.4" />
+      {/* dedos dobrados por cima: faixa dos nós com três divisões curtas */}
+      <path d="M-14 -14c0-6 5-9 12-9h10c6 0 9 3 9 9-10 3-21 3-31 0z" fill={skin.light} opacity="0.35" />
+      <path d="M-14 -13q15 4 31 0" fill="none" stroke={skin.shade} strokeWidth="1.4" strokeLinecap="round" opacity="0.45" />
+      {[-6, 1.5, 9].map((x) => (
+        <path key={x} d={`M${x} -22v8`} stroke={skin.shade} strokeWidth="1.3" strokeLinecap="round" opacity="0.6" />
       ))}
-      {fingers.slice(1).map(({ x, top }) => (
-        <path key={x} d={`M${x - 0.1} ${top + 4}V-8`} stroke={skin.shade} strokeWidth="1.3" strokeLinecap="round" opacity="0.7" />
-      ))}
-      {/* polegar do lado de fora, fechando sobre o cabo */}
-      <path d="M-15 -12c-7-1-12 6-11 14 1 7 7 11 14 10 4-0.5 5-4 2.5-5.5-3.5-1.5-6.5-5.5-5.5-12.5z" fill={skin.base} />
-      <path d="M-22 -4c1 6 4 10 9 12" fill="none" stroke={skin.shade} strokeWidth="1.4" strokeLinecap="round" opacity="0.6" />
-      <path d="M-23 -6q0-4 4-5" fill="none" stroke={skin.light} strokeWidth="1.6" strokeLinecap="round" opacity="0.7" />
+      {/* polegar abraçando o cabo pelo lado de fora */}
+      <path d="M-16 -10c-7 0-11 7-10 14 1 7 7 11 13 9 3-1 3-5 0-6-3-1-4-5-3-11z" fill={skin.base} />
+      <path d="M-22 -3c1 5 4 9 9 11" fill="none" stroke={skin.shade} strokeWidth="1.4" strokeLinecap="round" opacity="0.55" />
     </g>
   );
 }
 
-/** Mão apoiada na cintura, vista pelas costas, dedos juntos para baixo (+y); o polegar fica atrás, escondido. */
-function HipHand({ skin }: { skin: Tone }) {
-  const fingers: [number, number][] = [[-15, 15], [-7.5, 19], [0, 18], [7.5, 14]];
+/**
+ * Joinha: mão fechada de lado, dedos dobrados empilhados e polegar para cima,
+ * saindo do lado dos nós. Desenhada para a mão do lado direito da imagem
+ * (pontas dos dedos dobrados viradas para o meio do corpo, à esquerda); o
+ * pulso fica embaixo (+y). A outra é o espelho.
+ */
+function ThumbsUp({ skin }: { skin: Tone }) {
+  const fingers: [number, number][] = [[-18, 30], [-8.5, 31], [1, 29], [10.5, 25]];
   return (
-    <g transform="scale(1.25)">
-      <path d="M-15 -12c0-8 7-12 15-12s15 4 15 12v18h-30z" fill={skin.base} />
-      {fingers.map(([x, len]) => (
-        <rect key={x} x={x} y="2" width="7.4" height={len} rx="3.7" fill={skin.base} stroke={skin.shade} strokeWidth="0.9" strokeOpacity="0.55" />
+    <g transform="scale(1.2)">
+      {/* palma e dorso */}
+      <rect x="-12" y="-18" width="26" height="40" rx="10" fill={skin.base} />
+      <path d="M8 -17c4 2 6 6 6 10v20c0 5-3 8-6 9z" fill={skin.shade} opacity="0.4" />
+      {/* polegar para cima, com unha */}
+      <rect x="1" y="-44" width="11.5" height="32" rx="5.75" fill={skin.base} />
+      <path d="M9 -43c2 1 3.5 4 3.5 7v20h-3.5z" fill={skin.shade} opacity="0.35" />
+      <ellipse cx="6.2" cy="-38.5" rx="3.4" ry="4.2" fill={skin.light} />
+      <path d="M2 -16q5 3 10 0" fill="none" stroke={skin.shade} strokeWidth="1.3" strokeLinecap="round" opacity="0.5" />
+      {/* quatro dedos dobrados, frente arredondada para o lado de dentro */}
+      {fingers.map(([y, w]) => (
+        <rect key={y} x={12 - w} y={y} width={w} height="9.5" rx="4.75" fill={skin.base} />
       ))}
-      <path d="M10 -21c3 2 5 5 5 9v18h-5z" fill={skin.shade} opacity="0.35" />
-      {fingers.map(([x]) => (
-        <path key={x} d={`M${x + 1.8} 5.5q1.9-1.4 3.8 0`} fill="none" stroke={skin.light} strokeWidth="1.3" strokeLinecap="round" opacity="0.7" />
+      {fingers.slice(1).map(([y, w]) => (
+        <path key={y} d={`M${13 - w} ${y + 0.2}h${w - 6}`} stroke={skin.shade} strokeWidth="1.3" strokeLinecap="round" opacity="0.6" />
+      ))}
+      {fingers.map(([y, w]) => (
+        <path key={`b${y}`} d={`M${14.5 - w} ${y + 3.2}q1.4-1.6 3 -1.6`} fill="none" stroke={skin.light} strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
       ))}
     </g>
   );
@@ -294,28 +298,28 @@ const GRIP: Record<ToolName, string> = { screwdriver: SWAP, wrench: SWAP, hammer
 const SHOULDER: Record<"L" | "R", Pt> = { L: [124, 286], R: [276, 286] };
 
 /** Um braço da pose: cotovelo, mão e o que a mão faz. `twist` dobra o pulso (graus). */
-/** grip: "tool" segura a ferramenta, "hip" apoia a mão no quadril (pulso dobrado, dedos para baixo), "tuck" segue a linha do antebraço (braços cruzados). */
-type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "hip" | "tuck" | "none"; twist?: number };
+/** grip: "tool" segura a ferramenta, "joinha" faz sinal de positivo, "none" deixa a mão fora de vista. */
+type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "joinha" | "none"; twist?: number };
 type PoseSpec = { L: ArmSpec; R: ArmSpec; front: ("L" | "R")[] };
 
-const HIP_L: ArmSpec = { elbow: [64, 374], hand: [132, 444], grip: "hip" };
-const HIP_R: ArmSpec = { elbow: [336, 374], hand: [268, 444], grip: "hip" };
+const JOINHA_L: ArmSpec = { elbow: [50, 400], hand: [48, 318], grip: "joinha" };
+const JOINHA_R: ArmSpec = { elbow: [350, 400], hand: [352, 318], grip: "joinha" };
 const HANG_L: ArmSpec = { elbow: [90, 394], hand: [76, 540], grip: "none" };
 const HANG_R: ArmSpec = { elbow: [310, 394], hand: [324, 540], grip: "none" };
 
 export const POSES = {
-  /** ferramenta erguida à esquerda, mão na cintura */
-  ergue: { L: { elbow: [34, 372], hand: [100, 290], grip: "tool", twist: 22 }, R: HIP_R, front: ["R", "L"] },
+  /** ferramenta erguida à esquerda, joinha com a outra mão */
+  ergue: { L: { elbow: [34, 372], hand: [100, 290], grip: "tool", twist: 22 }, R: JOINHA_R, front: ["R", "L"] },
   /** ferramenta erguida à direita, outro braço solto */
   "ergue-direita": { L: HANG_L, R: { elbow: [366, 372], hand: [300, 290], grip: "tool", twist: -22 }, front: ["L", "R"] },
-  /** mostrando a ferramenta na frente do peito, mão na cintura */
-  mostra: { L: HIP_L, R: { elbow: [330, 410], hand: [236, 380], grip: "tool", twist: 62 }, front: ["L", "R"] },
-  /** braço dobrado para cima ao lado do ombro, mão na cintura */
-  forca: { L: HIP_L, R: { elbow: [356, 346], hand: [314, 256], grip: "tool" }, front: ["L", "R"] },
-  /** braços cruzados, ferramenta para cima */
-  cruzados: { L: { elbow: [94, 428], hand: [284, 390], grip: "tuck" }, R: { elbow: [306, 430], hand: [132, 366], grip: "tool" }, front: ["L", "R"] },
-  /** as duas mãos na cintura */
-  cintura: { L: HIP_L, R: HIP_R, front: ["L", "R"] },
+  /** mostrando a ferramenta na frente do peito, outro braço solto */
+  mostra: { L: HANG_L, R: { elbow: [330, 410], hand: [236, 380], grip: "tool", twist: 62 }, front: ["L", "R"] },
+  /** braço dobrado para cima ao lado do ombro, joinha com a outra mão */
+  forca: { L: JOINHA_L, R: { elbow: [356, 346], hand: [314, 256], grip: "tool" }, front: ["L", "R"] },
+  /** braços cruzados, ferramenta para cima (a outra mão fica escondida sob o braço) */
+  cruzados: { L: { elbow: [94, 428], hand: [290, 404], grip: "none" }, R: { elbow: [306, 430], hand: [132, 366], grip: "tool" }, front: ["L", "R"] },
+  /** sem ferramenta: braço solto e joinha */
+  joinha: { L: HANG_L, R: JOINHA_R, front: ["L", "R"] },
 } satisfies Record<string, PoseSpec>;
 export type PoseName = keyof typeof POSES;
 
@@ -350,15 +354,12 @@ function Forearm({ side, arm, skin, tool }: { side: "L" | "R"; arm: ArmSpec; ski
         <Fist skin={skin} />
       </g>
     );
-  } else if (arm.grip === "hip" || arm.grip === "tuck") {
-    // no quadril o pulso dobra e os dedos apontam para baixo, um pouco para dentro
-    const along = deg(Math.atan2(vx / len, -vy / len));
-    const angle = arm.grip === "hip" ? (along + (side === "R" ? 20 : -20)) / 2 : along;
-    const a = (angle * Math.PI) / 180;
-    const ox = hx - 14 * Math.sin(a), oy = hy + 14 * Math.cos(a);
+  } else if (arm.grip === "joinha") {
+    // polegar para cima, frente dos dedos virada para o meio do corpo
+    const angle = deg(Math.atan2(-vx / len, vy / len));
     hand = (
-      <g transform={`translate(${ox} ${oy}) rotate(${angle})${mirror}`}>
-        <HipHand skin={skin} />
+      <g transform={`translate(${hx} ${hy}) rotate(${angle})${side === "L" ? " scale(-1 1)" : ""}`}>
+        <ThumbsUp skin={skin} />
       </g>
     );
   }
@@ -387,7 +388,7 @@ export function RealPerson({
   pose,
   mustache,
 }: RealPersonProps) {
-  const p: PoseSpec = POSES[pose ?? (tool === "none" ? "cintura" : "ergue")];
+  const p: PoseSpec = POSES[pose ?? (tool === "none" ? "joinha" : "ergue")];
   const held = tool === "none" ? undefined : tool;
   return (
     <g>

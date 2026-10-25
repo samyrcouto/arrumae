@@ -108,3 +108,10 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Cotovelo: cada braço era dois "bastões" sobrepostos com sombra deslocada, o que criava uma bola e um crescente escuro no cotovelo. Agora o braço inteiro é uma forma só (`armPath`: ombro → cotovelo → pulso, afinando), cotovelo arredondado por fora e dobra marcada por dentro (`elbowCrease`). A sombra é a mesma forma mais fina e deslocada, então nunca vaza do contorno. O antebraço é redesenhado na frente do tronco com a mesma geometria (`forearmPath`).
 - Punho: quatro dedos como segmentos arredondados separados por linhas finas, brilho em arco no topo de cada um (sem "pintas") e polegar liso do lado de fora.
 - Mão na cintura: dorso com topo arredondado que se encaixa no pulso, pulso dobrado só até a metade do caminho e quatro dedos separados.
+
+## 2026-10-25 — Mão fechada e joinha
+
+- Fundador: dedos "pra fora"; pediu aspecto de mão fechada, e a outra mão aberta ou fazendo joinha.
+- Punho que segura a ferramenta virou um bloco compacto: nós dos dedos dentro do contorno (faixa clara com três divisões), polegar abraçando o cabo — nada sai do contorno.
+- Mão na cintura (que mostrava dedos esticados) foi substituída por **joinha** (`ThumbsUp`): dedos dobrados empilhados e polegar para cima saindo do lado dos nós. Eletricista e montador fazem joinha; encanador e técnica de ar-condicionado ficam com o outro braço solto; nos braços cruzados a mão de baixo fica escondida.
+- Removidos `HipHand` e as poses de mão na cintura; pose padrão sem ferramenta agora é `joinha`.
