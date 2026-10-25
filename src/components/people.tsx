@@ -237,7 +237,8 @@ function Sleeve({ from, toward, shirt }: { from: Pt; toward: Pt; shirt: Cloth })
  * Mão fechada num cabo, como nas fotos de referência: o cabo (vertical, y)
  * passa entre a palma e os dedos; os quatro dedos ficam empilhados por cima
  * dele, do indicador (em cima) ao mínimo, com as pontas para a esquerda (-x);
- * a palma e o pulso ficam à direita (+x) e o polegar fecha por cima.
+ * a palma e o pulso ficam à direita (+x) e o polegar passa por trás do cabo,
+ * aparecendo só a ponta do outro lado.
  * `view="palm"` mostra as unhas nas pontas; `"back"` mostra os nós (costas da mão).
  * A ferramenta entra como `children`, desenhada entre a palma e os dedos.
  */
@@ -253,6 +254,10 @@ function GripHand({ skin, view, children }: { skin: Tone; view: "palm" | "back";
       {/* palma (ou dorso) e começo do pulso */}
       <rect x="2" y="-22" width="24" height="42" rx="11" fill={skin.base} />
       <path d="M18 -20c5 2 8 6 8 11v18c0 5-3 9-8 11z" fill={skin.shade} opacity="0.4" />
+      {/* polegar passa por trás do cabo e a ponta aparece do outro lado, acima do indicador */}
+      <path d="M22 -16c-2-6-8-9-15-9H-13c-4 0-6 3-5 6 1 2 3 3 6 3h18c4 0 8 1 11 3z" fill={skin.shade} />
+      <path d="M-15 -22.5c0-1.5 1-2.5 3-2.5h6v6h-6c-2 0-3-1.5-3-3.5z" fill={skin.base} />
+      {view === "palm" && <ellipse cx="-12" cy="-21.8" rx="3" ry="2.3" fill={skin.light} opacity="0.9" />}
       {children}
       {/* dedos empilhados em volta do cabo */}
       {[...fingers].reverse().map(({ y, h, tip }) => (
@@ -266,10 +271,6 @@ function GripHand({ skin, view, children }: { skin: Tone; view: "palm" | "back";
           )}
         </g>
       ))}
-      {/* polegar fechando por cima do indicador */}
-      <path d="M22 -16c-2-6-8-9-15-9H-4c-4 0-6 3-5 6 1 2 3 3 6 3h9c4 0 8 1 11 3z" fill={skin.base} />
-      <path d="M-6 -16.5c5 1 11 1 16 0" fill="none" stroke={skin.shade} strokeWidth="1.3" strokeLinecap="round" opacity="0.45" />
-      {view === "palm" && <ellipse cx="-3.5" cy="-21.5" rx="3.6" ry="2.6" fill={skin.light} opacity="0.95" />}
     </g>
   );
 }

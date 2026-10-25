@@ -121,3 +121,7 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Fundador mandou duas fotos (mulher segurando rolo de pintura; profissional segurando furadeira) como referência de mão fechada.
 - Novo `GripHand`: o cabo passa entre a palma e os dedos; os quatro dedos ficam empilhados em volta do cabo (indicador em cima, mínimo embaixo), com unhas nas pontas quando a palma está para a frente (`view="palm"`, como na foto do rolo) ou nós quando são as costas da mão (`"back"`, como na foto da furadeira); polegar fecha por cima. A ferramenta é desenhada entre a palma e os dedos.
 - Poses refeitas como na foto: antebraço quase vertical e mão ao lado do ombro, com o cabo levemente inclinado. Cada mão com ferramenta tem `angle`, `mirror` e `view` explícitos na pose. Manômetro continua sempre em pé e sem espelhar.
+
+## 2026-10-25 — Polegar atrás do cabo
+
+- Fundador: o polegar devia ficar atrás do que está sendo segurado. Agora o polegar é desenhado antes da ferramenta (atrás do cabo); aparecem só a base, junto da palma, e a ponta do outro lado do cabo, acima do indicador — como na foto de referência.
