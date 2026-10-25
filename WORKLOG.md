@@ -129,3 +129,4 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 ## 2026-10-25 — Polegar sem unha
 
 - Removida a unha da ponta do polegar (que aparece atrás do cabo) para ficar mais natural; as unhas dos outros dedos continuam na vista da palma.
+- Correção: o que ainda parecia unha era a ponta do polegar pintada num tom mais claro sobre o polegar escuro. Agora o polegar inteiro tem o tom da pele, com só uma linha fina separando do indicador.

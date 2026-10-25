@@ -255,8 +255,8 @@ function GripHand({ skin, view, children }: { skin: Tone; view: "palm" | "back";
       <rect x="2" y="-22" width="24" height="42" rx="11" fill={skin.base} />
       <path d="M18 -20c5 2 8 6 8 11v18c0 5-3 9-8 11z" fill={skin.shade} opacity="0.4" />
       {/* polegar passa por trás do cabo e a ponta aparece do outro lado, acima do indicador */}
-      <path d="M22 -16c-2-6-8-9-15-9H-13c-4 0-6 3-5 6 1 2 3 3 6 3h18c4 0 8 1 11 3z" fill={skin.shade} />
-      <path d="M-15 -22.5c0-1.5 1-2.5 3-2.5h6v6h-6c-2 0-3-1.5-3-3.5z" fill={skin.base} />
+      <path d="M22 -16c-2-6-8-9-15-9H-13c-4 0-6 3-5 6 1 2 3 3 6 3h18c4 0 8 1 11 3z" fill={skin.base} />
+      <path d="M-16 -19.5c1 0.8 2 1 4 1h20c4 0 8 1 11 3" fill="none" stroke={skin.shade} strokeWidth="1.3" strokeLinecap="round" opacity="0.5" />
       {children}
       {/* dedos empilhados em volta do cabo */}
       {[...fingers].reverse().map(({ y, h, tip }) => (
