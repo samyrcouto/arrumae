@@ -135,3 +135,8 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 
 - Mãos invertidas para o lado certo, como nas fotos de referência: as pontas dos dedos apontam para o meio do corpo e o dorso/pulso fica do lado de fora. Novo `toolFlip` mantém cada ferramenta virada como antes (a furadeira continua apontando para fora).
 - Fundador pediu para excluir a técnica de ar-condicionado: removida de `TRADES`, junto com o manômetro e a pose `mostra`. A landing de ar-condicionado voltou para a ilustração do aparelho (`CategoryArt`); a equipe da home agora é encanador, eletricista e pequenos reparos.
+
+## 2026-10-25 — Sem joinha e herói masculino na home
+
+- Joinha removido (`ThumbsUp` e pose `joinha`): a mão livre agora fica com o braço solto ao lado do corpo. Pose padrão sem ferramenta: `solto`.
+- Página inicial com eletricista homem (`HeroPro home`: capacete, bigode, sem brincos). A landing de elétrica continua com a eletricista.

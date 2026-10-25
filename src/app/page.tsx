@@ -121,7 +121,7 @@ export default async function Home() {
           </div>
 
           <div className="relative mx-auto w-full max-w-[36rem] self-end">
-            <HeroPro className="w-full" />
+            <HeroPro home className="w-full" />
           </div>
         </div>
       </section>

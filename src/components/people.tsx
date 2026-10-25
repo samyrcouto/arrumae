@@ -38,7 +38,7 @@ export type RealPersonProps = {
   earrings?: boolean;
   /** Ferramenta erguida numa das mãos. */
   tool?: ToolName | "none";
-  /** Posição do corpo; sem ferramenta, o padrão é o joinha. */
+  /** Posição do corpo; sem ferramenta, o padrão é com os braços soltos. */
   pose?: PoseName;
   mustache?: boolean;
 };
@@ -247,45 +247,13 @@ function GripHand({ skin, view, children }: { skin: Tone; view: "palm" | "back";
   );
 }
 
-/**
- * Joinha: mão fechada de lado, dedos dobrados empilhados e polegar para cima,
- * saindo do lado dos nós. Desenhada para a mão do lado direito da imagem
- * (pontas dos dedos dobrados viradas para o meio do corpo, à esquerda); o
- * pulso fica embaixo (+y). A outra é o espelho.
- */
-function ThumbsUp({ skin }: { skin: Tone }) {
-  const fingers: [number, number][] = [[-18, 30], [-8.5, 31], [1, 29], [10.5, 25]];
-  return (
-    <g transform="scale(1.2)">
-      {/* palma e dorso */}
-      <rect x="-12" y="-18" width="26" height="40" rx="10" fill={skin.base} />
-      <path d="M8 -17c4 2 6 6 6 10v20c0 5-3 8-6 9z" fill={skin.shade} opacity="0.4" />
-      {/* polegar para cima, com unha */}
-      <rect x="1" y="-44" width="11.5" height="32" rx="5.75" fill={skin.base} />
-      <path d="M9 -43c2 1 3.5 4 3.5 7v20h-3.5z" fill={skin.shade} opacity="0.35" />
-      <ellipse cx="6.2" cy="-38.5" rx="3.4" ry="4.2" fill={skin.light} />
-      <path d="M2 -16q5 3 10 0" fill="none" stroke={skin.shade} strokeWidth="1.3" strokeLinecap="round" opacity="0.5" />
-      {/* quatro dedos dobrados, frente arredondada para o lado de dentro */}
-      {fingers.map(([y, w]) => (
-        <rect key={y} x={12 - w} y={y} width={w} height="9.5" rx="4.75" fill={skin.base} />
-      ))}
-      {fingers.slice(1).map(([y, w]) => (
-        <path key={y} d={`M${13 - w} ${y + 0.2}h${w - 6}`} stroke={skin.shade} strokeWidth="1.3" strokeLinecap="round" opacity="0.6" />
-      ))}
-      {fingers.map(([y, w]) => (
-        <path key={`b${y}`} d={`M${14.5 - w} ${y + 3.2}q1.4-1.6 3 -1.6`} fill="none" stroke={skin.light} strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
-      ))}
-    </g>
-  );
-}
-
 /** Ajuste de cada ferramenta dentro da mão (todas desenhadas em pé, cabo em x = 0). */
 const GRIP: Record<ToolName, string> = { screwdriver: "", wrench: "", hammer: "", drill: "scale(0.85)" };
 
 const SHOULDER: Record<"L" | "R", Pt> = { L: [124, 286], R: [276, 286] };
 
 /** Um braço da pose: cotovelo, mão e o que a mão faz. `twist` dobra o pulso (graus). */
-/** grip: "tool" segura a ferramenta, "joinha" faz sinal de positivo, "none" deixa a mão fora de vista. */
+/** grip: "tool" segura a ferramenta, "none" deixa a mão fora de vista (braço solto ou escondido). */
 /**
  * Para a mão com ferramenta: `angle` gira a mão (graus; 0 = cabo em pé, pontas
  * dos dedos para a esquerda), `mirror` espelha (pontas para a direita),
@@ -293,29 +261,26 @@ const SHOULDER: Record<"L" | "R", Pt> = { L: [124, 286], R: [276, 286] };
  * Como nas fotos de referência, as pontas dos dedos apontam para o meio do
  * corpo e o dorso/pulso fica do lado de fora.
  */
-type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "joinha" | "none"; angle?: number; mirror?: boolean; toolFlip?: boolean; view?: "palm" | "back" };
+type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "none"; angle?: number; mirror?: boolean; toolFlip?: boolean; view?: "palm" | "back" };
 type PoseSpec = { L: ArmSpec; R: ArmSpec; front: ("L" | "R")[] };
 
-const JOINHA_L: ArmSpec = { elbow: [50, 400], hand: [48, 318], grip: "joinha" };
-const JOINHA_R: ArmSpec = { elbow: [350, 400], hand: [352, 318], grip: "joinha" };
 const HANG_L: ArmSpec = { elbow: [90, 394], hand: [76, 540], grip: "none" };
 const HANG_R: ArmSpec = { elbow: [310, 394], hand: [324, 540], grip: "none" };
 
 export const POSES = {
-  /** ferramenta erguida à esquerda, joinha com a outra mão */
-  ergue: { L: { elbow: [60, 412], hand: [80, 300], grip: "tool", angle: 10, mirror: true, toolFlip: true, view: "palm" }, R: JOINHA_R, front: ["R", "L"] },
+  /** ferramenta erguida à esquerda, outro braço solto */
+  ergue: { L: { elbow: [60, 412], hand: [80, 300], grip: "tool", angle: 10, mirror: true, toolFlip: true, view: "palm" }, R: HANG_R, front: ["R", "L"] },
   /** ferramenta erguida à direita, outro braço solto */
   "ergue-direita": { L: HANG_L, R: { elbow: [340, 412], hand: [320, 300], grip: "tool", angle: -10, toolFlip: true, view: "palm" }, front: ["L", "R"] },
-  /** braço dobrado para cima ao lado do ombro, joinha com a outra mão */
-  forca: { L: JOINHA_L, R: { elbow: [352, 372], hand: [318, 270], grip: "tool", angle: -40, toolFlip: true, view: "back" }, front: ["L", "R"] },
+  /** braço dobrado para cima ao lado do ombro, outro braço solto */
+  forca: { L: HANG_L, R: { elbow: [352, 372], hand: [318, 270], grip: "tool", angle: -40, toolFlip: true, view: "back" }, front: ["L", "R"] },
   /** braços cruzados, ferramenta para cima (a outra mão fica escondida sob o braço) */
   cruzados: { L: { elbow: [94, 428], hand: [290, 404], grip: "none" }, R: { elbow: [306, 430], hand: [134, 368], grip: "tool", angle: 5, view: "back" }, front: ["L", "R"] },
-  /** sem ferramenta: braço solto e joinha */
-  joinha: { L: HANG_L, R: JOINHA_R, front: ["L", "R"] },
+  /** sem ferramenta: os dois braços soltos */
+  solto: { L: HANG_L, R: HANG_R, front: ["L", "R"] },
 } satisfies Record<string, PoseSpec>;
 export type PoseName = keyof typeof POSES;
 
-const deg = (rad: number) => (rad * 180) / Math.PI;
 
 /** Braço inteiro e manga, desenhados antes do tronco (a manga "sai" da camisa). */
 function UpperArm({ side, arm, skin, shirt }: { side: "L" | "R"; arm: ArmSpec; skin: Tone; shirt: Cloth }) {
@@ -332,8 +297,6 @@ function UpperArm({ side, arm, skin, shirt }: { side: "L" | "R"; arm: ArmSpec; s
 /** Antebraço (redesenhado na frente do tronco) e mão. O punho fica perpendicular ao antebraço; a mão esquerda é espelhada. */
 function Forearm({ side, arm, skin, tool }: { side: "L" | "R"; arm: ArmSpec; skin: Tone; tool?: ToolName }) {
   const [hx, hy] = arm.hand;
-  const vx = arm.elbow[0] - hx, vy = arm.elbow[1] - hy;
-  const len = Math.hypot(vx, vy);
   let hand = null;
   if (arm.grip === "tool" && tool) {
     const Tool = TOOLS[tool];
@@ -345,14 +308,6 @@ function Forearm({ side, arm, skin, tool }: { side: "L" | "R"; arm: ArmSpec; ski
         <GripHand skin={skin} view={arm.view ?? "palm"}>
           <g transform={`scale(${1 / 1.15})${toolTransform ? ` ${toolTransform}` : ""}`}><Tool /></g>
         </GripHand>
-      </g>
-    );
-  } else if (arm.grip === "joinha") {
-    // polegar para cima, frente dos dedos virada para o meio do corpo
-    const angle = deg(Math.atan2(-vx / len, vy / len));
-    hand = (
-      <g transform={`translate(${hx} ${hy}) rotate(${angle})${side === "L" ? " scale(-1 1)" : ""}`}>
-        <ThumbsUp skin={skin} />
       </g>
     );
   }
@@ -381,7 +336,7 @@ export function RealPerson({
   pose,
   mustache,
 }: RealPersonProps) {
-  const p: PoseSpec = POSES[pose ?? (tool === "none" ? "joinha" : "ergue")];
+  const p: PoseSpec = POSES[pose ?? (tool === "none" ? "solto" : "ergue")];
   const held = tool === "none" ? undefined : tool;
   return (
     <g>
@@ -575,8 +530,14 @@ const BADGES = {
 } as const;
 
 /** Profissional sobre fundo de casinha. Mostra selo só nos serviços que têm um. */
-export function HeroPro({ className, trade = "eletrica", badge = true }: { className?: string; trade?: TradeSlug; badge?: boolean }) {
-  const t = TRADES[trade];
+/** Eletricista da página inicial (homem; a landing de elétrica continua com a eletricista). */
+const HOME_ELETRICISTA = {
+  label: "Ilustração: eletricista sorridente de capacete segurando uma chave de fenda isolada",
+  person: { ...TRADES.eletrica.person, skin: SKIN.brown, hair: "short", earrings: false, mustache: true },
+} satisfies { label: string; person: RealPersonProps };
+
+export function HeroPro({ className, trade = "eletrica", badge = true, home = false }: { className?: string; trade?: TradeSlug; badge?: boolean; home?: boolean }) {
+  const t = home ? { ...TRADES.eletrica, ...HOME_ELETRICISTA } : TRADES[trade];
   const b = badge ? BADGES[trade as keyof typeof BADGES] : undefined;
   return (
     <svg viewBox="0 0 440 470" className={className} role="img" aria-label={t.label}>
