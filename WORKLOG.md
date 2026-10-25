@@ -84,3 +84,10 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Punho novo com quatro dedos dobrados e polegar com unha; o mesmo punho, girado, faz a mão na cintura.
 - Um profissional por serviço (`TRADES` em `people.tsx`): eletricista (chave de fenda isolada), encanador (chave de grifo), técnica de ar-condicionado (manômetro), montador (furadeira) e pequenos reparos (martelo).
 - Landings `/servicos/[categoria]` mostram o profissional do serviço; a equipe da home virou eletricista + encanador + técnica de ar-condicionado. `HeroPro` agora recebe `trade` (slug) em vez de `variant`.
+
+## 2026-10-25 — Mãos de verdade e poses variadas
+
+- Fundador: mão "com dedos a mais, invertida", poses todas iguais e uma personagem parecendo careca.
+- Causa da mão estranha: o cabo passava na mesma direção do antebraço. Agora o punho é visto pelas costas (4 nós dos dedos + polegar do lado de fora), o cabo atravessa a mão perpendicular ao antebraço e a ponta da ferramenta sai pelo lado do polegar; a mão esquerda é o espelho da direita. Mão na cintura com 4 dedos e polegar escondido.
+- Poses (`POSES` em `people.tsx`): `ergue`, `ergue-direita`, `mostra`, `forca`, `cruzados`, `cintura`. Eletricista ergue a chave de fenda; encanador ergue a chave de grifo do outro lado com o braço solto; técnica de ar-condicionado mostra o manômetro na frente do peito; montador com a furadeira ao lado do ombro; pequenos reparos de braços cruzados com o martelo.
+- Cabelo agora aparece embaixo de boné/capacete para todos (costeletas); encanador ganhou bigode — antes parecia uma mulher careca.

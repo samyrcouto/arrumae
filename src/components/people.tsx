@@ -38,6 +38,9 @@ export type RealPersonProps = {
   earrings?: boolean;
   /** Ferramenta erguida numa das mãos; sem ferramenta, as duas mãos ficam na cintura. */
   tool?: ToolName | "none";
+  /** Posição do corpo; sem ferramenta, o padrão é as duas mãos na cintura. */
+  pose?: PoseName;
+  mustache?: boolean;
 };
 
 function Eye({ cx, iris = "#3a2417" }: { cx: number; iris?: string }) {
@@ -185,89 +188,132 @@ function Sleeve({ from, toward, shirt }: { from: Pt; toward: Pt; shirt: Cloth })
   );
 }
 
-/** Punho fechado em volta de um cabo vertical (x=0), visto de frente: quatro dedos dobrados e o polegar por cima. */
+/**
+ * Mão direita do personagem (lado esquerdo da imagem) fechada num cabo, vista
+ * pelas costas: quatro nós dos dedos em cima (indicador à esquerda, mínimo à
+ * direita) e o polegar envolvendo o cabo do lado de fora. O pulso fica para
+ * baixo (+y) e o cabo atravessa a mão na horizontal (y = -4), perpendicular ao
+ * antebraço, como numa pegada de verdade. A mão esquerda é o espelho desta.
+ */
 function Fist({ skin }: { skin: Tone }) {
-  const fingers = [
-    { y: -22, len: 36 },
-    { y: -10, len: 37 },
-    { y: 2, len: 35 },
-    { y: 14, len: 30 },
+  const knuckles = [
+    { x: -13, r: 5.8 },
+    { x: -3.5, r: 6 },
+    { x: 6, r: 5.6 },
+    { x: 14.5, r: 4.6 },
   ];
   return (
     <g>
-      {/* dorso / base da mão, do lado do pulso */}
-      <path d="M-22 -14c0-10 6-14 14-14h6v52h-6c-8 0-14-4-14-12z" fill={skin.base} />
-      <path d="M-22 -10c0-6 3-10 7-12v44c-4-2-7-6-7-10z" fill={skin.light} opacity="0.4" />
-      {/* dedos, do indicador (em cima) ao mínimo */}
-      {[...fingers].reverse().map(({ y, len }) => (
-        <g key={y}>
-          <rect x="-16" y={y} width={len} height="13" rx="6.5" fill={skin.base} />
-          <path d={`M${len - 22} ${y + 12}q4 0 6-3`} fill="none" stroke={skin.shade} strokeWidth="2" strokeLinecap="round" />
-          <path d={`M-12 ${y + 12.5}h${len - 12}`} stroke={skin.shade} strokeWidth="2" strokeLinecap="round" opacity="0.7" />
-          <ellipse cx={len - 22} cy={y + 5} rx="4" ry="2.2" fill={skin.light} opacity="0.6" />
+      {/* dorso da mão */}
+      <rect x="-21" y="-19" width="42" height="40" rx="13" fill={skin.base} />
+      <path d="M12 -17c6 2 9 7 9 12v13c0 6-4 11-9 13z" fill={skin.shade} opacity="0.45" />
+      {/* nós dos dedos */}
+      {knuckles.map(({ x, r }) => (
+        <g key={x}>
+          <circle cx={x} cy={-18} r={r} fill={skin.base} />
+          <ellipse cx={x - 0.5} cy={-20} rx={r * 0.55} ry="1.8" fill={skin.light} opacity="0.65" />
         </g>
       ))}
-      {/* polegar dobrado por cima do indicador, com unha */}
-      <path d="M-20 -18c4-10 14-14 26-12 7 1 11 5 10 9-1 4-6 5-12 4-9-1-17 1-24 7z" fill={skin.base} />
-      <path d="M-18 -16c6-6 14-9 22-8" fill="none" stroke={skin.light} strokeWidth="2.4" strokeLinecap="round" opacity="0.6" />
-      <ellipse cx="9" cy="-24" rx="5" ry="3.4" fill={skin.light} />
-      <path d="M-20 -18c7-6 15-8 24-7" fill="none" stroke={skin.shade} strokeWidth="1.8" strokeLinecap="round" opacity="0.5" transform="translate(0 6)" />
+      {[-8.2, 1.2, 10.4].map((x) => (
+        <path key={x} d={`M${x} -16v9`} stroke={skin.shade} strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
+      ))}
+      {/* polegar fechando o cabo do lado de fora */}
+      <path d="M-18 -11c-7 0-12 5-11 11 1 6 6 10 13 9z" fill={skin.base} />
+      <path d="M-25 2c2 3 5 5 9 5" fill="none" stroke={skin.shade} strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
     </g>
   );
 }
 
-/** Mão fechada apoiada na cintura (mesmo punho, girado na direção do antebraço). */
-function HipHand({ skin, flip }: { skin: Tone; flip?: boolean }) {
+/** Mão apoiada na cintura, vista pelas costas, dedos para baixo (+y); o polegar fica atrás, escondido. */
+function HipHand({ skin }: { skin: Tone }) {
+  const fingers: [number, number][] = [[-16.5, 15], [-8.3, 19], [0, 20], [8.3, 16]];
   return (
-    <g transform={`${flip ? "scale(-1 1) " : ""}rotate(-128) scale(0.92)`}>
-      <Fist skin={skin} />
+    <g>
+      <path d="M-15 -16h30c2 8 3 15 2 22h-34c-1-7 0-14 2-22z" fill={skin.base} />
+      {fingers.map(([x, len]) => (
+        <rect key={x} x={x} y="1" width="8.4" height={len} rx="4.2" fill={skin.base} />
+      ))}
+      {[-8.3, 0, 8.3].map((x) => (
+        <path key={x} d={`M${x} 5v11`} stroke={skin.shade} strokeWidth="1.8" strokeLinecap="round" opacity="0.8" />
+      ))}
+      {fingers.map(([x]) => <ellipse key={x} cx={x + 4.2} cy="2" rx="2.8" ry="1.5" fill={skin.light} opacity="0.6" />)}
+      <path d="M13 -12c2 6 2 12 1 18" fill="none" stroke={skin.shade} strokeWidth="5" strokeLinecap="round" opacity="0.35" />
     </g>
   );
 }
 
-const SHOULDER_L: Pt = [124, 286];
-const SHOULDER_R: Pt = [276, 286];
+/** Como cada ferramenta entra no punho: a maioria é desenhada em pé e vira na horizontal, com a ponta saindo pelo lado do polegar. */
+const SWAP = "translate(0 -4) matrix(0 1 1 0 0 0)";
+const GRIP: Record<ToolName, string> = { screwdriver: SWAP, wrench: SWAP, hammer: SWAP, drill: SWAP, gauges: "translate(0 27)" };
 
-/** Inclinação do punho por ferramenta (a furadeira aponta para cima e para fora). */
-const TOOL_TILT: Partial<Record<ToolName, number>> = { drill: 26 };
+const SHOULDER: Record<"L" | "R", Pt> = { L: [124, 286], R: [276, 286] };
 
-type ArmPose = { shoulder: Pt; elbow: Pt; wrist: Pt; hand: Pt; raised: boolean };
+/** Um braço da pose: cotovelo, mão e o que a mão faz. `twist` dobra o pulso (graus). */
+type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "hip" | "none"; twist?: number };
+type PoseSpec = { L: ArmSpec; R: ArmSpec; front: ("L" | "R")[] };
 
-function armPose(side: "left" | "right", raised: boolean): ArmPose {
-  if (raised) return { shoulder: SHOULDER_L, elbow: [62, 390], wrist: [70, 290], hand: [70, 262], raised };
-  const right = side === "right";
-  return right
-    ? { shoulder: SHOULDER_R, elbow: [336, 374], wrist: [290, 432], hand: [276, 444], raised }
-    : { shoulder: SHOULDER_L, elbow: [64, 374], wrist: [110, 432], hand: [124, 444], raised };
-}
+const HIP_L: ArmSpec = { elbow: [64, 374], hand: [118, 438], grip: "hip" };
+const HIP_R: ArmSpec = { elbow: [336, 374], hand: [282, 438], grip: "hip" };
+const HANG_L: ArmSpec = { elbow: [90, 394], hand: [76, 540], grip: "none" };
+const HANG_R: ArmSpec = { elbow: [310, 394], hand: [324, 540], grip: "none" };
+
+export const POSES = {
+  /** ferramenta erguida à esquerda, mão na cintura */
+  ergue: { L: { elbow: [34, 372], hand: [100, 290], grip: "tool", twist: 22 }, R: HIP_R, front: ["R", "L"] },
+  /** ferramenta erguida à direita, outro braço solto */
+  "ergue-direita": { L: HANG_L, R: { elbow: [366, 372], hand: [300, 290], grip: "tool", twist: -22 }, front: ["L", "R"] },
+  /** mostrando a ferramenta na frente do peito, mão na cintura */
+  mostra: { L: HIP_L, R: { elbow: [330, 410], hand: [236, 380], grip: "tool", twist: 62 }, front: ["L", "R"] },
+  /** braço dobrado para cima ao lado do ombro, mão na cintura */
+  forca: { L: HIP_L, R: { elbow: [356, 346], hand: [314, 256], grip: "tool" }, front: ["L", "R"] },
+  /** braços cruzados, ferramenta para cima */
+  cruzados: { L: { elbow: [94, 428], hand: [284, 390], grip: "hip" }, R: { elbow: [306, 430], hand: [132, 366], grip: "tool" }, front: ["L", "R"] },
+  /** as duas mãos na cintura */
+  cintura: { L: HIP_L, R: HIP_R, front: ["L", "R"] },
+} satisfies Record<string, PoseSpec>;
+export type PoseName = keyof typeof POSES;
+
+const deg = (rad: number) => (rad * 180) / Math.PI;
 
 /** Braço e manga: desenhados antes do tronco, para a manga "sair" da camisa. */
-function UpperArm({ pose, skin, shirt }: { pose: ArmPose; skin: Tone; shirt: Cloth }) {
+function UpperArm({ side, arm, skin, shirt }: { side: "L" | "R"; arm: ArmSpec; skin: Tone; shirt: Cloth }) {
   return (
     <g>
-      <Limb from={pose.shoulder} to={pose.elbow} w={36} tone={skin} />
-      <Sleeve from={pose.shoulder} toward={pose.elbow} shirt={shirt} />
+      <Limb from={SHOULDER[side]} to={arm.elbow} w={36} tone={skin} />
+      <Sleeve from={SHOULDER[side]} toward={arm.elbow} shirt={shirt} />
     </g>
   );
 }
 
-/** Antebraço e mão (com ferramenta, se o braço estiver erguido). */
-function Forearm({ pose, skin, tool }: { pose: ArmPose; skin: Tone; tool?: ToolName }) {
-  const Tool = tool ? TOOLS[tool] : null;
-  const tilt = tool ? (TOOL_TILT[tool] ?? 0) : 0;
+/** Antebraço e mão. O punho gira para ficar perpendicular ao antebraço; a mão esquerda é espelhada. */
+function Forearm({ side, arm, skin, tool }: { side: "L" | "R"; arm: ArmSpec; skin: Tone; tool?: ToolName }) {
+  const [hx, hy] = arm.hand;
+  const vx = arm.elbow[0] - hx, vy = arm.elbow[1] - hy;
+  const len = Math.hypot(vx, vy);
+  const mirror = side === "R" ? " scale(-1 1)" : "";
+  let hand = null;
+  if (arm.grip === "tool" && tool) {
+    const Tool = TOOLS[tool];
+    const angle = deg(Math.atan2(-vx / len, vy / len)) + (arm.twist ?? 0);
+    hand = (
+      <g transform={`translate(${hx} ${hy}) rotate(${angle})${mirror}`}>
+        {/* o manômetro não espelha: azul (baixa) sempre à esquerda */}
+        <g transform={`${mirror && tool === "gauges" ? "scale(-1 1) " : ""}${GRIP[tool]}`}><Tool /></g>
+        <Fist skin={skin} />
+      </g>
+    );
+  } else if (arm.grip === "hip") {
+    const angle = deg(Math.atan2(vx / len, -vy / len)) + 180;
+    hand = (
+      <g transform={`translate(${hx} ${hy}) rotate(${angle})${mirror}`}>
+        <HipHand skin={skin} />
+      </g>
+    );
+  }
   return (
     <g>
-      <Limb from={pose.elbow} to={pose.wrist} w={31} tone={skin} />
-      <g transform={`translate(${pose.hand[0]} ${pose.hand[1]})`}>
-        {Tool ? (
-          <g transform={`rotate(${tilt})`}>
-            <Tool />
-            <Fist skin={skin} />
-          </g>
-        ) : (
-          <HipHand skin={skin} flip={pose.shoulder === SHOULDER_L} />
-        )}
-      </g>
+      <Limb from={arm.elbow} to={arm.hand} w={31} tone={skin} />
+      {hand}
     </g>
   );
 }
@@ -283,9 +329,11 @@ export function RealPerson({
   beard,
   earrings,
   tool = "drill",
+  pose,
+  mustache,
 }: RealPersonProps) {
-  const left = armPose("left", tool !== "none");
-  const right = armPose("right", false);
+  const p: PoseSpec = POSES[pose ?? (tool === "none" ? "cintura" : "ergue")];
+  const held = tool === "none" ? undefined : tool;
   return (
     <g>
       {/* cabelo que fica atrás da cabeça */}
@@ -299,8 +347,8 @@ export function RealPerson({
       )}
 
       {/* braços (parte de cima fica atrás do tronco) */}
-      <UpperArm pose={left} skin={skin} shirt={shirt} />
-      <UpperArm pose={right} skin={skin} shirt={shirt} />
+      <UpperArm side="L" arm={p.L} skin={skin} shirt={shirt} />
+      <UpperArm side="R" arm={p.R} skin={skin} shirt={shirt} />
 
       {/* tronco com camisa polo */}
       <path d="M176 238c-26 6-52 14-66 30-10 14-6 36 6 56 6 50 12 110 14 176h140c2-66 8-126 14-176 12-20 16-42 6-56-14-16-40-24-66-30-12 10-36 10-48 0z" fill={shirt.base} />
@@ -349,6 +397,8 @@ export function RealPerson({
         </g>
       )}
 
+      {mustache && <path d="M182 172c6-6 12-6 18-2 6-4 12-4 18 2-6 3-12 3-18 0-6 3-12 3-18 0z" fill={hairColor} />}
+
       {/* sobrancelhas, olhos, nariz e boca */}
       <path d="M165 119q13-10 29-5-14 0-28 8z" fill={hairColor} />
       <path d="M235 119q-13-10-29-5 14 0 28 8z" fill={hairColor} />
@@ -385,6 +435,9 @@ export function RealPerson({
       {headwear !== "none" && (hair === "bun" || hair === "curly") && (
         <path d="M152 106c-2 12 0 22 2 30l6-28zM248 106c2 12 0 22-2 30l-6-28z" fill={hairColor} />
       )}
+      {headwear !== "none" && (hair === "short" || hair === "buzz") && (
+        <path d="M150 104c-2 12-1 24 3 32l6-2c-3-10-3-20-1-30zM250 104c2 12 1 24-3 32l-6-2c3-10 3-20 1-30z" fill={hairColor} opacity={hair === "buzz" ? 0.85 : 1} />
+      )}
 
       {/* chapéus */}
       {headwear === "hardhat" && (
@@ -415,8 +468,9 @@ export function RealPerson({
       )}
 
       {/* antebraços e mãos */}
-      <Forearm pose={left} skin={skin} tool={tool === "none" ? undefined : tool} />
-      <Forearm pose={right} skin={skin} />
+      {p.front.map((side) => (
+        <Forearm key={side} side={side} arm={p[side]} skin={skin} tool={held} />
+      ))}
     </g>
   );
 }
@@ -439,31 +493,33 @@ function TruthBadge({ x, y, w, title, sub }: { x: number; y: number; w: number; 
 export const TRADES = {
   eletrica: {
     label: "Ilustração: eletricista sorridente de capacete segurando uma chave de fenda isolada",
-    person: { skin: SKIN.brown, hair: "bun", hairColor: HAIR.black, headwear: "hardhat", shirt: CLOTH.petrol, earrings: true, tool: "screwdriver" },
+    person: { skin: SKIN.brown, hair: "bun", hairColor: HAIR.black, headwear: "hardhat", shirt: CLOTH.petrol, earrings: true, tool: "screwdriver", pose: "ergue" },
   },
   encanador: {
     label: "Ilustração: encanador sorridente de boné segurando uma chave de grifo",
-    person: { skin: SKIN.light, hair: "short", hairColor: HAIR.brown, headwear: "cap", capColor: CLOTH.leaf, shirt: CLOTH.sand, tool: "wrench" },
+    person: { skin: SKIN.light, hair: "short", hairColor: HAIR.brown, headwear: "cap", capColor: CLOTH.leaf, shirt: CLOTH.sand, mustache: true, tool: "wrench", pose: "ergue-direita" },
   },
   "ar-condicionado": {
     label: "Ilustração: técnica de ar-condicionado sorridente segurando um manômetro",
-    person: { skin: SKIN.tan, hair: "curly", hairColor: HAIR.auburn, shirt: CLOTH.leaf, earrings: true, tool: "gauges" },
+    person: { skin: SKIN.tan, hair: "curly", hairColor: HAIR.auburn, shirt: CLOTH.leaf, earrings: true, tool: "gauges", pose: "mostra" },
   },
   "montagem-de-moveis": {
     label: "Ilustração: montador sorridente de boné segurando uma furadeira",
-    person: { skin: SKIN.deep, hair: "short", hairColor: HAIR.black, headwear: "cap", capColor: CLOTH.petrol, beard: true, shirt: CLOTH.clay, tool: "drill" },
+    shift: 22,
+    person: { skin: SKIN.deep, hair: "short", hairColor: HAIR.black, headwear: "cap", capColor: CLOTH.petrol, beard: true, shirt: CLOTH.clay, tool: "drill", pose: "forca" },
   },
   "pequenos-reparos": {
     label: "Ilustração: profissional de pequenos reparos sorridente segurando um martelo",
-    person: { skin: SKIN.tan, hair: "buzz", hairColor: HAIR.black, beard: true, shirt: CLOTH.ink, tool: "hammer" },
+    person: { skin: SKIN.tan, hair: "buzz", hairColor: HAIR.black, beard: true, shirt: CLOTH.ink, tool: "hammer", pose: "cruzados" },
   },
-} satisfies Record<string, { label: string; person: RealPersonProps }>;
+} satisfies Record<string, { label: string; person: RealPersonProps; shift?: number }>;
 
 export type TradeSlug = keyof typeof TRADES;
 
+/** Selos com fatos verdadeiros; `x` escolhe o canto que não esconde as mãos. */
 const BADGES = {
-  eletrica: { title: "Documentos", sub: "conferidos pela equipe" },
-  "montagem-de-moveis": { title: "Sem taxa", sub: "para ver os pedidos" },
+  eletrica: { title: "Documentos", sub: "conferidos pela equipe", x: 6 },
+  "montagem-de-moveis": { title: "Sem taxa", sub: "para ver os pedidos", x: 232 },
 } as const;
 
 /** Profissional sobre fundo de casinha. Mostra selo só nos serviços que têm um. */
@@ -474,10 +530,10 @@ export function HeroPro({ className, trade = "eletrica", badge = true }: { class
     <svg viewBox="0 0 440 470" className={className} role="img" aria-label={t.label}>
       <path d="M50 470V226L220 84l170 142v244z" fill="var(--color-tape-soft)" stroke="var(--color-tape-soft)" strokeWidth="28" strokeLinejoin="round" />
       <path d="M24 214 220 50l196 164" fill="none" stroke="var(--color-tape)" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
-      <g transform="translate(46 -30)">
+      <g transform={`translate(${"shift" in t ? t.shift : 46} -30)`}>
         <RealPerson {...t.person} />
       </g>
-      {b && <TruthBadge x={6} y={404} w={200} title={b.title} sub={b.sub} />}
+      {b && <TruthBadge x={b.x} y={404} w={200} title={b.title} sub={b.sub} />}
     </svg>
   );
 }
@@ -488,19 +544,19 @@ export function TradeArt({ slug, className }: { slug: string; className?: string
   return <HeroPro trade={slug as TradeSlug} badge={false} className={className} />;
 }
 
-/** Equipe: eletricista, encanador e técnica de ar-condicionado. */
+/** Equipe: eletricista, encanador e técnica de ar-condicionado, cada um numa pose. */
 export function ProTeam({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 760 360" className={className} role="img" aria-label="Ilustração: eletricista, encanador e técnica de ar-condicionado sorridentes">
       <ellipse cx="380" cy="352" rx="360" ry="22" fill="#18202c" opacity="0.08" />
-      <g transform="translate(14 30) scale(0.66)">
-        <RealPerson {...TRADES.encanador.person} />
+      <g transform="translate(-2 30) scale(0.66)">
+        <RealPerson {...TRADES.encanador.person} pose="ergue" />
       </g>
-      <g transform="translate(510 30) scale(0.66)">
+      <g transform="translate(512 30) scale(0.66)">
         <RealPerson {...TRADES["ar-condicionado"].person} />
       </g>
-      <g transform="translate(250 0) scale(0.72)">
-        <RealPerson {...TRADES.eletrica.person} skin={SKIN.deep} hair="short" earrings={false} beard />
+      <g transform="translate(236 0) scale(0.72)">
+        <RealPerson {...TRADES.eletrica.person} skin={SKIN.deep} hair="short" earrings={false} beard pose="ergue-direita" />
       </g>
     </svg>
   );
