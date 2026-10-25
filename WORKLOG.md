@@ -102,3 +102,9 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 
 - Braços mais grossos (braço 44, antebraço 38, manga 56) — estavam finos para o tronco.
 - Punho com os quatro nós dos dedos no contorno, dobra das falanges e polegar separado com unha envolvendo o cabo; mão na cintura com quatro pontas de dedos separadas (médio e anelar mais longos). Mãos 20–30% maiores, proporcionais ao novo antebraço.
+
+## 2026-10-25 — Cotovelo e dedos (de novo)
+
+- Cotovelo: cada braço era dois "bastões" sobrepostos com sombra deslocada, o que criava uma bola e um crescente escuro no cotovelo. Agora o braço inteiro é uma forma só (`armPath`: ombro → cotovelo → pulso, afinando), cotovelo arredondado por fora e dobra marcada por dentro (`elbowCrease`). A sombra é a mesma forma mais fina e deslocada, então nunca vaza do contorno. O antebraço é redesenhado na frente do tronco com a mesma geometria (`forearmPath`).
+- Punho: quatro dedos como segmentos arredondados separados por linhas finas, brilho em arco no topo de cada um (sem "pintas") e polegar liso do lado de fora.
+- Mão na cintura: dorso com topo arredondado que se encaixa no pulso, pulso dobrado só até a metade do caminho e quatro dedos separados.
