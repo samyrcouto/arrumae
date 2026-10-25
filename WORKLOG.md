@@ -130,3 +130,8 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 
 - Removida a unha da ponta do polegar (que aparece atrás do cabo) para ficar mais natural; as unhas dos outros dedos continuam na vista da palma.
 - Correção: o que ainda parecia unha era a ponta do polegar pintada num tom mais claro sobre o polegar escuro. Agora o polegar inteiro tem o tom da pele, com só uma linha fina separando do indicador.
+
+## 2026-10-25 — Mãos do lado certo e sem a técnica de ar-condicionado
+
+- Mãos invertidas para o lado certo, como nas fotos de referência: as pontas dos dedos apontam para o meio do corpo e o dorso/pulso fica do lado de fora. Novo `toolFlip` mantém cada ferramenta virada como antes (a furadeira continua apontando para fora).
+- Fundador pediu para excluir a técnica de ar-condicionado: removida de `TRADES`, junto com o manômetro e a pose `mostra`. A landing de ar-condicionado voltou para a ilustração do aparelho (`CategoryArt`); a equipe da home agora é encanador, eletricista e pequenos reparos.

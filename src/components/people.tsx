@@ -94,33 +94,6 @@ function PipeWrench() {
   );
 }
 
-function Gauges() {
-  return (
-    <g>
-      {/* mangueiras pendendo */}
-      <path d="M-26 -22c-6 40-22 70-14 110" fill="none" stroke="#2f6fb5" strokeWidth="7" strokeLinecap="round" />
-      <path d="M26 -22c8 40 22 66 16 106" fill="none" stroke="#c8392b" strokeWidth="7" strokeLinecap="round" />
-      <path d="M0 -20c2 30-4 70 4 104" fill="none" stroke="#f2b33d" strokeWidth="7" strokeLinecap="round" />
-      {/* corpo do manifold com registros */}
-      <rect x="-38" y="-44" width="76" height="26" rx="6" fill="#aeb6bc" />
-      <rect x="-38" y="-44" width="76" height="7" rx="3" fill="#d3d9dd" />
-      <rect x="-50" y="-38" width="12" height="14" rx="3" fill="#2f6fb5" />
-      <rect x="38" y="-38" width="12" height="14" rx="3" fill="#c8392b" />
-      {/* manômetros azul (baixa) e vermelho (alta) */}
-      {[[-20, "#2f6fb5"], [20, "#c8392b"]].map(([x, c]) => (
-        <g key={x as number}>
-          <rect x={(x as number) - 4} y="-52" width="8" height="10" fill="#7d868d" />
-          <circle cx={x as number} cy="-70" r="19" fill={c as string} />
-          <circle cx={x as number} cy="-70" r="14" fill="#fbf8f4" />
-          <path d={`M${(x as number) - 9} -64a11 11 0 0 1 18 0`} fill="none" stroke="#9aa3aa" strokeWidth="2" />
-          <path d={`M${x} -70l7 -8`} stroke="#18202c" strokeWidth="2.4" strokeLinecap="round" />
-          <circle cx={x as number} cy="-70" r="2.4" fill="#18202c" />
-        </g>
-      ))}
-    </g>
-  );
-}
-
 function Hammer() {
   return (
     <g>
@@ -155,7 +128,7 @@ function Drill() {
   );
 }
 
-const TOOLS = { screwdriver: Screwdriver, wrench: PipeWrench, gauges: Gauges, hammer: Hammer, drill: Drill };
+const TOOLS = { screwdriver: Screwdriver, wrench: PipeWrench, hammer: Hammer, drill: Drill };
 export type ToolName = keyof typeof TOOLS;
 
 /* ------------------------------------------------------------------- braços */
@@ -307,7 +280,7 @@ function ThumbsUp({ skin }: { skin: Tone }) {
 }
 
 /** Ajuste de cada ferramenta dentro da mão (todas desenhadas em pé, cabo em x = 0). */
-const GRIP: Record<ToolName, string> = { screwdriver: "", wrench: "", hammer: "", drill: "scale(0.85)", gauges: "" };
+const GRIP: Record<ToolName, string> = { screwdriver: "", wrench: "", hammer: "", drill: "scale(0.85)" };
 
 const SHOULDER: Record<"L" | "R", Pt> = { L: [124, 286], R: [276, 286] };
 
@@ -315,10 +288,12 @@ const SHOULDER: Record<"L" | "R", Pt> = { L: [124, 286], R: [276, 286] };
 /** grip: "tool" segura a ferramenta, "joinha" faz sinal de positivo, "none" deixa a mão fora de vista. */
 /**
  * Para a mão com ferramenta: `angle` gira a mão (graus; 0 = cabo em pé, pontas
- * dos dedos para a esquerda), `mirror` espelha (pontas para a direita) e
- * `view` escolhe palma ou costas.
+ * dos dedos para a esquerda), `mirror` espelha (pontas para a direita),
+ * `toolFlip` espelha só a ferramenta e `view` escolhe palma ou costas.
+ * Como nas fotos de referência, as pontas dos dedos apontam para o meio do
+ * corpo e o dorso/pulso fica do lado de fora.
  */
-type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "joinha" | "none"; angle?: number; mirror?: boolean; view?: "palm" | "back" };
+type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "joinha" | "none"; angle?: number; mirror?: boolean; toolFlip?: boolean; view?: "palm" | "back" };
 type PoseSpec = { L: ArmSpec; R: ArmSpec; front: ("L" | "R")[] };
 
 const JOINHA_L: ArmSpec = { elbow: [50, 400], hand: [48, 318], grip: "joinha" };
@@ -328,13 +303,11 @@ const HANG_R: ArmSpec = { elbow: [310, 394], hand: [324, 540], grip: "none" };
 
 export const POSES = {
   /** ferramenta erguida à esquerda, joinha com a outra mão */
-  ergue: { L: { elbow: [60, 412], hand: [80, 300], grip: "tool", angle: 10, view: "palm" }, R: JOINHA_R, front: ["R", "L"] },
+  ergue: { L: { elbow: [60, 412], hand: [80, 300], grip: "tool", angle: 10, mirror: true, toolFlip: true, view: "palm" }, R: JOINHA_R, front: ["R", "L"] },
   /** ferramenta erguida à direita, outro braço solto */
-  "ergue-direita": { L: HANG_L, R: { elbow: [340, 412], hand: [320, 300], grip: "tool", angle: -10, mirror: true, view: "palm" }, front: ["L", "R"] },
-  /** mostrando a ferramenta na frente do peito, outro braço solto */
-  mostra: { L: HANG_L, R: { elbow: [300, 424], hand: [240, 362], grip: "tool", angle: -90, mirror: true, view: "palm" }, front: ["L", "R"] },
+  "ergue-direita": { L: HANG_L, R: { elbow: [340, 412], hand: [320, 300], grip: "tool", angle: -10, toolFlip: true, view: "palm" }, front: ["L", "R"] },
   /** braço dobrado para cima ao lado do ombro, joinha com a outra mão */
-  forca: { L: JOINHA_L, R: { elbow: [352, 372], hand: [318, 270], grip: "tool", angle: -40, mirror: true, view: "back" }, front: ["L", "R"] },
+  forca: { L: JOINHA_L, R: { elbow: [352, 372], hand: [318, 270], grip: "tool", angle: -40, toolFlip: true, view: "back" }, front: ["L", "R"] },
   /** braços cruzados, ferramenta para cima (a outra mão fica escondida sob o braço) */
   cruzados: { L: { elbow: [94, 428], hand: [290, 404], grip: "none" }, R: { elbow: [306, 430], hand: [134, 368], grip: "tool", angle: 5, view: "back" }, front: ["L", "R"] },
   /** sem ferramenta: braço solto e joinha */
@@ -366,8 +339,7 @@ function Forearm({ side, arm, skin, tool }: { side: "L" | "R"; arm: ArmSpec; ski
     const Tool = TOOLS[tool];
     const angle = arm.angle ?? 0;
     const flip = arm.mirror ? " scale(-1 1)" : "";
-    // o manômetro fica sempre em pé e sem espelhar (azul à esquerda): desfaz a rotação da mão
-    const toolTransform = tool === "gauges" ? `${flip} rotate(${-angle}) translate(0 27)` : GRIP[tool];
+    const toolTransform = `${arm.toolFlip ? "scale(-1 1) " : ""}${GRIP[tool]}`.trim();
     hand = (
       <g transform={`translate(${hx} ${hy}) rotate(${angle})${flip}`}>
         <GripHand skin={skin} view={arm.view ?? "palm"}>
@@ -583,10 +555,6 @@ export const TRADES = {
     label: "Ilustração: encanador sorridente de boné segurando uma chave de grifo",
     person: { skin: SKIN.light, hair: "short", hairColor: HAIR.brown, headwear: "cap", capColor: CLOTH.leaf, shirt: CLOTH.sand, mustache: true, tool: "wrench", pose: "ergue-direita" },
   },
-  "ar-condicionado": {
-    label: "Ilustração: técnica de ar-condicionado sorridente segurando um manômetro",
-    person: { skin: SKIN.tan, hair: "curly", hairColor: HAIR.auburn, shirt: CLOTH.leaf, earrings: true, tool: "gauges", pose: "mostra" },
-  },
   "montagem-de-moveis": {
     label: "Ilustração: montador sorridente de boné segurando uma furadeira",
     shift: 22,
@@ -628,16 +596,16 @@ export function TradeArt({ slug, className }: { slug: string; className?: string
   return <HeroPro trade={slug as TradeSlug} badge={false} className={className} />;
 }
 
-/** Equipe: eletricista, encanador e técnica de ar-condicionado, cada um numa pose. */
+/** Equipe: encanador, eletricista e profissional de pequenos reparos, cada um numa pose. */
 export function ProTeam({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 760 360" className={className} role="img" aria-label="Ilustração: eletricista, encanador e técnica de ar-condicionado sorridentes">
+    <svg viewBox="0 0 760 360" className={className} role="img" aria-label="Ilustração: encanador, eletricista e profissional de pequenos reparos sorridentes">
       <ellipse cx="380" cy="352" rx="360" ry="22" fill="#18202c" opacity="0.08" />
       <g transform="translate(-2 30) scale(0.66)">
         <RealPerson {...TRADES.encanador.person} pose="ergue" />
       </g>
       <g transform="translate(512 30) scale(0.66)">
-        <RealPerson {...TRADES["ar-condicionado"].person} />
+        <RealPerson {...TRADES["pequenos-reparos"].person} />
       </g>
       <g transform="translate(236 0) scale(0.72)">
         <RealPerson {...TRADES.eletrica.person} skin={SKIN.deep} hair="short" earrings={false} beard pose="ergue-direita" />
