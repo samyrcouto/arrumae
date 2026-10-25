@@ -71,3 +71,9 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Fundador achou os personagens em cartum feios e pediu algo mais realista (sem chegar a foto).
 - Novo `src/components/people.tsx`: `RealPerson` sem contorno, com sombreado, olhos com íris e brilho, nariz e lábios, gola polo, bolso com caneta, capacete/boné com volume e mão segurando furadeira; `HeroPro` (eletricista / montador) e `ProTeam`.
 - Removidos os personagens antigos de `illustrations.tsx`.
+
+## 2026-10-25 — Ajuste da mão e dos capacetes
+
+- Fundador achou a mão da furadeira "torta/invertida" e os capacetes estranhos.
+- Mão redesenhada como um punho fechado no cabo (dedos por baixo, polegar por cima) e braço dobrado natural: braço junto ao corpo, cotovelo e antebraço em diagonal até a mão.
+- Capacete refeito: casco mais largo e arredondado, nervuras curvas e aba contínua com sombra na testa; coque ajustado para aparecer por baixo do capacete.

@@ -75,15 +75,23 @@ function Drill({ skin }: { skin: Tone }) {
       ))}
       {/* gatilho */}
       <rect x="156" y="334" width="10" height="16" rx="4" fill="#3a4148" />
-      {/* mão segurando a empunhadura */}
-      {[0, 1, 2, 3].map((i) => (
-        <g key={i}>
-          <rect x="124" y={340 + i * 14} width="50" height="15" rx="7.5" fill={skin.base} />
-          <path d={`M128 ${354 + i * 14}h42`} stroke={skin.shade} strokeWidth="2" opacity="0.7" strokeLinecap="round" />
-        </g>
+      {/* mão: dorso e pulso à esquerda, dedos dobrados em volta do cabo */}
+      <path
+        d="M112 346c6-8 16-12 28-12l30 4c8 2 12 10 10 18 4 6 4 14 0 20 4 6 3 14-3 19-4 5-10 7-16 7l-30-2c-12 0-20-6-24-14z"
+        fill={skin.base}
+      />
+      {/* sombra suave na base do punho */}
+      <path d="M150 400l-30-2c-10 0-17-4-21-10 8 3 16 4 24 4l30 3c-1 2-2 4-3 5z" fill={skin.shade} opacity="0.35" />
+      {/* divisão dos dedos e nós */}
+      {[358, 374, 389].map((y) => (
+        <path key={y} d={`M154 ${y}q14 1 24-2`} fill="none" stroke={skin.shade} strokeWidth="2.4" strokeLinecap="round" opacity="0.85" />
       ))}
-      <path d="M124 344c-6-10-2-22 10-24 10-2 16 6 16 14z" fill={skin.base} />
-      <path d="M124 344c-2-6 0-12 6-15" fill="none" stroke={skin.shade} strokeWidth="2" opacity="0.7" strokeLinecap="round" />
+      {[350, 366, 381].map((y) => (
+        <ellipse key={y} cx="172" cy={y} rx="4" ry="2.4" fill={skin.light} opacity="0.55" />
+      ))}
+      {/* polegar por cima do cabo, em direção ao gatilho */}
+      <path d="M128 344c4-10 14-16 26-14 8 1 12 6 10 11-2 4-8 5-14 4-8-1-14 1-18 5z" fill={skin.base} />
+      <path d="M150 334c6 0 10 3 11 6" fill="none" stroke={skin.shade} strokeWidth="2" strokeLinecap="round" opacity="0.8" />
     </g>
   );
 }
@@ -103,7 +111,7 @@ export function RealPerson({
   return (
     <g>
       {/* cabelo que fica atrás da cabeça */}
-      {hair === "bun" && <circle cx="238" cy={headwear === "none" ? 66 : 92} r="24" fill={hairColor} />}
+      {hair === "bun" && <circle cx={headwear === "none" ? 238 : 246} cy={headwear === "none" ? 66 : 120} r={headwear === "none" ? 24 : 15} fill={hairColor} />}
       {hair === "curly" && headwear === "none" && (
         <g fill={hairColor}>
           {[[158, 96, 28], [182, 70, 30], [218, 70, 30], [242, 96, 28], [148, 128, 22], [252, 128, 22], [200, 60, 26]].map(([x, y, r]) => (
@@ -199,12 +207,19 @@ export function RealPerson({
       {/* chapéus */}
       {headwear === "hardhat" && (
         <g>
-          <path d="M142 104c0-46 28-72 58-72s58 26 58 72z" fill="#f2b33d" />
-          <path d="M228 38c20 12 30 36 30 66h-26c4-26 2-48-4-66z" fill="#d9971f" opacity="0.75" />
-          <path d="M160 64c6-12 16-20 28-24-10 12-18 26-22 44z" fill="#fff" opacity="0.28" />
-          <rect x="191" y="33" width="18" height="72" rx="8" fill="#f7c65e" />
-          <rect x="191" y="33" width="18" height="72" rx="8" fill="#000" opacity="0.05" />
-          <path d="M124 100q76-12 152 0 8 10-2 15-74-10-148 0-10-5-2-15z" fill="#e3a02b" />
+          {/* sombra da aba na testa */}
+          <path d="M150 104c30 8 70 8 100 0v12c-30 8-70 8-100 0z" fill={skin.shade} opacity="0.55" />
+          {/* cúpula */}
+          <path d="M136 100c-2-44 28-72 64-72s66 28 64 72z" fill="#f2b33d" />
+          {/* sombra lateral e brilho */}
+          <path d="M234 38c20 14 30 36 30 62h-24c2-24-1-46-6-62z" fill="#d48f1c" opacity="0.6" />
+          <path d="M154 62c8-14 20-24 34-28-12 12-20 28-24 48z" fill="#fff" opacity="0.32" />
+          {/* nervuras acompanhando a curvatura */}
+          <path d="M192 30c-4 22-5 46-4 70h24c1-24 0-48-4-70-5-2-11-2-16 0z" fill="#f7c862" />
+          <path d="M168 40c-8 18-12 38-12 60M232 40c8 18 12 38 12 60" fill="none" stroke="#c9861a" strokeWidth="3" strokeLinecap="round" opacity="0.45" />
+          {/* aba contínua, levemente curvada */}
+          <path d="M124 98c40-10 112-10 152 0 6 3 6 11 0 14-40-8-112-8-152 0-6-3-6-11 0-14z" fill="#e39f27" />
+          <path d="M126 108c40-7 108-7 148 0" fill="none" stroke="#b97814" strokeWidth="2.5" opacity="0.5" strokeLinecap="round" />
         </g>
       )}
       {headwear === "cap" && (
@@ -220,8 +235,15 @@ export function RealPerson({
       {/* braço e ferramenta */}
       {tool === "drill" && (
         <g>
-          <path d="M92 500c4-48 14-90 30-122l48 8c-8 36-12 76-10 114z" fill={skin.base} />
-          <path d="M150 384l20 2c-8 36-12 76-10 114h-16c0-40 2-80 6-116z" fill={skin.shade} opacity="0.55" />
+          {/* manga e braço junto ao corpo */}
+          <path d="M44 298c-5 30-5 52-1 70l54-4c-2-22-2-44 2-70z" fill={shirt.base} />
+          <path d="M44 298c-5 30-5 52-1 70l14-1c-3-22-2-46 3-70z" fill={shirt.light} opacity="0.45" />
+          <path d="M43 368l54-4" stroke={shirt.shade} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+          <path d="M46 368c0 32 4 62 12 88l42-8c-4-28-6-56-4-84z" fill={skin.base} />
+          <path d="M84 366c-2 28 0 56 4 82l12-2c-4-28-6-56-4-84z" fill={skin.shade} opacity="0.45" />
+          {/* antebraço diagonal, do cotovelo até a mão */}
+          <path d="M58 438c-4 20 8 34 28 32 6 0 10-3 14-7l44-48-24-30-42 36c-8 6-16 10-20 17z" fill={skin.base} />
+          <path d="M100 463l44-48-8-10-46 50c-2 4-6 8-12 10 8 2 16 1 22-2z" fill={skin.shade} opacity="0.45" />
           <Drill skin={skin} />
         </g>
       )}
