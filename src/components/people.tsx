@@ -234,27 +234,42 @@ function Sleeve({ from, toward, shirt }: { from: Pt; toward: Pt; shirt: Cloth })
 }
 
 /**
- * Mão direita do personagem (lado esquerdo da imagem) fechada num cabo, vista
- * pelas costas: quatro nós dos dedos em cima (indicador à esquerda, mínimo à
- * direita) e o polegar envolvendo o cabo do lado de fora. O pulso fica para
- * baixo (+y) e o cabo atravessa a mão na horizontal (y = -4), perpendicular ao
- * antebraço, como numa pegada de verdade. A mão esquerda é o espelho desta.
+ * Mão fechada num cabo, como nas fotos de referência: o cabo (vertical, y)
+ * passa entre a palma e os dedos; os quatro dedos ficam empilhados por cima
+ * dele, do indicador (em cima) ao mínimo, com as pontas para a esquerda (-x);
+ * a palma e o pulso ficam à direita (+x) e o polegar fecha por cima.
+ * `view="palm"` mostra as unhas nas pontas; `"back"` mostra os nós (costas da mão).
+ * A ferramenta entra como `children`, desenhada entre a palma e os dedos.
  */
-function Fist({ skin }: { skin: Tone }) {
+function GripHand({ skin, view, children }: { skin: Tone; view: "palm" | "back"; children?: React.ReactNode }) {
+  const fingers = [
+    { y: -20, h: 10.5, tip: -17 },
+    { y: -10, h: 10.5, tip: -18.5 },
+    { y: 0, h: 10, tip: -17 },
+    { y: 9.5, h: 9, tip: -13.5 },
+  ];
   return (
     <g transform="scale(1.15)">
-      {/* mão fechada: bloco compacto, sem nada saindo do contorno */}
-      <path d="M-16 -12c0-8 6-12 14-12h10c7 0 11 5 11 12v16c0 8-4 16-7 20h-23c-3-6-5-12-5-18z" fill={skin.base} />
-      <path d="M12 -23c4 2 7 6 7 11v16c0 8-4 16-7 20h-5c3-6 5-13 5-20z" fill={skin.shade} opacity="0.4" />
-      {/* dedos dobrados por cima: faixa dos nós com três divisões curtas */}
-      <path d="M-14 -14c0-6 5-9 12-9h10c6 0 9 3 9 9-10 3-21 3-31 0z" fill={skin.light} opacity="0.35" />
-      <path d="M-14 -13q15 4 31 0" fill="none" stroke={skin.shade} strokeWidth="1.4" strokeLinecap="round" opacity="0.45" />
-      {[-6, 1.5, 9].map((x) => (
-        <path key={x} d={`M${x} -22v8`} stroke={skin.shade} strokeWidth="1.3" strokeLinecap="round" opacity="0.6" />
+      {/* palma (ou dorso) e começo do pulso */}
+      <rect x="2" y="-22" width="24" height="42" rx="11" fill={skin.base} />
+      <path d="M18 -20c5 2 8 6 8 11v18c0 5-3 9-8 11z" fill={skin.shade} opacity="0.4" />
+      {children}
+      {/* dedos empilhados em volta do cabo */}
+      {[...fingers].reverse().map(({ y, h, tip }) => (
+        <g key={y}>
+          <rect x={tip} y={y} width={16 - tip} height={h} rx={h / 2} fill={skin.base} />
+          <path d={`M${tip + 3} ${y + h - 0.6}H13`} stroke={skin.shade} strokeWidth="1.4" strokeLinecap="round" opacity="0.55" />
+          {view === "palm" ? (
+            <ellipse cx={tip + 4} cy={y + h / 2} rx="2.9" ry={h / 2 - 1.6} fill={skin.light} opacity="0.95" />
+          ) : (
+            <path d={`M${tip + 2.5} ${y + 3}q2-1.6 4.5-1`} fill="none" stroke={skin.light} strokeWidth="1.5" strokeLinecap="round" opacity="0.75" />
+          )}
+        </g>
       ))}
-      {/* polegar abraçando o cabo pelo lado de fora */}
-      <path d="M-16 -10c-7 0-11 7-10 14 1 7 7 11 13 9 3-1 3-5 0-6-3-1-4-5-3-11z" fill={skin.base} />
-      <path d="M-22 -3c1 5 4 9 9 11" fill="none" stroke={skin.shade} strokeWidth="1.4" strokeLinecap="round" opacity="0.55" />
+      {/* polegar fechando por cima do indicador */}
+      <path d="M22 -16c-2-6-8-9-15-9H-4c-4 0-6 3-5 6 1 2 3 3 6 3h9c4 0 8 1 11 3z" fill={skin.base} />
+      <path d="M-6 -16.5c5 1 11 1 16 0" fill="none" stroke={skin.shade} strokeWidth="1.3" strokeLinecap="round" opacity="0.45" />
+      {view === "palm" && <ellipse cx="-3.5" cy="-21.5" rx="3.6" ry="2.6" fill={skin.light} opacity="0.95" />}
     </g>
   );
 }
@@ -291,15 +306,19 @@ function ThumbsUp({ skin }: { skin: Tone }) {
   );
 }
 
-/** Como cada ferramenta entra no punho: a maioria é desenhada em pé e vira na horizontal, com a ponta saindo pelo lado do polegar. */
-const SWAP = "translate(0 -4) matrix(0 1 1 0 0 0)";
-const GRIP: Record<ToolName, string> = { screwdriver: SWAP, wrench: SWAP, hammer: SWAP, drill: SWAP, gauges: "translate(0 27)" };
+/** Ajuste de cada ferramenta dentro da mão (todas desenhadas em pé, cabo em x = 0). */
+const GRIP: Record<ToolName, string> = { screwdriver: "", wrench: "", hammer: "", drill: "scale(0.85)", gauges: "" };
 
 const SHOULDER: Record<"L" | "R", Pt> = { L: [124, 286], R: [276, 286] };
 
 /** Um braço da pose: cotovelo, mão e o que a mão faz. `twist` dobra o pulso (graus). */
 /** grip: "tool" segura a ferramenta, "joinha" faz sinal de positivo, "none" deixa a mão fora de vista. */
-type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "joinha" | "none"; twist?: number };
+/**
+ * Para a mão com ferramenta: `angle` gira a mão (graus; 0 = cabo em pé, pontas
+ * dos dedos para a esquerda), `mirror` espelha (pontas para a direita) e
+ * `view` escolhe palma ou costas.
+ */
+type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "joinha" | "none"; angle?: number; mirror?: boolean; view?: "palm" | "back" };
 type PoseSpec = { L: ArmSpec; R: ArmSpec; front: ("L" | "R")[] };
 
 const JOINHA_L: ArmSpec = { elbow: [50, 400], hand: [48, 318], grip: "joinha" };
@@ -309,15 +328,15 @@ const HANG_R: ArmSpec = { elbow: [310, 394], hand: [324, 540], grip: "none" };
 
 export const POSES = {
   /** ferramenta erguida à esquerda, joinha com a outra mão */
-  ergue: { L: { elbow: [34, 372], hand: [100, 290], grip: "tool", twist: 22 }, R: JOINHA_R, front: ["R", "L"] },
+  ergue: { L: { elbow: [60, 412], hand: [80, 300], grip: "tool", angle: 10, view: "palm" }, R: JOINHA_R, front: ["R", "L"] },
   /** ferramenta erguida à direita, outro braço solto */
-  "ergue-direita": { L: HANG_L, R: { elbow: [366, 372], hand: [300, 290], grip: "tool", twist: -22 }, front: ["L", "R"] },
+  "ergue-direita": { L: HANG_L, R: { elbow: [340, 412], hand: [320, 300], grip: "tool", angle: -10, mirror: true, view: "palm" }, front: ["L", "R"] },
   /** mostrando a ferramenta na frente do peito, outro braço solto */
-  mostra: { L: HANG_L, R: { elbow: [330, 410], hand: [236, 380], grip: "tool", twist: 62 }, front: ["L", "R"] },
+  mostra: { L: HANG_L, R: { elbow: [300, 424], hand: [240, 362], grip: "tool", angle: -90, mirror: true, view: "palm" }, front: ["L", "R"] },
   /** braço dobrado para cima ao lado do ombro, joinha com a outra mão */
-  forca: { L: JOINHA_L, R: { elbow: [356, 346], hand: [314, 256], grip: "tool" }, front: ["L", "R"] },
+  forca: { L: JOINHA_L, R: { elbow: [352, 372], hand: [318, 270], grip: "tool", angle: -40, mirror: true, view: "back" }, front: ["L", "R"] },
   /** braços cruzados, ferramenta para cima (a outra mão fica escondida sob o braço) */
-  cruzados: { L: { elbow: [94, 428], hand: [290, 404], grip: "none" }, R: { elbow: [306, 430], hand: [132, 366], grip: "tool" }, front: ["L", "R"] },
+  cruzados: { L: { elbow: [94, 428], hand: [290, 404], grip: "none" }, R: { elbow: [306, 430], hand: [134, 368], grip: "tool", angle: 5, view: "back" }, front: ["L", "R"] },
   /** sem ferramenta: braço solto e joinha */
   joinha: { L: HANG_L, R: JOINHA_R, front: ["L", "R"] },
 } satisfies Record<string, PoseSpec>;
@@ -342,16 +361,18 @@ function Forearm({ side, arm, skin, tool }: { side: "L" | "R"; arm: ArmSpec; ski
   const [hx, hy] = arm.hand;
   const vx = arm.elbow[0] - hx, vy = arm.elbow[1] - hy;
   const len = Math.hypot(vx, vy);
-  const mirror = side === "R" ? " scale(-1 1)" : "";
   let hand = null;
   if (arm.grip === "tool" && tool) {
     const Tool = TOOLS[tool];
-    const angle = deg(Math.atan2(-vx / len, vy / len)) + (arm.twist ?? 0);
+    const angle = arm.angle ?? 0;
+    const flip = arm.mirror ? " scale(-1 1)" : "";
+    // o manômetro fica sempre em pé e sem espelhar (azul à esquerda): desfaz a rotação da mão
+    const toolTransform = tool === "gauges" ? `${flip} rotate(${-angle}) translate(0 27)` : GRIP[tool];
     hand = (
-      <g transform={`translate(${hx} ${hy}) rotate(${angle})${mirror}`}>
-        {/* o manômetro não espelha: azul (baixa) sempre à esquerda */}
-        <g transform={`${mirror && tool === "gauges" ? "scale(-1 1) " : ""}${GRIP[tool]}`}><Tool /></g>
-        <Fist skin={skin} />
+      <g transform={`translate(${hx} ${hy}) rotate(${angle})${flip}`}>
+        <GripHand skin={skin} view={arm.view ?? "palm"}>
+          <g transform={`scale(${1 / 1.15})${toolTransform ? ` ${toolTransform}` : ""}`}><Tool /></g>
+        </GripHand>
       </g>
     );
   } else if (arm.grip === "joinha") {

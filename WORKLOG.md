@@ -115,3 +115,9 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Punho que segura a ferramenta virou um bloco compacto: nós dos dedos dentro do contorno (faixa clara com três divisões), polegar abraçando o cabo — nada sai do contorno.
 - Mão na cintura (que mostrava dedos esticados) foi substituída por **joinha** (`ThumbsUp`): dedos dobrados empilhados e polegar para cima saindo do lado dos nós. Eletricista e montador fazem joinha; encanador e técnica de ar-condicionado ficam com o outro braço solto; nos braços cruzados a mão de baixo fica escondida.
 - Removidos `HipHand` e as poses de mão na cintura; pose padrão sem ferramenta agora é `joinha`.
+
+## 2026-10-25 — Mãos baseadas em fotos de referência
+
+- Fundador mandou duas fotos (mulher segurando rolo de pintura; profissional segurando furadeira) como referência de mão fechada.
+- Novo `GripHand`: o cabo passa entre a palma e os dedos; os quatro dedos ficam empilhados em volta do cabo (indicador em cima, mínimo embaixo), com unhas nas pontas quando a palma está para a frente (`view="palm"`, como na foto do rolo) ou nós quando são as costas da mão (`"back"`, como na foto da furadeira); polegar fecha por cima. A ferramenta é desenhada entre a palma e os dedos.
+- Poses refeitas como na foto: antebraço quase vertical e mão ao lado do ombro, com o cabo levemente inclinado. Cada mão com ferramenta tem `angle`, `mirror` e `view` explícitos na pose. Manômetro continua sempre em pé e sem espelhar.
