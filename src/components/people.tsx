@@ -253,15 +253,16 @@ const GRIP: Record<ToolName, string> = { screwdriver: "", wrench: "", hammer: ""
 const SHOULDER: Record<"L" | "R", Pt> = { L: [124, 286], R: [276, 286] };
 
 /** Um braço da pose: cotovelo, mão e o que a mão faz. `twist` dobra o pulso (graus). */
-/** grip: "tool" segura a ferramenta, "none" deixa a mão fora de vista (braço solto ou escondido). */
+/** grip: "tool" segura a ferramenta, "hold" fecha a mão em volta de algo (ex.: o outro braço), "none" deixa a mão fora de vista. */
 /**
  * Para a mão com ferramenta: `angle` gira a mão (graus; 0 = cabo em pé, pontas
- * dos dedos para a esquerda), `mirror` espelha (pontas para a direita),
- * `toolFlip` espelha só a ferramenta e `view` escolhe palma ou costas.
- * Como nas fotos de referência, as pontas dos dedos apontam para o meio do
- * corpo e o dorso/pulso fica do lado de fora.
+ * dos dedos para a esquerda), `mirror` espelha (pontas para a direita) e
+ * `view` escolhe palma ou costas. Como nas fotos de referência, as pontas dos
+ * dedos apontam para o meio do corpo e o dorso/pulso fica do lado de fora; a
+ * ferramenta acompanha a mão (a frente dela fica do lado das pontas dos dedos)
+ * e o topo inclina para o lado do pulso, para fora.
  */
-type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "none"; angle?: number; mirror?: boolean; toolFlip?: boolean; view?: "palm" | "back" };
+type ArmSpec = { elbow: Pt; hand: Pt; grip: "tool" | "hold" | "none"; angle?: number; mirror?: boolean; view?: "palm" | "back" };
 type PoseSpec = { L: ArmSpec; R: ArmSpec; front: ("L" | "R")[] };
 
 const HANG_L: ArmSpec = { elbow: [90, 394], hand: [76, 540], grip: "none" };
@@ -269,13 +270,13 @@ const HANG_R: ArmSpec = { elbow: [310, 394], hand: [324, 540], grip: "none" };
 
 export const POSES = {
   /** ferramenta erguida à esquerda, outro braço solto */
-  ergue: { L: { elbow: [60, 412], hand: [80, 300], grip: "tool", angle: 10, mirror: true, toolFlip: true, view: "palm" }, R: HANG_R, front: ["R", "L"] },
+  ergue: { L: { elbow: [60, 412], hand: [80, 300], grip: "tool", angle: -10, mirror: true, view: "palm" }, R: HANG_R, front: ["R", "L"] },
   /** ferramenta erguida à direita, outro braço solto */
-  "ergue-direita": { L: HANG_L, R: { elbow: [340, 412], hand: [320, 300], grip: "tool", angle: -10, toolFlip: true, view: "palm" }, front: ["L", "R"] },
+  "ergue-direita": { L: HANG_L, R: { elbow: [340, 412], hand: [320, 300], grip: "tool", angle: 10, view: "palm" }, front: ["L", "R"] },
   /** braço dobrado para cima ao lado do ombro, outro braço solto */
-  forca: { L: HANG_L, R: { elbow: [352, 372], hand: [318, 270], grip: "tool", angle: -40, toolFlip: true, view: "back" }, front: ["L", "R"] },
-  /** braços cruzados, ferramenta para cima (a outra mão fica escondida sob o braço) */
-  cruzados: { L: { elbow: [94, 428], hand: [290, 404], grip: "none" }, R: { elbow: [306, 430], hand: [134, 368], grip: "tool", angle: 5, view: "back" }, front: ["L", "R"] },
+  forca: { L: HANG_L, R: { elbow: [362, 380], hand: [336, 276], grip: "tool", angle: 75, view: "back" }, front: ["L", "R"] },
+  /** braços cruzados, ferramenta para cima; a outra mão segura o braço oposto */
+  cruzados: { L: { elbow: [94, 428], hand: [296, 398], grip: "hold", mirror: true, view: "back" }, R: { elbow: [306, 430], hand: [134, 368], grip: "tool", angle: 5, view: "back" }, front: ["L", "R"] },
   /** sem ferramenta: os dois braços soltos */
   solto: { L: HANG_L, R: HANG_R, front: ["L", "R"] },
 } satisfies Record<string, PoseSpec>;
@@ -298,11 +299,17 @@ function UpperArm({ side, arm, skin, shirt }: { side: "L" | "R"; arm: ArmSpec; s
 function Forearm({ side, arm, skin, tool }: { side: "L" | "R"; arm: ArmSpec; skin: Tone; tool?: ToolName }) {
   const [hx, hy] = arm.hand;
   let hand = null;
-  if (arm.grip === "tool" && tool) {
+  if (arm.grip === "hold") {
+    hand = (
+      <g transform={`translate(${hx} ${hy}) rotate(${arm.angle ?? 0})${arm.mirror ? " scale(-1 1)" : ""}`}>
+        <GripHand skin={skin} view={arm.view ?? "back"} />
+      </g>
+    );
+  } else if (arm.grip === "tool" && tool) {
     const Tool = TOOLS[tool];
     const angle = arm.angle ?? 0;
     const flip = arm.mirror ? " scale(-1 1)" : "";
-    const toolTransform = `${arm.toolFlip ? "scale(-1 1) " : ""}${GRIP[tool]}`.trim();
+    const toolTransform = GRIP[tool];
     hand = (
       <g transform={`translate(${hx} ${hy}) rotate(${angle})${flip}`}>
         <GripHand skin={skin} view={arm.view ?? "palm"}>

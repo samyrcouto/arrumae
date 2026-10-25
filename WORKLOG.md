@@ -140,3 +140,8 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 
 - Joinha removido (`ThumbsUp` e pose `joinha`): a mão livre agora fica com o braço solto ao lado do corpo. Pose padrão sem ferramenta: `solto`.
 - Página inicial com eletricista homem (`HeroPro home`: capacete, bigode, sem brincos). A landing de elétrica continua com a eletricista.
+
+## 2026-10-25 — Ferramentas viradas como o martelo e mão nos braços cruzados
+
+- Fundador: só o martelo estava virado certo. Regra do martelo aplicada a todas: a ferramenta acompanha a mão (frente do lado das pontas dos dedos) e o topo inclina para o lado do pulso, para fora. Removido `toolFlip`, que espelhava a ferramenta sozinha (a furadeira ficava segurada ao contrário). Chave de fenda e chave de grifo agora inclinam para fora; furadeira aponta para cima com a empunhadura na mão.
+- Braços cruzados: a mão de baixo voltou a aparecer, segurando o braço do outro lado (`grip: "hold"`, costas da mão).
