@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HeroPro } from "@/components/illustrations";
+import { HeroPro } from "@/components/people";
 import { Card, LinkButton } from "@/components/ui";
 import { listCategories } from "@/server/services/catalog";
 

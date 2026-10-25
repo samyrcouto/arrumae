@@ -133,7 +133,8 @@ Em produção, crie o admin com `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:c
 |---|---|
 | Nome, slogan e textos da marca | `src/config/brand.ts` |
 | Logo (casinha com trena + "ê" com telhado) | `src/components/brand/logo.tsx` e `public/icon.svg` |
-| Ilustrações (cena da home, serviços) e personagens (`Person`, `HeroPro`, `ProTeam`) | `src/components/illustrations.tsx` |
+| Ilustrações (cena da home, serviços) | `src/components/illustrations.tsx` |
+| Personagens dos profissionais (`RealPerson`, `HeroPro`, `ProTeam`) | `src/components/people.tsx` |
 | Telas do app nas molduras de celular | `public/marketing/*.webp` (geradas por `npm run vitrine`) |
 | Cores, fontes, raio dos cantos, faixa "trena" | `src/app/globals.css` (bloco `@theme`) |
 | Botões, cartões, selos, alertas | `src/components/ui.tsx` |

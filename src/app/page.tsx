@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { CategoryArt, HeroPro, HeroScene, ProTeam } from "@/components/illustrations";
+import { CategoryArt, HeroScene } from "@/components/illustrations";
+import { HeroPro, ProTeam } from "@/components/people";
 import { PhoneFrame } from "@/components/phone-frame";
 import { LinkButton } from "@/components/ui";
 import { brand } from "@/config/brand";
@@ -251,7 +252,7 @@ export default async function Home() {
       {/* -------------------------------------------------- PROFISSIONAIS */}
       <section className="full-bleed mt-16 bg-tape">
         <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-14 lg:grid-cols-[1fr_1.1fr]">
-          <ProTeam className="mx-auto w-full max-w-xl" />
+          <ProTeam className="mx-auto w-full max-w-xl lg:-mb-14 lg:self-end" />
           <div>
             <p className="font-semibold">Para profissionais</p>
             <h2 className="mt-1 text-3xl font-extrabold sm:text-4xl">Pedidos de verdade, sem pagar por contato</h2>

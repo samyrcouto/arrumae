@@ -65,3 +65,9 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Home: eletricista no topo sobre fundo de casinha com selo "Documentos conferidos pela equipe"; equipe de 3 profissionais na seção de profissionais; cena da sala na chamada final.
 - "Seja um profissional": montador com selo "Sem taxa para ver os pedidos".
 - Removida a ilustração antiga do celular (`ProScene`), sem uso.
+
+## 2026-10-25 — Personagens semi-realistas
+
+- Fundador achou os personagens em cartum feios e pediu algo mais realista (sem chegar a foto).
+- Novo `src/components/people.tsx`: `RealPerson` sem contorno, com sombreado, olhos com íris e brilho, nariz e lábios, gola polo, bolso com caneta, capacete/boné com volume e mão segurando furadeira; `HeroPro` (eletricista / montador) e `ProTeam`.
+- Removidos os personagens antigos de `illustrations.tsx`.
