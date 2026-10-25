@@ -58,3 +58,10 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Landings de serviço, formulário de pedido e página de profissionais com as ilustrações.
 - `npm run vitrine` agora também gera `public/marketing/*.webp` (telas reais para as molduras de celular).
 - Sites dos concorrentes não puderam ser abertos daqui (rede bloqueada); a referência veio de pesquisa e de padrões do segmento (D‑016).
+
+## 2026-10-25 — Personagens desenhados
+
+- Componente `Person` (SVG configurável: pele, cabelo, capacete/boné, barba, óculos, brincos, roupa, cinto, ferramenta).
+- Home: eletricista no topo sobre fundo de casinha com selo "Documentos conferidos pela equipe"; equipe de 3 profissionais na seção de profissionais; cena da sala na chamada final.
+- "Seja um profissional": montador com selo "Sem taxa para ver os pedidos".
+- Removida a ilustração antiga do celular (`ProScene`), sem uso.

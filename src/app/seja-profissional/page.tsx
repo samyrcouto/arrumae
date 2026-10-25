@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ProScene } from "@/components/illustrations";
+import { HeroPro } from "@/components/illustrations";
 import { Card, LinkButton } from "@/components/ui";
 import { listCategories } from "@/server/services/catalog";
 
@@ -10,7 +10,7 @@ export default async function ProLanding() {
   const categories = await listCategories();
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="grid items-center gap-8 rounded-[2rem] bg-tape p-6 sm:p-10 md:grid-cols-[1.3fr_1fr]">
+      <div className="grid items-end gap-8 overflow-hidden rounded-[2rem] bg-tape px-6 pt-6 sm:px-10 sm:pt-10 md:grid-cols-[1.3fr_1fr]">
         <div>
           <p className="font-semibold">Para profissionais</p>
           <h1 className="mt-1 text-4xl font-extrabold leading-[1.05] sm:text-5xl">Pedidos de verdade, sem pagar por contato</h1>
@@ -20,7 +20,7 @@ export default async function ProLanding() {
           </p>
           <LinkButton href="/cadastro?tipo=profissional" className="mt-6 bg-ink hover:bg-ink/90">Começar cadastro</LinkButton>
         </div>
-        <ProScene className="mx-auto w-full max-w-sm" />
+        <HeroPro variant="montador" className="mx-auto -mb-px w-full max-w-sm" />
       </div>
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         {[

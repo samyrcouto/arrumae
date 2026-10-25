@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CategoryArt, HeroScene, ProScene } from "@/components/illustrations";
+import { CategoryArt, HeroPro, HeroScene, ProTeam } from "@/components/illustrations";
 import { PhoneFrame } from "@/components/phone-frame";
 import { LinkButton } from "@/components/ui";
 import { brand } from "@/config/brand";
@@ -70,7 +70,7 @@ export default async function Home() {
     <div className="-mt-6 sm:-mt-10">
       {/* ------------------------------------------------------------ HERO */}
       <section className="full-bleed dot-grid overflow-hidden border-b border-line">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-12 pt-8 sm:pb-16 sm:pt-14 lg:grid-cols-[1.05fr_1fr]">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-8 sm:pt-14 lg:grid-cols-[1.05fr_1fr]">
           <div>
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-tape/70 bg-tape-soft px-3 py-1 text-sm font-semibold">
               <span className="size-2 rounded-full bg-clay" /> Piloto em {brand.city}
@@ -119,12 +119,8 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-[34rem]">
-            <HeroScene className="w-full" />
-            <div className="absolute -bottom-6 -left-2 w-[38%] max-w-[13rem] rotate-[-4deg] sm:-left-6">
-              <PhoneFrame src="/marketing/app-propostas.webp" alt="Tela real do app mostrando propostas com preço e horário" priority />
-            </div>
-            <p className="mt-3 pl-[42%] text-right text-xs text-ink-soft sm:mt-8">Tela real do app, com dados de demonstração.</p>
+          <div className="relative mx-auto w-full max-w-[36rem] self-end">
+            <HeroPro className="w-full" />
           </div>
         </div>
       </section>
@@ -255,7 +251,7 @@ export default async function Home() {
       {/* -------------------------------------------------- PROFISSIONAIS */}
       <section className="full-bleed mt-16 bg-tape">
         <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-14 lg:grid-cols-[1fr_1.1fr]">
-          <ProScene className="mx-auto w-full max-w-md" />
+          <ProTeam className="mx-auto w-full max-w-xl" />
           <div>
             <p className="font-semibold">Para profissionais</p>
             <h2 className="mt-1 text-3xl font-extrabold sm:text-4xl">Pedidos de verdade, sem pagar por contato</h2>
@@ -307,12 +303,13 @@ export default async function Home() {
 
       {/* -------------------------------------------------------- CTA FINAL */}
       <section className="mt-12 overflow-hidden rounded-[2rem] bg-brand text-white">
-        <div className="grid items-center gap-6 p-8 sm:p-12 md:grid-cols-[1fr_auto]">
+        <div className="grid items-center gap-6 p-8 sm:p-12 md:grid-cols-[1fr_minmax(0,22rem)]">
           <div>
             <h2 className="text-3xl font-extrabold sm:text-4xl">Bora arrumar?</h2>
             <p className="mt-2 text-white/80">Conte o que precisa e receba propostas com preço e horário.</p>
+            <LinkButton href="/pedir" variant="tape" className="mt-6 text-lg">Pedir orçamento grátis</LinkButton>
           </div>
-          <LinkButton href="/pedir" variant="tape" className="text-lg">Pedir orçamento grátis</LinkButton>
+          <HeroScene className="hidden w-full md:block" />
         </div>
         <div className="tape-measure" aria-hidden />
       </section>
