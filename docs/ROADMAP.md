@@ -18,14 +18,16 @@ Status por fase em 29/10/2026. Critério de conclusão em cada fase.
 
 1. **Recuperação de senha por e‑mail** + driver de e‑mail real (Resend/SES) — bloqueado por: conta no provedor + domínio verificado.
 2. **2FA (TOTP) para admins.**
-3. **Driver de storage S3‑compatível** (Supabase Storage/R2) — necessário para qualquer deploy serverless.
-4. Validar prefixos de CEP das 2 regiões iniciais e desativar as demais no admin.
-5. "Pedir de novo com este profissional" e profissionais favoritos.
-6. Worker para `outbound_messages` (e‑mail; depois WhatsApp Business API).
-7. Pagamentos integrados (Asaas → ver BUSINESS.md §4), cupons aplicados, repasses e reembolsos com aprovação humana.
-8. Upload direto assinado e varredura de arquivos órfãos.
-9. Avaliação do cliente pelo profissional (reputação de dois lados).
-10. Monitoramento (Sentry) e uptime. (Alerta de pedido sem proposta há > 2 h: **feito** — evento `request.stale` + workflow 01 do n8n.)
+3. **Criptografar CPF/CNPJ** no banco (AES-256-GCM + índice cego) — ver [PESQUISA-MERCADO.md §5.4](PESQUISA-MERCADO.md#54-autenticação-criptografia-jwt-python-e-lgpd).
+4. **Perguntas específicas por serviço** no pedido (ex.: "quantas tomadas?"), como fazem GetNinjas e Thumbtack.
+5. **Driver de storage S3‑compatível** (Supabase Storage/R2) — necessário para qualquer deploy serverless.
+6. Validar prefixos de CEP das 2 regiões iniciais e desativar as demais no admin.
+7. "Pedir de novo com este profissional" e profissionais favoritos.
+8. Worker para `outbound_messages` (e‑mail; depois WhatsApp Business API).
+9. Pagamentos integrados (Asaas → ver BUSINESS.md §4), cupons aplicados, repasses e reembolsos com aprovação humana.
+10. Upload direto assinado e varredura de arquivos órfãos.
+11. Avaliação do cliente pelo profissional (reputação de dois lados).
+12. Monitoramento (Sentry) e uptime. (Alerta de pedido sem proposta há > 2 h: **feito** — evento `request.stale` + workflow 01 do n8n.)
 
 ## Operação manual do piloto (concierge — não automatizar ainda)
 
@@ -57,6 +59,7 @@ Status por fase em 29/10/2026. Critério de conclusão em cada fase.
 - [ ] Backups + PITR + teste de restauração
 - [ ] Sentry/uptime/alertas
 - [ ] 2FA admin e reset de senha
+- [ ] CPF/CNPJ criptografados no banco
 - [ ] Confiar apenas no header de IP do provedor (SECURITY.md)
 - [ ] Teste E2E contra o ambiente de homologação
 - [ ] Revisar textos de `/como-funciona`, `/termos`, `/privacidade`

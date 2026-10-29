@@ -31,6 +31,7 @@
 |---|---|---|
 | IP de cliente vem de `X-Forwarded-For` | Falsificável se o app não estiver atrás de proxy confiável → contorna rate limit por IP (o limite por e‑mail continua) | Em produção, confiar apenas no header do provedor (ex.: `x-vercel-forwarded-for`) |
 | CSP com `'unsafe-inline'` em scripts | Reduz proteção contra XSS | Migrar para nonces quando houver CDN/edge |
+| CPF/CNPJ do profissional em texto no banco (`pro_profiles`) | Vazamento do banco expõe o documento (o acesso pelo admin já é restrito e auditado) | Antes de produção: criptografia na aplicação (AES-256-GCM, chave fora do banco) + índice cego HMAC para checar duplicidade ([PESQUISA-MERCADO.md §5.4](PESQUISA-MERCADO.md#54-autenticação-criptografia-jwt-python-e-lgpd)) |
 | Sem 2FA para admin | Comprometimento de conta admin | Obrigatório antes do lançamento: TOTP para admins ou SSO |
 | Sem recuperação de senha | Suporte manual pode ser explorado por engenharia social | Implementar reset por e‑mail com token de uso único e expiração curta |
 | Sem antivírus em uploads | PDFs maliciosos não detectados pelas regras simples | ClamAV/serviço do storage, ou aceitar só imagens |

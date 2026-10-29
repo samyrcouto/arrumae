@@ -52,7 +52,7 @@ Navegador ──► Next.js (Server Components + Server Actions + Route Handlers
 
 ## Hospedagem (recomendação, nada contratado)
 
-- App: Vercel ou Render/Railway/Fly (Node 22). Região próxima a São Paulo quando disponível.
+- App: Vercel **Pro** ou Render/Railway/Fly em plano pago (Node 22). Região próxima a São Paulo quando disponível. O plano grátis da Vercel (Hobby) proíbe uso comercial e o do Render dorme após 15 min: servem só para homologação ([PESQUISA-MERCADO.md §5.2](PESQUISA-MERCADO.md#52-servidor-hospedagem-do-site)).
 - Banco: Supabase ou Neon com região `sa-east-1` (São Paulo), backups diários + PITR.
 - Arquivos: Supabase Storage ou Cloudflare R2 (privado).
 - Cron: agendador do host chamando `POST /api/cron/maintenance` a cada 10–15 min.

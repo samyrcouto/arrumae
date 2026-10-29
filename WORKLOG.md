@@ -163,3 +163,11 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Docs: novo `docs/AUTOMACOES.md` (arquitetura, catálogo de eventos, passo a passo do n8n, plano de agentes de IA com gatilhos, modelo e custo estimado); DATABASE (relatórios + plano de produção, alerta da Data API do Supabase), SECURITY, ARCHITECTURE, DECISIONS (D‑017 a D‑019), ROADMAP, PRODUCT, `.env.example`.
 - Testes: 57 (8 novos de integrações), typecheck, lint, e2e + vitrine (nova captura do painel de integrações).
 - **Não feito (depende do fundador):** hospedar o n8n (Cloud ou VPS), criar o bot do Telegram, contratar banco gerenciado, qualquer uso de IA (custo + revisão jurídica).
+
+## 2026-10-29 — Pesquisa de mercado e decisões de base
+
+- Fundador pediu um panorama dos sites que já existem (modelo de negócio, estrutura, escala) e opinião sobre banco, autenticação/criptografia/JWT/Python/LGPD, UI/UX e tipografia, pagamentos, cadastro com CPF/RG, dor do cliente, domínio, servidor e e-mail.
+- Novo `docs/PESQUISA-MERCADO.md`: GetNinjas, Triider, Parafuzo, Thumbtack, Angi, TaskRabbit, Urban Company e Homejoy (quem paga, estrutura do site, escala, lição); os três modelos (contato, comissão, ponta a ponta) e o que limita a escala; padrões de site comparados com o Arrumaê; recomendações por tema; custos estimados; ordem sugerida; validação da dor com roteiro de entrevistas.
+- Sites dos concorrentes **não acessíveis** deste ambiente (bloqueio de rede): pesquisa feita por busca na web, fontes linkadas em cada linha. Lista de domínios para liberar no §8.
+- Achados que mudaram docs: o plano grátis da Vercel proíbe uso comercial (ARCHITECTURE corrigido); CPF/CNPJ do profissional fica em texto no banco → nova pendência em SECURITY e duas tarefas novas no ROADMAP (criptografar CPF/CNPJ; perguntas específicas por serviço no pedido).
+- Nada contratado, nenhuma conta criada. Só documentação.
