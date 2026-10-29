@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { NextResponse, type NextRequest } from "next/server";
 import { assertSafeKey, storage } from "@/server/adapters/storage";
-import { getCurrentUser } from "@/server/auth/session";
+import { getCurrentUser, needsMfaSetup } from "@/server/auth/session";
 import { db } from "@/server/db/client";
 import { proPhotos, proProfiles, requestInvitations, requestPhotos, serviceRequests } from "@/server/db/schema";
 
@@ -20,7 +20,9 @@ export async function GET(_req: NextRequest, ctx: { params: Promise<{ key: strin
     return notFound();
   }
   const [folder, ownerId] = key.split("/");
-  const user = await getCurrentUser();
+  const sessionUser = await getCurrentUser();
+  // Admin sem o 2FA obrigatório não abre arquivos de ninguém.
+  const user = sessionUser && !needsMfaSetup(sessionUser) ? sessionUser : null;
 
   let allowed = false;
   if (folder === "request-photos") {

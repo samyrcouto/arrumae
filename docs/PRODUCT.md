@@ -156,7 +156,17 @@ O profissional **não** consegue alterar avaliações (trigger no banco), status
 | Configurações comerciais | testada |
 | Auditoria (append‑only) | testada |
 | Integrações (fila de eventos para n8n, entregas, falhas, reenvio) | testada (inclusive ponta a ponta com n8n 1.123 local) |
+| Verificação em duas etapas obrigatória para admin (produção/homologação) | testada (integração); E2E cobre a ativação e o login com código |
+| Alerta de cadastros com o mesmo CPF (pelo índice cego, sem decifrar) | testada |
+
+### D. Conta e segurança (todos os papéis)
+
+| Funcionalidade | Status |
+|---|---|
+| "Esqueci minha senha" por link de uso único (30 min) | testada (E2E); **e-mail real depende de provedor** — hoje o link só aparece no terminal em desenvolvimento |
+| Verificação em duas etapas por app autenticador, com 10 códigos de recuperação | testada (E2E) |
+| CPF/CNPJ cifrados no banco | testada |
 
 ## 8. Fora do escopo do MVP (planejado)
 
-Recuperação de senha por e‑mail (exige provedor de e‑mail), login por telefone/OTP, pagamentos integrados e repasses, envio real de e‑mail/WhatsApp/push, geolocalização por mapa, agenda com bloqueio automático de horários, avaliação do cliente pelo profissional, app nativo, IA. Ver [ROADMAP.md](ROADMAP.md).
+Envio real do e-mail de recuperação de senha (exige provedor de e‑mail), login por telefone/OTP, pagamentos integrados e repasses, envio real de e‑mail/WhatsApp/push, geolocalização por mapa, agenda com bloqueio automático de horários, avaliação do cliente pelo profissional, app nativo, IA. Ver [ROADMAP.md](ROADMAP.md).

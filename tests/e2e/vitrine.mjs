@@ -25,12 +25,14 @@ function screens(ids) {
       { slug: "seja-profissional", title: "Página para profissionais", path: "/seja-profissional", as: null },
       { slug: "pedir", title: "Pedido de orçamento (etapa 1 de 3)", path: "/pedir?categoria=pequenos-reparos", as: null },
       { slug: "entrar", title: "Entrar", path: "/entrar", as: null },
+      { slug: "esqueci-senha", title: "Esqueci minha senha", path: "/entrar/esqueci", as: null },
     ] },
     { group: "Área do cliente", items: [
       { slug: "cliente-lista", title: "Minhas solicitações", path: "/cliente", as: "cliente" },
       { slug: "cliente-propostas", title: "Comparando propostas e escolhendo horário", path: `/cliente/solicitacoes/${ids.open}`, as: "cliente" },
       { slug: "cliente-concluido", title: "Serviço concluído e avaliado", path: `/cliente/solicitacoes/${ids.done}`, as: "cliente" },
       { slug: "perfil-publico", title: "Perfil público do profissional", path: `/profissionais/${ids.pro1}`, as: "cliente" },
+      { slug: "conta-seguranca", title: "Segurança da conta (verificação em duas etapas)", path: "/conta/seguranca", as: "cliente" },
     ] },
     { group: "Área do profissional", items: [
       { slug: "pro-inicio", title: "Início do profissional", path: "/profissional", as: "pro1" },

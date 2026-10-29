@@ -37,6 +37,9 @@ export async function enforceRateLimit(bucket: string, identifier: string, limit
 /** Limites padrão por ponto vulnerável. Ajuste aqui, não espalhado pelo código. */
 export const LIMITS = {
   login: { limit: 8, window: 15 * 60 },
+  mfa: { limit: 10, window: 15 * 60 },
+  passwordResetIp: { limit: 10, window: 60 * 60 },
+  passwordResetEmail: { limit: 3, window: 60 * 60 },
   signup: { limit: 5, window: 60 * 60 },
   createRequest: { limit: 10, window: 24 * 60 * 60 },
   quote: { limit: 60, window: 60 * 60 },

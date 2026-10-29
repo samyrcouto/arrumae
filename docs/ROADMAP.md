@@ -7,7 +7,7 @@ Status por fase em 29/10/2026. Critério de conclusão em cada fase.
 | 1. Diagnóstico e estratégia | **concluída** | Concorrência, riscos, recorte e stack documentados (BUSINESS, PRODUCT, DECISIONS, LEGAL) |
 | 2. Fundação técnica | **concluída** | App roda localmente; migrations; auth; permissões; testes base |
 | 3. MVP funcional | **concluída** | Fluxos de cliente, profissional e admin ponta a ponta (E2E aprovado) |
-| 4. Segurança e qualidade | **parcial** | 57 testes + E2E aprovados; faltam 2FA admin, reset de senha, antivírus de upload, teste de carga, revisão externa |
+| 4. Segurança e qualidade | **parcial** | 79 testes + E2E aprovados; 2FA, reset de senha, CPF cifrado e CSP com nonce feitos; faltam e-mail real, antivírus de upload, teste de carga, revisão externa |
 | 5. Piloto e monetização | **em preparação** | Ver checklist abaixo; pagamentos integrados planejados para depois da validação |
 | 6. Produção | **não iniciada** | Depende de contas/credenciais do fundador |
 | 7. Aquisição | **instrumentação pronta** | Landings, UTM, funil e plano de experimentos prontos; nenhuma campanha ativa |
@@ -16,9 +16,9 @@ Status por fase em 29/10/2026. Critério de conclusão em cada fase.
 
 ## Próximas tarefas (prioridade)
 
-1. **Recuperação de senha por e‑mail** + driver de e‑mail real (Resend/SES) — bloqueado por: conta no provedor + domínio verificado.
-2. **2FA (TOTP) para admins.**
-3. **Criptografar CPF/CNPJ** no banco (AES-256-GCM + índice cego) — ver [PESQUISA-MERCADO.md §5.4](PESQUISA-MERCADO.md#54-autenticação-criptografia-jwt-python-e-lgpd).
+1. **Driver de e‑mail real** (Resend/SES) — o "esqueci minha senha" já está pronto e testado; falta o envio de verdade. Bloqueado por: conta no provedor + domínio verificado (**requer autorização**).
+2. ~~2FA (TOTP) para admins~~ — **feito** (obrigatório para admin em produção; opcional para todos).
+3. ~~Criptografar CPF/CNPJ~~ — **feito** (AES-256-GCM + índice cego; CSP com nonce e sessão de admin de 12 h também).
 4. **Perguntas específicas por serviço** no pedido (ex.: "quantas tomadas?"), como fazem GetNinjas e Thumbtack.
 5. **Driver de storage S3‑compatível** (Supabase Storage/R2) — necessário para qualquer deploy serverless.
 6. Validar prefixos de CEP das 2 regiões iniciais e desativar as demais no admin.
@@ -58,8 +58,10 @@ Status por fase em 29/10/2026. Critério de conclusão em cada fase.
 - [ ] Cron chamando `/api/cron/maintenance`
 - [ ] Backups + PITR + teste de restauração
 - [ ] Sentry/uptime/alertas
-- [ ] 2FA admin e reset de senha
-- [ ] CPF/CNPJ criptografados no banco
+- [x] 2FA admin e reset de senha (falta só o provedor de e-mail)
+- [x] CPF/CNPJ criptografados no banco
+- [ ] Gerar `DATA_ENCRYPTION_KEY` própria de produção e guardar em cofre (perder = perder os CPFs)
+- [ ] `TRUSTED_IP_HEADER` com o cabeçalho do provedor de hospedagem
 - [ ] Confiar apenas no header de IP do provedor (SECURITY.md)
 - [ ] Teste E2E contra o ambiente de homologação
 - [ ] Revisar textos de `/como-funciona`, `/termos`, `/privacidade`

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHmac } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { chromium } from "playwright";
 
@@ -17,7 +18,20 @@ function spLocal(minutes) {
   return { date: `${parts.year}-${parts.month}-${parts.day}`, time: `${parts.hour}:${parts.minute}` };
 }
 
-export async function runFlow(base) {
+/** Código TOTP (RFC 6238), como um app autenticador calcularia. */
+function totp(secretBase32, offsetSteps = 0) {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  let bits = "";
+  for (const ch of secretBase32.replace(/\s/g, "")) bits += alphabet.indexOf(ch).toString(2).padStart(5, "0");
+  const key = Buffer.from(bits.match(/.{8}/g).map((b) => parseInt(b, 2)));
+  const counter = Buffer.alloc(8);
+  counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000) + offsetSteps));
+  const mac = createHmac("sha1", key).update(counter).digest();
+  const o = mac[mac.length - 1] & 15;
+  return String((mac.readUInt32BE(o) & 0x7fffffff) % 1e6).padStart(6, "0");
+}
+
+export async function runFlow(base, { serverLog = () => "" } = {}) {
   const browser = await chromium.launch();
   const errors = [];
   const newPage = async () => {
@@ -137,6 +151,58 @@ export async function runFlow(base) {
     const anon = await newPage();
     const photo = await anon.goto(`${base}/arquivos/request-photos/${requestId}/00000000-0000-0000-0000-000000000000.webp`);
     assert.equal(photo.status(), 404);
+
+    // H. Segurança: CSP com nonce, "esqueci minha senha" e verificação em duas etapas
+    step("CSP com nonce em todas as páginas");
+    const home = await anon.goto(`${base}/`);
+    const csp = home.headers()["content-security-policy"] ?? "";
+    assert.match(csp, /script-src 'self' 'nonce-[A-Za-z0-9+/=]+' 'strict-dynamic'/, "CSP deve exigir nonce nos scripts");
+    assert.doesNotMatch(csp.split(";").find((d) => d.trim().startsWith("script-src")), /unsafe-inline/);
+
+    step("cliente redefine a senha pelo link do e-mail");
+    const forgot = await newPage();
+    await forgot.goto(`${base}/entrar`);
+    await forgot.getByRole("link", { name: "Esqueci minha senha" }).click();
+    await forgot.getByLabel("E-mail da sua conta").fill(email);
+    await forgot.getByRole("button", { name: "Enviar link" }).click();
+    await forgot.getByText("Confira seu e-mail").waitFor();
+    const link = [...serverLog().matchAll(/link=(\S+redefinir\?token=\S+)/g)].at(-1)?.[1];
+    assert.ok(link, "o link de redefinição deve aparecer no log do driver de e-mail de teste");
+    await forgot.goto(link.replace(/^https?:\/\/[^/]+/, base));
+    await forgot.getByLabel("Nova senha", { exact: true }).fill("senha-nova-e2e-456");
+    await forgot.getByLabel("Repita a nova senha").fill("senha-nova-e2e-456");
+    await forgot.getByRole("button", { name: "Salvar nova senha" }).click();
+    await forgot.waitForURL(/senha=redefinida/);
+    await forgot.getByLabel("E-mail", { exact: true }).fill(email);
+    await forgot.getByLabel("Senha").fill("senha-nova-e2e-456");
+    await forgot.getByRole("button", { name: "Entrar" }).click();
+    await forgot.waitForURL(/\/cliente/);
+    // O link não serve duas vezes.
+    await forgot.goto(link.replace(/^https?:\/\/[^/]+/, base));
+    await forgot.getByText("Este link não vale mais").waitFor();
+
+    step("profissional ativa a verificação em duas etapas e entra com código");
+    await otherPro.goto(`${base}/conta/seguranca`);
+    await otherPro.getByRole("button", { name: "Ativar verificação em duas etapas" }).click();
+    await otherPro.getByText("Não consegue ler o QR code?").click();
+    const secret = (await otherPro.getByTestId("totp-secret").textContent()).replace(/\s/g, "");
+    await otherPro.screenshot({ path: `${SHOTS}/07-2fa-cadastro.png`, fullPage: true });
+    await otherPro.getByLabel(/Código de 6 números/).fill(totp(secret));
+    await otherPro.getByRole("button", { name: "Ativar", exact: true }).click();
+    await otherPro.getByTestId("recovery-codes").waitFor();
+    assert.equal(await otherPro.getByTestId("recovery-codes").locator("li").count(), 10);
+    const mfaLogin = await newPage();
+    await mfaLogin.goto(`${base}/entrar`);
+    await mfaLogin.getByLabel("E-mail", { exact: true }).fill("pro2@demo.arrumae.invalid");
+    await mfaLogin.getByLabel("Senha").fill(PASSWORD);
+    await mfaLogin.getByRole("button", { name: "Entrar" }).click();
+    await mfaLogin.waitForURL(/\/entrar\/verificacao/);
+    await mfaLogin.getByLabel("Código").fill("000000");
+    await mfaLogin.getByRole("button", { name: "Entrar" }).click();
+    await mfaLogin.getByText(/Código incorreto/).first().waitFor();
+    await mfaLogin.getByLabel("Código").fill(totp(secret, 1)); // o código da ativação não vale de novo
+    await mfaLogin.getByRole("button", { name: "Entrar" }).click();
+    await mfaLogin.waitForURL(/\/profissional/);
 
     assert.deepEqual(errors, [], "a página não deve ter erros de JavaScript");
   } finally {

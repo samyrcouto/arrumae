@@ -10,11 +10,11 @@ Marketplace de **pequenos reparos em casa**, com piloto em São Paulo. O cliente
 
 | Em números | |
 |---|---|
-| Páginas | 40 (site público, área do cliente, do profissional e admin) |
-| Tabelas no banco | 32, mais 6 views de relatório |
+| Páginas | 44 (site público, área do cliente, do profissional e admin) |
+| Tabelas no banco | 35, mais 6 views de relatório |
 | Rotas de API | 5 (arquivos privados, exportar dados LGPD, cron, indicadores, analytics) |
-| Testes | 57 automáticos (unidade e integração com banco real) + 1 teste de navegador do fluxo completo |
-| Decisões registradas | 19 ([DECISIONS.md](DECISIONS.md)) |
+| Testes | 79 automáticos (unidade e integração com banco real) + 1 teste de navegador do fluxo completo (inclui senha esquecida e 2FA) |
+| Decisões registradas | 20 ([DECISIONS.md](DECISIONS.md)) |
 | Código | ~11 mil linhas em `src/`, quase 50 commits |
 
 ## O que já foi feito
@@ -25,7 +25,7 @@ Marketplace de **pequenos reparos em casa**, com piloto em São Paulo. O cliente
 - **Admin:** indicadores, fila de verificação com análise de documentos, usuários, solicitações (cancelar, resolver contestação), avaliações, suporte, categorias e regiões, financeiro, cupons, configurações comerciais, integrações, auditoria.
 - **Regras:** máquina de estados do pedido (aberto → agendado → em andamento → aguardando confirmação → concluído, além de cancelado, expirado e contestado); contato e endereço só liberados após o agendamento; no máximo 4 propostas e 8 convites por pedido; pedido expira em 72 h; confirmação automática em 72 h; comissão de 15% configurada, mas **dispensada no piloto**.
 
-**Segurança** ([SECURITY.md](SECURITY.md)): senhas com argon2id, sessões no banco, autorização por papel e por dono do registro em todo serviço, proteção contra corrida (trava de linha e UPDATE condicional), rate limit, uploads re-codificados (sem EXIF/GPS), cabeçalhos e CSP, auditoria append-only no próprio banco.
+**Segurança** ([SECURITY.md](SECURITY.md)): senhas com argon2id, sessões no banco (12 h para admin), verificação em duas etapas por app autenticador (obrigatória para admin), "esqueci minha senha" com link de uso único, CPF/CNPJ cifrados no banco, autorização por papel e por dono do registro em todo serviço, proteção contra corrida (trava de linha e UPDATE condicional), rate limit, uploads re-codificados (sem EXIF/GPS), CSP com nonce por requisição, auditoria append-only no próprio banco.
 
 **Visual** ([DECISIONS.md](DECISIONS.md) D-015/D-016): marca Arrumaê (logo com telhado no "ê"), paleta própria, ilustrações SVG feitas para o projeto (5 serviços, cena da sala, profissionais semi-realistas com ferramentas e cenários de sala e cozinha) e telas reais do app em molduras de celular.
 
@@ -122,6 +122,6 @@ docs/                  documentação
 ## O que falta (resumo)
 
 Detalhes e ordem em [ROADMAP.md](ROADMAP.md):
-- **Técnico, sem custo:** "esqueci minha senha", verificação em duas etapas para admins, armazenamento de arquivos na nuvem, monitoramento de erros.
-- **Depende do fundador:** hospedagem e banco gerenciado, domínio e busca no INPI, provedor de e-mail, revisão jurídica, contador, n8n online, recrutamento dos primeiros profissionais.
+- **Técnico, sem custo:** armazenamento de arquivos na nuvem, monitoramento de erros, perguntas específicas por serviço no pedido.
+- **Depende do fundador:** hospedagem e banco gerenciado, domínio e busca no INPI, provedor de e-mail (para o "esqueci minha senha" sair de verdade), revisão jurídica, contador, n8n online, recrutamento dos primeiros profissionais.
 - **Depois do piloto:** pagamento pela plataforma, IA, mais serviços e regiões, app de celular.

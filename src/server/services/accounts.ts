@@ -21,8 +21,12 @@ import { conflict, forbidden, invalid } from "../domain/errors";
 import { burnPasswordCheck, hashPassword, verifyPassword } from "../auth/password";
 import { randomToken, sha256 } from "../security/crypto";
 import { audit } from "./audit";
+import { openProProfile } from "./pro-pii";
 
 export const SESSION_TTL_DAYS = 30;
+// Conta de administrador vê dados de todo mundo: sessão curta, renovada só com uso.
+export const ADMIN_SESSION_TTL_HOURS = 12;
+const sessionTtlMs = (role: UserRole) => (role === "admin" ? ADMIN_SESSION_TTL_HOURS * 3600_000 : SESSION_TTL_DAYS * 86400_000);
 
 const COMMON_PASSWORDS = new Set(["12345678", "123456789", "password", "senha123", "qwerty123", "11111111", "abc12345"]);
 
@@ -124,14 +128,27 @@ export async function authenticate(emailInput: string, password: string) {
   return user;
 }
 
-export async function createSession(userId: string, userAgent?: string | null) {
+/** Entradas de administradores ficam na auditoria (com o fator usado). */
+export async function recordSignIn(user: { id: string; role: UserRole }, factor: "password" | "totp" | "recovery") {
+  if (user.role === "admin") await audit(db, { kind: "user", id: user.id, role: user.role }, "auth.admin_login", "user", user.id, { factor });
+}
+
+export async function createSession(userId: string, role: UserRole, userAgent?: string | null) {
   const token = randomToken();
-  const expiresAt = new Date(Date.now() + SESSION_TTL_DAYS * 86400_000);
+  const expiresAt = new Date(Date.now() + sessionTtlMs(role));
   await db.insert(sessions).values({ id: sha256(token), userId, expiresAt, userAgent: userAgent?.slice(0, 200) ?? null });
   return { token, expiresAt };
 }
 
-export type SessionUser = { id: string; name: string; email: string; role: UserRole; isDemo: boolean };
+export type SessionUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  isDemo: boolean;
+  mfaEnabled: boolean;
+  sessionId: string;
+};
 
 export async function validateSessionToken(token: string): Promise<SessionUser | null> {
   const id = sha256(token);
@@ -143,6 +160,7 @@ export async function validateSessionToken(token: string): Promise<SessionUser |
       role: users.role,
       status: users.status,
       isDemo: users.isDemo,
+      totpEnabledAt: users.totpEnabledAt,
       lastSeenAt: sessions.lastSeenAt,
     })
     .from(sessions)
@@ -153,10 +171,18 @@ export async function validateSessionToken(token: string): Promise<SessionUser |
   if (Date.now() - row.lastSeenAt.getTime() > 3600_000) {
     await db
       .update(sessions)
-      .set({ lastSeenAt: new Date(), expiresAt: new Date(Date.now() + SESSION_TTL_DAYS * 86400_000) })
+      .set({ lastSeenAt: new Date(), expiresAt: new Date(Date.now() + sessionTtlMs(row.role)) })
       .where(eq(sessions.id, id));
   }
-  return { id: row.id, name: row.name, email: row.email, role: row.role, isDemo: row.isDemo };
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    role: row.role,
+    isDemo: row.isDemo,
+    mfaEnabled: !!row.totpEnabledAt,
+    sessionId: id,
+  };
 }
 
 export async function revokeSessionToken(token: string) {
@@ -230,7 +256,7 @@ export async function deleteAccount(actor: Actor, password: string) {
     if (u.role === "pro") {
       await tx
         .update(proProfiles)
-        .set({ displayName: "Profissional removido", bio: "", cpf: null, cnpj: null, verificationStatus: "suspended" })
+        .set({ displayName: "Profissional removido", bio: "", cpf: null, cnpj: null, cpfHash: null, verificationStatus: "suspended" })
         .where(eq(proProfiles.userId, u.id));
     }
     await tx
@@ -266,12 +292,14 @@ export async function exportAccountData(actor: Actor) {
     db.select().from(proProfiles).where(eq(proProfiles.userId, u.id)),
   ]);
   await db.insert(dataRequests).values({ userId: u.id, kind: "export", completedAt: new Date() });
-  const { passwordHash: _omit, ...account } = u;
+  const { passwordHash: _omit, totpSecret: _secret, totpLastStep: _step, ...account } = u;
   void _omit;
+  void _secret;
+  void _step;
   return {
     generatedAt: new Date().toISOString(),
     account,
-    proProfile: profile[0] ?? null,
+    proProfile: profile[0] ? openProProfile(profile[0]) : null,
     requests,
     quotes: myQuotes,
     reviews: myReviews,

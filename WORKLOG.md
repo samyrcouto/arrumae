@@ -171,3 +171,17 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Sites dos concorrentes **não acessíveis** deste ambiente (bloqueio de rede): pesquisa feita por busca na web, fontes linkadas em cada linha. Lista de domínios para liberar no §8.
 - Achados que mudaram docs: o plano grátis da Vercel proíbe uso comercial (ARCHITECTURE corrigido); CPF/CNPJ do profissional fica em texto no banco → nova pendência em SECURITY e duas tarefas novas no ROADMAP (criptografar CPF/CNPJ; perguntas específicas por serviço no pedido).
 - Nada contratado, nenhuma conta criada. Só documentação.
+
+## 2026-10-29 — Segurança da conta: 2FA, "esqueci minha senha", CPF cifrado, CSP com nonce
+
+- Fundador mandou referências visuais (barrettjflowers.dev, bizar.ro, 2024.bizar.ro) e pediu prioridade em segurança. Os três sites estão **bloqueados** pela rede deste ambiente (curl 000, WebFetch ENOTFOUND; busca não encontrou descrição confiável): nada sobre o visual deles foi presumido. Aguardando liberação dos domínios ou capturas de tela.
+- **CPF/CNPJ cifrados** (AES-256-GCM, chave `DATA_ENCRYPTION_KEY` fora do banco, contexto da coluna como dado autenticado, id da chave no valor para permitir troca). Índice cego `cpf_hash` (HMAC): o admin vê outros cadastros com o mesmo CPF. CPF antigo em texto puro é regravado no `db:migrate`; `db:encrypt-pii` para troca de chave.
+- **Esqueci minha senha:** `/entrar/esqueci` e `/entrar/redefinir`. Token de 256 bits (só o hash no banco), 30 min, uso único, um link por vez, mesma resposta exista ou não a conta, rate limit por IP e e-mail, derruba sessões, e-mail de aviso. O link nunca é gravado em `outbound_messages`; o driver `console` só o mostra no terminal em dev (e no E2E com `EMAIL_DEV_LINKS=1`).
+- **Verificação em duas etapas (TOTP):** `/conta/seguranca` com QR code (SVG desenhado no servidor; conferido com leitor jsQR) e chave para digitar; `/entrar/verificacao` depois da senha (desafio de 10 min, 5 tentativas). Código não pode ser reusado; 10 códigos de recuperação (HMAC). Obrigatória para admin em produção/homologação (`ADMIN_REQUIRE_2FA`): admin sem 2FA é levado ao cadastro e não age em nenhum serviço, rota de arquivo ou exportação. `npm run db:reset-2fa` para quem perdeu tudo.
+- **Sessão de admin de 12 h** (demais: 30 dias); entradas de admin na auditoria com o fator usado.
+- **CSP com nonce** por requisição no `proxy.ts` (`'strict-dynamic'`, sem `'unsafe-inline'` em scripts), seguindo `node_modules/next/dist/docs/01-app/02-guides/content-security-policy.md`. Saiu do `next.config.ts`.
+- **`TRUSTED_IP_HEADER`** para o rate limit usar só o IP informado pelo provedor.
+- Migration `0004_security` (3 tabelas, 4 colunas). Dependência nova: `qrcode` 1.5.4 (`npm audit --omit=dev`: 0 vulnerabilidades).
+- Testes: **79** (22 novos: vetores da RFC 6238, criptografia, adulteração, migração de texto puro, reset, 2FA, reuso, tentativas, obrigatoriedade do admin, sessão), typecheck, lint, E2E com 3 etapas novas (CSP, senha esquecida pelo link do e-mail, ativação do 2FA + login com código) sem erros no navegador.
+- Docs: SECURITY, DECISIONS (D‑020), PRODUCT, ROADMAP, VISAO-GERAL, README, `.env.example`.
+- **Depende do fundador:** provedor de e-mail para o link sair de verdade; gerar e guardar a `DATA_ENCRYPTION_KEY` de produção.

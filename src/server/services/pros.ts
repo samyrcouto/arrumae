@@ -21,6 +21,7 @@ import {
 import type { Actor } from "../domain/actor";
 import { conflict, forbidden, invalid, notFound } from "../domain/errors";
 import { sha256 } from "../security/crypto";
+import { decryptField } from "../security/field-crypto";
 import { enforceRateLimit, LIMITS } from "../security/rate-limit";
 import { processDocument, processImage } from "../security/uploads";
 import { audit } from "./audit";
@@ -28,6 +29,7 @@ import { fieldErrorsFrom } from "./accounts";
 import { statsForPros } from "./matching";
 import { emitIntegrationEvent, proAdminUrl } from "./integrations";
 import { notify } from "./notifications";
+import { CPF_CONTEXT, openProProfile, sealProDocuments } from "./pro-pii";
 
 type ProActor = Extract<Actor, { kind: "user" }> & { role: "pro" };
 
@@ -51,7 +53,7 @@ export async function getMyProProfile(actor: Actor) {
     db.select().from(proPhotos).where(eq(proPhotos.proId, actor.id)).orderBy(desc(proPhotos.createdAt)),
   ]);
   return {
-    profile,
+    profile: openProProfile(profile),
     categoryIds: cats.map((c) => c.id),
     regionIds: regs.map((r) => r.id),
     availability,
@@ -106,7 +108,7 @@ export async function updateProProfile(actor: Actor, input: z.input<typeof proPr
     }
 
     // Trocar o CPF de um perfil aprovado exige nova análise.
-    const cpfChanged = (current.cpf ?? "") !== d.cpf;
+    const cpfChanged = (decryptField(current.cpf, CPF_CONTEXT) ?? "") !== d.cpf;
     const needsReReview = cpfChanged && current.verificationStatus === "approved";
 
     await tx
@@ -115,8 +117,7 @@ export async function updateProProfile(actor: Actor, input: z.input<typeof proPr
         displayName: d.displayName,
         bio: d.bio,
         yearsExperience: d.yearsExperience,
-        cpf: d.cpf || null,
-        cnpj: d.cnpj || null,
+        ...sealProDocuments(d.cpf, d.cnpj),
         acceptsUrgent: d.acceptsUrgent,
         ...(needsReReview ? { verificationStatus: "pending_review" as const, submittedAt: new Date() } : {}),
         updatedAt: new Date(),
@@ -284,8 +285,9 @@ export async function getPublicProProfile(proId: string) {
       .where(eq(proAvailability.proId, proId))
       .orderBy(asc(proAvailability.weekday), asc(proAvailability.startMinute)),
   ]);
-  const { cpf: _cpf, cnpj, verificationNotes: _notes, verifiedBy: _vb, ...publicProfile } = row.profile;
+  const { cpf: _cpf, cnpj, cpfHash: _hash, verificationNotes: _notes, verifiedBy: _vb, ...publicProfile } = row.profile;
   void _cpf;
+  void _hash;
   void _notes;
   void _vb;
   return {

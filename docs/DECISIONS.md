@@ -65,3 +65,10 @@ Relatórios (n8n, planilhas, BI) leem só views agregadas/pseudonimizadas; o pap
 
 ### D‑019 — IA: chamada única com resposta estruturada, sugestão revisada por humano, rodando no app
 Triagem, resumos e sugestões serão chamadas únicas ao modelo com JSON validado — não agentes autônomos — e o resultado aparece como sugestão para a equipe. Itens que leem texto de usuários rodam no app (controle de dados pessoais, custo e falhas), não no n8n. Só serão implementados quando os gatilhos em [AUTOMACOES.md](AUTOMACOES.md) forem atingidos e com autorização de gasto. Nunca aprova, paga, verifica ou resolve disputas.
+
+### D‑020 — Segurança de conta: sessão no banco (sem JWT), TOTP próprio, CPF cifrado na aplicação, CSP com nonce
+- **Sessão no banco, não JWT:** a sessão é cancelada na hora (suspensão, troca de senha, ativação do 2FA). Um JWT valeria até expirar. Admin tem sessão de 12 h.
+- **2FA por TOTP (app autenticador), não SMS:** SMS custa por mensagem e é vulnerável a troca de chip. Implementação própria da RFC 6238 (poucas linhas, testada com os vetores oficiais) em vez de dependência; só o QR code usa biblioteca (`qrcode`). Obrigatório para admin em produção e homologação.
+- **CPF/CNPJ cifrados pela aplicação** (AES-256-GCM, chave fora do banco), em vez de depender só da criptografia de disco do provedor: um dump ou backup vazado não expõe documentos. Índice cego (HMAC) para achar CPF repetido. Texto puro antigo é regravado no `db:migrate`.
+- **CSP com nonce por requisição** no `proxy.ts`: viável porque todas as páginas já são dinâmicas (D‑004). Estilos inline continuam liberados (risco menor).
+- Recuperação de quem perdeu o celular e os códigos: só por script no servidor (`npm run db:reset-2fa`), nunca por atendimento sem conferir identidade.

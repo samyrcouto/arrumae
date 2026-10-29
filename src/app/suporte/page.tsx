@@ -3,14 +3,14 @@ import Link from "next/link";
 import { Badge, Card, EmptyState, LinkButton, PageHeader } from "@/components/ui";
 import { formatDateTime } from "@/lib/datetime";
 import { TICKET_CATEGORY_LABEL, TICKET_STATUS_LABEL } from "@/lib/labels";
-import { getCurrentUser, toActor } from "@/server/auth/session";
+import { getCurrentUser, needsMfaSetup, toActor } from "@/server/auth/session";
 import { listMyTickets } from "@/server/services/support";
 
 export const metadata: Metadata = { title: "Ajuda e suporte" };
 
 export default async function SupportPage() {
   const user = await getCurrentUser();
-  const tickets = user ? await listMyTickets(toActor(user)) : [];
+  const tickets = user && !needsMfaSetup(user) ? await listMyTickets(toActor(user)) : [];
   return (
     <div className="mx-auto max-w-2xl">
       <PageHeader title="Ajuda e suporte" subtitle="Atendimento por pessoas da equipe." action={user ? <LinkButton href="/suporte/novo">Abrir chamado</LinkButton> : null} />

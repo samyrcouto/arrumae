@@ -16,6 +16,7 @@ import {
 import type { Actor } from "../domain/actor";
 import { forbidden, invalid, notFound } from "../domain/errors";
 import { audit } from "./audit";
+import { openProProfile } from "./pro-pii";
 import { emitIntegrationEvent, proAdminUrl } from "./integrations";
 import { notify } from "./notifications";
 
@@ -167,7 +168,7 @@ export async function getProForAdmin(actor: Actor, proId: string) {
     .innerJoin(users, eq(users.id, proProfiles.userId))
     .where(eq(proProfiles.userId, proId));
   if (!row) throw notFound("Profissional");
-  const [docs, cats, regs] = await Promise.all([
+  const [docs, cats, regs, sameCpf] = await Promise.all([
     db.select().from(proDocuments).where(eq(proDocuments.proId, proId)).orderBy(desc(proDocuments.createdAt)),
     db.execute<{ name: string }>(
       sql`select c.name from pro_categories pc join categories c on c.id = pc.category_id where pc.pro_id = ${proId}`,
@@ -175,11 +176,26 @@ export async function getProForAdmin(actor: Actor, proId: string) {
     db.execute<{ name: string }>(
       sql`select r.name from pro_regions pr join regions r on r.id = pr.region_id where pr.pro_id = ${proId}`,
     ),
+    // Outros cadastros com o mesmo CPF (pelo índice cego, sem decifrar): sinal de conta duplicada.
+    row.profile.cpfHash
+      ? db
+          .select({ id: proProfiles.userId, displayName: proProfiles.displayName })
+          .from(proProfiles)
+          .where(and(eq(proProfiles.cpfHash, row.profile.cpfHash), sql`${proProfiles.userId} <> ${proId}`))
+      : Promise.resolve([]),
   ]);
   await audit(db, actor, "pro.view_sensitive", "pro_profile", proId); // acesso a CPF/documentos fica registrado
-  const { passwordHash: _ph, ...user } = row.user;
+  const { passwordHash: _ph, totpSecret: _ts, ...user } = row.user;
   void _ph;
-  return { profile: row.profile, user, documents: docs, categories: cats.map((c) => c.name), regions: regs.map((r) => r.name) };
+  void _ts;
+  return {
+    profile: openProProfile(row.profile),
+    user,
+    documents: docs,
+    categories: cats.map((c) => c.name),
+    regions: regs.map((r) => r.name),
+    sameCpf,
+  };
 }
 
 export async function listProsByVerification(actor: Actor, status?: (typeof proProfiles.$inferSelect)["verificationStatus"]) {

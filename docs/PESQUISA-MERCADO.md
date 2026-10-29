@@ -120,7 +120,7 @@ Em qualquer opção o site precisa de: Node 22+, um agendador chamando `/api/cro
 **Criptografia, em três camadas:**
 1. **No caminho** (navegador ↔ site ↔ banco): HTTPS e SSL no banco. Já é exigido em produção.
 2. **No disco do provedor:** os bancos gerenciados já criptografam o disco.
-3. **Nos campos sensíveis:** hoje o CPF/CNPJ do profissional fica em texto no banco (`pro_profiles.cpf`), com acesso restrito a admins e auditado. **Recomendação (sem custo, antes de produção):** criptografar o CPF/CNPJ na aplicação (AES-256-GCM com a chave fora do banco) e guardar um "índice cego" (HMAC) para conferir CPF repetido sem decifrar. Assim, um vazamento do banco não expõe o CPF.
+3. **Nos campos sensíveis:** **feito em 29/10/2026.** O CPF/CNPJ do profissional e o segredo do 2FA ficam cifrados na aplicação (AES-256-GCM com a chave fora do banco), com um "índice cego" (HMAC) para conferir CPF repetido sem decifrar. Um vazamento do banco não expõe o CPF.
 
 Senha nunca é "criptografada", é transformada em hash irreversível (argon2id). Isso já está feito.
 
@@ -128,7 +128,7 @@ Senha nunca é "criptografada", é transformada em hash irreversível (argon2id)
 
 **LGPD**, o que falta (detalhes em LEGAL.md §2): nomear o encarregado (DPO), registro das operações de tratamento, política de retenção de documentos, contratos com os fornecedores e plano de incidente. **Atenção:** biometria (selfie comparada com documento) é **dado pessoal sensível** na LGPD (art. 5º, II), com regras mais rígidas (art. 11). Se for usada, preferir um fornecedor que devolva só o resultado ("confere" / "não confere") e não guardar a imagem.
 
-**Pendências de segurança antes de lançar** (ROADMAP): "esqueci minha senha", 2FA para admins, armazenamento de arquivos na nuvem, monitoramento de erros e criptografia do CPF (acima).
+**Pendências de segurança antes de lançar** (ROADMAP): provedor de e-mail para o "esqueci minha senha" sair de verdade, armazenamento de arquivos na nuvem e monitoramento de erros. 2FA, recuperação de senha, CPF cifrado e CSP com nonce já foram feitos (SECURITY.md).
 
 ### 5.5 Cadastro de pessoas (CPF, RG)
 
@@ -199,7 +199,7 @@ Já detalhado em [BUSINESS.md §4](BUSINESS.md#4-pagamentos). Resumo atualizado:
 ## 7. O que eu faria agora, em ordem
 
 1. **Vocês:** escolher as referências visuais (§5.7) e fazer as conversas com clientes e profissionais (§5.8). É o que mais muda as próximas decisões, e não custa nada.
-2. **Eu, sem custo:** criptografia do CPF/CNPJ, "esqueci minha senha", 2FA para admins, armazenamento de arquivos na nuvem, perguntas específicas por serviço no pedido.
+2. **Eu, sem custo:** ~~criptografia do CPF/CNPJ, "esqueci minha senha", 2FA para admins~~ (feitos), armazenamento de arquivos na nuvem, perguntas específicas por serviço no pedido.
 3. **Com a sua autorização:** contas grátis de homologação (criadas por você, as senhas ficam com você) para testar pelo celular.
 4. **Com a sua autorização e depois do INPI:** domínio e e-mail.
 5. **Só com o piloto validado:** servidor e banco pagos, pagamento pela plataforma, anúncios.

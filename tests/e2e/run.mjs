@@ -30,6 +30,8 @@ const env = {
   APP_URL: "http://localhost:3100",
   STORAGE_LOCAL_DIR: "./.e2e-storage",
   NEXT_TELEMETRY_DISABLED: "1",
+  // O driver de e-mail "console" mostra o link de redefinir senha no log (só em teste/dev).
+  EMAIL_DEV_LINKS: "1",
 };
 rmSync(".e2e-storage", { recursive: true, force: true });
 const sh = (cmd) => execSync(cmd, { stdio: "inherit", env });
@@ -75,7 +77,7 @@ for (let i = 0; i < 60; i++) {
 
 try {
   const { runFlow } = await import("./flow.mjs");
-  await runFlow("http://localhost:3100");
+  await runFlow("http://localhost:3100", { serverLog: () => serverLog });
   console.log("\n✅ E2E: fluxo completo aprovado");
   if (process.argv.includes("--vitrine")) {
     const { captureVitrine } = await import("./vitrine.mjs");

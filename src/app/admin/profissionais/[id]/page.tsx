@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DocumentReviewForm, ProDecisionForm } from "@/components/admin-forms";
-import { Badge, Card, DemoTag, KeyValue, Section } from "@/components/ui";
+import { Alert, Badge, Card, DemoTag, KeyValue, Section } from "@/components/ui";
 import { formatPhone, isValidCpf } from "@/lib/br";
 import { formatDateTime } from "@/lib/datetime";
 import { DOCUMENT_KIND_LABEL, DOCUMENT_STATUS_LABEL, VERIFICATION_LABEL, VERIFICATION_TONE } from "@/lib/labels";
@@ -37,6 +37,20 @@ export default async function AdminProDetail({ params }: { params: Promise<{ id:
           <KeyValue label="Histórico">{p.cancellationsCount} cancelamentos · {p.noShowCount} ausências</KeyValue>
         </dl>
         {p.bio && <p className="mt-4 whitespace-pre-wrap rounded-xl bg-paper p-3">{p.bio}</p>}
+        {d.sameCpf.length > 0 && (
+          <div className="mt-4">
+            <Alert tone="warn">
+              O mesmo CPF está em outro cadastro:{" "}
+              {d.sameCpf.map((o, i) => (
+                <span key={o.id}>
+                  {i > 0 && ", "}
+                  <Link href={`/admin/profissionais/${o.id}`} className="font-semibold underline">{o.displayName}</Link>
+                </span>
+              ))}
+              . Confira se é a mesma pessoa antes de aprovar.
+            </Alert>
+          </div>
+        )}
       </Card>
       <Section title="Documentos">
         {d.documents.length === 0 ? <p className="text-ink-soft">Nenhum documento enviado.</p> : (

@@ -4,12 +4,16 @@ import { db } from "../db/client";
 import { rateLimits } from "../db/schema";
 import { purgeExpiredSessions } from "./accounts";
 import { detectStaleRequests, dispatchIntegrationEvents, purgeIntegrationEvents } from "./integrations";
+import { purgeExpiredMfaChallenges } from "./mfa";
+import { purgePasswordResetTokens } from "./password-reset";
 import { runLifecycleJobs } from "./requests";
 
 /** Executado periodicamente (scripts/jobs.ts ou rota /api/cron/maintenance). */
 export async function runMaintenance(now = new Date()) {
   const lifecycle = await runLifecycleJobs(now);
   await purgeExpiredSessions();
+  await purgePasswordResetTokens();
+  await purgeExpiredMfaChallenges();
   await db.delete(rateLimits).where(lt(rateLimits.windowStart, sql`now() - interval '2 days'`));
   // Integrações: alertas derivados, entrega dos webhooks pendentes e limpeza.
   const staleAlerts = await detectStaleRequests(now);

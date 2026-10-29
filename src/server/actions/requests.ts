@@ -41,9 +41,10 @@ export async function createRequestAction(_: ActionResult, form: FormData): Prom
     };
     const photos = filesFrom(form, "photos");
 
-    let user = await getCurrentUser();
+    const user = await getCurrentUser();
     if (user && user.role !== "client") throw invalid("Para pedir um serviço, entre com uma conta de cliente.");
-    if (!user) {
+    let actor = user ? toActor(user) : null;
+    if (!actor) {
       // Visitante: valida o pedido antes de criar a conta.
       await validateRequestDraft(input);
       await enforceRateLimit("signup", await clientIp(), LIMITS.signup.limit, LIMITS.signup.window);
@@ -57,10 +58,10 @@ export async function createRequestAction(_: ActionResult, form: FormData): Prom
         marketingConsent: bool(form, "marketingConsent"),
       });
       await trackServer("signup", { userId: created.id, props: { role: "client", via: "request" } });
-      await startSession(created.id);
-      user = { id: created.id, name: created.name, email: created.email, role: "client", isDemo: false };
+      await startSession(created.id, "client");
+      actor = { kind: "user", id: created.id, role: "client" };
     }
-    const { id } = await createServiceRequest(toActor(user), input, photos);
+    const { id } = await createServiceRequest(actor, input, photos);
     redirect(`/cliente/solicitacoes/${id}?nova=1`);
   });
 }

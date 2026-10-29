@@ -63,7 +63,7 @@ describe("contas e sessões", () => {
 
   it("sessão guarda apenas o hash do token e cai quando o usuário é suspenso", async () => {
     const client = await makeClient();
-    const { token } = await createSession(client.id);
+    const { token } = await createSession(client.id, "client");
     const rows = await db.select().from(sessions);
     expect(rows[0].id).not.toBe(token);
     expect((await validateSessionToken(token))?.id).toBe(client.id);
@@ -82,7 +82,7 @@ describe("contas e sessões", () => {
   it("exclusão de conta anonimiza dados pessoais e encerra sessões (LGPD)", async () => {
     const client = await makeClient();
     await createServiceRequest(client, requestInput(base.cat.id));
-    await createSession(client.id);
+    await createSession(client.id, "client");
     const exported = await exportAccountData(client);
     expect(exported.requests).toHaveLength(1);
     expect(JSON.stringify(exported)).not.toContain("passwordHash");

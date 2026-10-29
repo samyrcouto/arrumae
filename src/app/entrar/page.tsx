@@ -14,15 +14,17 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   return (
     <div className="mx-auto max-w-md">
       <h1 className="mb-6 text-3xl font-bold">Entrar</h1>
-      {sp.senha === "alterada" && <div className="mb-4"><Alert tone="ok">Senha alterada. Entre com a nova senha.</Alert></div>}
+      {(sp.senha === "alterada" || sp.senha === "redefinida") && (
+        <div className="mb-4"><Alert tone="ok">Senha {sp.senha}. Entre com a nova senha.</Alert></div>
+      )}
       <Card>
         <LoginForm next={sp.next} />
       </Card>
       <p className="mt-6 text-center">
         Ainda não tem conta? <Link href="/cadastro" className="font-semibold text-brand underline">Cadastre-se</Link>
       </p>
-      <p className="mt-2 text-center text-sm text-ink-soft">
-        Esqueceu a senha? Fale com o <Link href="/suporte" className="underline">suporte</Link> — a recuperação por e-mail ainda está em construção.
+      <p className="mt-2 text-center">
+        <Link href="/entrar/esqueci" className="font-semibold text-brand underline">Esqueci minha senha</Link>
       </p>
     </div>
   );

@@ -120,6 +120,10 @@ Contas de demonstração (senha `demo-senha-123` para todas):
 
 Para criar pedidos, use CEPs que começam com 054, 050, 040, 041, 045 ou 014 (ex.: `05422-010`). Dica: abra uma janela anônima para entrar com outra conta ao mesmo tempo (cliente numa, profissional na outra).
 
+**Segurança da conta para testar:**
+- **Esqueci minha senha** (`/entrar/esqueci`): como ainda não há provedor de e-mail, o link aparece no terminal onde roda o `npm run dev` (linha `[email:console] … link=…`).
+- **Verificação em duas etapas** (`/conta/seguranca`): leia o QR code com o Google Authenticator ou Microsoft Authenticator. Em desenvolvimento o admin de demonstração não é obrigado a ativar; em produção é (`ADMIN_REQUIRE_2FA`). Perdeu o celular e os códigos? `npm run db:reset-2fa -- email@da.conta`.
+
 ### Problemas comuns
 
 | Erro | Solução |
@@ -130,7 +134,7 @@ Para criar pedidos, use CEPs que começam com 054, 050, 040, 041, 045 ou 014 (ex
 | `Configuração inválida: APP_SECRET…` | Coloque um texto com 32+ caracteres em `APP_SECRET` no `.env.local` |
 | Porta 3000 em uso | `npm.cmd run dev -- -p 3001` e abra http://localhost:3001 |
 
-Em produção, crie o admin com `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:create-admin` e rode só `npm run db:seed` (sem `--demo`).
+Em produção, crie o admin com `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:create-admin` e rode só `npm run db:seed` (sem `--demo`). Produção também exige `DATA_ENCRYPTION_KEY` (chave dos CPFs, diferente do `APP_SECRET`, guardada em cofre: perder a chave = perder os CPFs) e pede `TRUSTED_IP_HEADER` (ver `.env.example`). No primeiro acesso, o admin cadastra a verificação em duas etapas.
 
 ## Para quem vai mudar o visual
 
@@ -163,7 +167,9 @@ Antes de enviar mudanças, rode `npm run typecheck && npm run lint && npm test`.
 | `npm test` | Testes unitários + integração (Postgres real, banco de teste é **limpo** a cada execução) |
 | `npm run test:e2e` | Build de produção + navegador real (Playwright) percorrendo o fluxo completo, em banco separado `arrumae_e2e`. Na 1ª vez, rode `npx playwright install chromium` |
 | `npm run db:generate` | Gera migration a partir de `src/server/db/schema.ts` |
-| `npm run db:migrate` | Aplica migrations |
+| `npm run db:migrate` | Aplica migrations (e cifra CPF/CNPJ que estiverem em texto puro) |
+| `npm run db:encrypt-pii` | Regrava CPF/CNPJ e segredos do 2FA com a chave atual (troca de `DATA_ENCRYPTION_KEY`) |
+| `npm run db:reset-2fa -- email` | Remove o 2FA de quem perdeu o celular e os códigos (confira a identidade antes; fica na auditoria) |
 | `npm run db:seed` | Catálogo base (`--demo` para dados de demonstração) |
 | `npm run vitrine` / `vitrine:publicar` | Gera capturas reais de todas as telas em `./vitrine` e publica no GitHub Pages (branch `gh-pages`) |
 | `npm run jobs` | Rotinas periódicas: expirar pedidos/propostas, confirmação automática, alertas de pedido parado, envio dos webhooks de integração, limpeza |

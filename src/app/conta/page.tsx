@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ContactForm, DeleteAccountForm, PasswordForm } from "@/components/account-forms";
 import { Card, PageHeader, Section } from "@/components/ui";
 import { ROLE_LABEL } from "@/lib/labels";
@@ -18,6 +19,14 @@ export default async function AccountPage() {
       <PageHeader title="Minha conta" subtitle={`${u.email} · ${ROLE_LABEL[u.role]}`} />
       <Card><ContactForm name={u.name} phone={u.phone ? formatPhone(u.phone) : ""} marketingConsent={u.marketingConsent} /></Card>
       <Section title="Senha"><Card><PasswordForm /></Card></Section>
+      <Section title="Verificação em duas etapas">
+        <Card className="flex flex-wrap items-center justify-between gap-3">
+          <p>{u.totpEnabledAt ? "Ativa: além da senha, pedimos um código do celular." : "Desativada. Proteja a conta com um código do celular."}</p>
+          <Link href="/conta/seguranca" className="inline-flex min-h-12 items-center rounded-full border border-line px-5 font-semibold hover:border-ink-soft">
+            {u.totpEnabledAt ? "Gerenciar" : "Ativar"}
+          </Link>
+        </Card>
+      </Section>
       <Section title="Seus dados (LGPD)">
         <Card className="space-y-3">
           <p>Baixe uma cópia dos dados que guardamos sobre você, em formato JSON.</p>

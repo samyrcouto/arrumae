@@ -12,6 +12,7 @@
 import { sql } from "drizzle-orm";
 import {
   type AnyPgColumn,
+  bigint,
   bigserial,
   boolean,
   check,
@@ -129,6 +130,12 @@ export const users = pgTable(
     termsVersion: text("terms_version").notNull(),
     termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }).notNull(),
     lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+    // 2FA (TOTP). O segredo fica cifrado (security/field-crypto.ts). Com
+    // `totp_enabled_at` nulo o segredo é só um cadastro em andamento.
+    totpSecret: text("totp_secret"),
+    totpEnabledAt: timestamp("totp_enabled_at", { withTimezone: true }),
+    // Último intervalo de 30 s aceito: o mesmo código não serve duas vezes.
+    totpLastStep: bigint("totp_last_step", { mode: "number" }),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     isDemo: boolean("is_demo").notNull().default(false),
     createdAt: createdAt(),
@@ -151,6 +158,52 @@ export const sessions = pgTable(
     createdAt: createdAt(),
   },
   (t) => [index("sessions_user_idx").on(t.userId)],
+);
+
+/** Link de "esqueci minha senha". Guarda só o hash do token; uso único. */
+export const passwordResetTokens = pgTable(
+  "password_reset_tokens",
+  {
+    id: text("id").primaryKey(), // SHA-256 do token enviado por e-mail
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("password_reset_tokens_user_idx").on(t.userId)],
+);
+
+/** Login que passou pela senha e aguarda o código do 2FA (validade curta). */
+export const mfaChallenges = pgTable(
+  "mfa_challenges",
+  {
+    id: text("id").primaryKey(), // SHA-256 do token do cookie temporário
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    nextPath: text("next_path"),
+    attempts: smallint("attempts").notNull().default(0),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("mfa_challenges_user_idx").on(t.userId)],
+);
+
+/** Códigos de recuperação do 2FA (uso único). Só o hash é guardado. */
+export const mfaRecoveryCodes = pgTable(
+  "mfa_recovery_codes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    codeHash: text("code_hash").notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("mfa_recovery_codes_hash_key").on(t.codeHash), index("mfa_recovery_codes_user_idx").on(t.userId)],
 );
 
 // ---------------------------------------------------------------------------
@@ -200,8 +253,11 @@ export const proProfiles = pgTable("pro_profiles", {
   displayName: text("display_name").notNull(),
   bio: text("bio").notNull().default(""),
   yearsExperience: smallint("years_experience").notNull().default(0),
+  // CPF e CNPJ cifrados pela aplicação ("enc:v1:..."), nunca em texto puro.
   cpf: text("cpf"),
   cnpj: text("cnpj"),
+  // Índice cego do CPF (HMAC): acha cadastros com o mesmo CPF sem decifrar.
+  cpfHash: text("cpf_hash"),
   acceptsUrgent: boolean("accepts_urgent").notNull().default(false),
   // Somente o painel administrativo altera estes campos.
   verificationStatus: verificationStatus("verification_status").notNull().default("draft"),
@@ -214,7 +270,7 @@ export const proProfiles = pgTable("pro_profiles", {
   noShowCount: integer("no_show_count").notNull().default(0),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
-});
+}, (t) => [index("pro_profiles_cpf_hash_idx").on(t.cpfHash)]);
 
 export const proCategories = pgTable(
   "pro_categories",
