@@ -2,7 +2,7 @@
 
 Marketplace de serviços residenciais (eletricista, encanador, montagem de móveis, pequenos reparos e ar‑condicionado) para um piloto em São Paulo. O cliente descreve o problema, recebe até 4 propostas com preço e horário de profissionais com documentos conferidos, agenda, acompanha e avalia — tudo pelo celular, sem instalar app.
 
-> **Estado:** MVP funcional em ambiente local. **Não está publicado** e **não processa pagamentos** (piloto com pagamento direto ao profissional). Veja [`docs/ROADMAP.md`](docs/ROADMAP.md) para o que falta antes do lançamento.
+> **Estado:** MVP funcional em ambiente local. **Não está publicado** e **não processa pagamentos** (piloto com pagamento direto ao profissional). Segurança de conta pronta (verificação em duas etapas, "esqueci minha senha", CPF cifrado). Veja [`docs/ROADMAP.md`](docs/ROADMAP.md) para o que falta antes do lançamento.
 
 ## Ver o projeto sem instalar nada
 

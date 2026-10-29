@@ -16,3 +16,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Antes de concluir qualquer mudança: `npm run typecheck && npm run lint && npm test` (precisa de Postgres; ver README). Para fluxos de UI: `npm run test:e2e`.
 - Não crie dados que pareçam reais (avaliações, profissionais, transações). Demonstração = `is_demo` + "[DEMO]".
 - Atualize `WORKLOG.md` e o status em `docs/PRODUCT.md` ao terminar.
+- Pedido do fundador: ao terminar cada entrega, **atualize o `README.md`** (estado, como testar, comandos novos) e **faça os commits e o push** sem esperar ser pedido.
