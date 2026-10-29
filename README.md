@@ -13,6 +13,7 @@ Marketplace de serviços residenciais (eletricista, encanador, montagem de móve
 
 | Documento | Conteúdo |
 |---|---|
+| [docs/VISAO-GERAL.md](docs/VISAO-GERAL.md) | **Comece por aqui:** o que já existe, tecnologias, mapa do código, onde mexer para cada coisa e regras para mudar sem quebrar |
 | [docs/PRODUCT.md](docs/PRODUCT.md) | Problema, público, proposta de valor, escopo, ciclo de vida, políticas e status de cada funcionalidade |
 | [docs/BUSINESS.md](docs/BUSINESS.md) | Concorrência pesquisada, monetização, economia por transação, provedores de pagamento |
 | [docs/GROWTH.md](docs/GROWTH.md) | Funil, canais, métricas e plano de experimentos |
