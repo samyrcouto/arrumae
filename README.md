@@ -77,6 +77,8 @@ npm.cmd run dev                 # inicia o site
 
 **6.** Abra **http://localhost:3000**.
 
+**7. (Opcional) Integração com o n8n:** passo a passo para testar no seu computador em [docs/AUTOMACOES.md](docs/AUTOMACOES.md#testar-no-seu-computador-windows).
+
 ## Como rodar no Linux/Mac
 
 ```bash

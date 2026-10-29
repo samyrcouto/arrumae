@@ -119,7 +119,60 @@ Recomendação para o piloto: começar no computador para validar; quando o app 
 
 O código dos nós de formatação também está em `formatar-alerta.js` e `formatar-relatorio.js`, para ficar fácil de revisar.
 
-### Passo a passo
+### Testar no seu computador (Windows)
+
+Use três janelas do PowerShell, todas na pasta do projeto. Se o PowerShell bloquear scripts, use `npm.cmd`/`npx.cmd` como no README.
+
+**1. Atualize o projeto e o banco** (cria as tabelas novas de integração e relatórios):
+
+```powershell
+git pull
+npm.cmd install
+npm.cmd run db:migrate
+```
+
+**2. Gere três segredos** (rode três vezes e guarde cada resultado):
+
+```powershell
+[guid]::NewGuid().ToString("N") + [guid]::NewGuid().ToString("N")
+```
+
+e acrescente no fim do `.env.local`:
+
+```
+INTEGRATION_WEBHOOK_URL=http://localhost:5678/webhook/arrumae-eventos
+INTEGRATION_WEBHOOK_SECRET=<segredo 1>
+INTEGRATION_API_TOKEN=<segredo 2>
+CRON_SECRET=<segredo 3>
+```
+
+**3. Janela 1 — o site:** `npm.cmd run dev` (http://localhost:3000).
+
+**4. Janela 2 — o n8n:** veja a versão do Node com `node -v`.
+- `v24` ou mais nova: `npx.cmd n8n`
+- `v22`: `npx.cmd n8n@1` (a versão 2 do n8n exige Node 24)
+
+Na primeira vez ele baixa bastante coisa (alguns minutos). Quando aparecer "Editor is now accessible", abra **http://localhost:5678** e crie a conta local (fica só no seu computador). Se o Windows perguntar sobre o firewall, permita só em rede privada.
+
+**5. Importe o workflow de alertas:** *Workflows → Import from File → `integrations/n8n/01-alertas-da-equipe.json`*.
+- No nó **Calcular assinatura**, troque `COLE_AQUI_O_INTEGRATION_WEBHOOK_SECRET` pelo segredo 1.
+- Sem Telegram por enquanto? Clique com o botão direito no nó **Enviar para a equipe (Telegram)** → *Deactivate*. Os alertas aparecem só no histórico do n8n.
+- Com Telegram: no @BotFather mande `/newbot` e copie o token; crie um grupo, adicione o bot e mande `/start` no grupo; abra `https://api.telegram.org/bot<TOKEN>/getUpdates` e copie o `chat.id` (número negativo). No nó do Telegram, crie a credencial com o token e cole o `chat.id`.
+- Salve e **ative** o workflow (chave *Active*; no n8n 2 o botão se chama *Publish*).
+
+**6. Teste:** no site, entre como `cliente@demo.arrumae.invalid` (senha `demo-senha-123`) e crie um pedido com CEP `05422-010`. Na **janela 3**:
+
+```powershell
+npm.cmd run jobs
+```
+
+A saída deve mostrar `"integrations":{"configured":true,"delivered":…}` com `delivered` maior que zero. Confira em **http://localhost:3000/admin/integracoes** (entre como `admin@demo.arrumae.invalid`) que o evento ficou "entregue", e no n8n, em *Executions*, a execução do workflow (e a mensagem no Telegram, se configurou).
+
+**7. Opcional — relatório e agendador:** importe `02` e `03`, troque `https://SEU-APP` por `http://localhost:3000` e crie as credenciais *Header Auth* (nome `Authorization`; valor `Bearer <segredo 2>` no 02 e `Bearer <segredo 3>` no 03). Com o **03** ativo, o n8n roda a manutenção a cada 5 min e você não precisa mais do `npm.cmd run jobs`. Para ver o 02 na hora, abra-o e clique em *Execute workflow*.
+
+> O webhook só funciona enquanto o n8n estiver aberto. Se ele estiver fechado, o evento fica "na fila" e é reenviado sozinho quando o n8n voltar, até cerca de 8 horas.
+
+### Passo a passo (produção)
 
 1. No app (`.env.local` ou variáveis do provedor), gere segredos longos e diferentes entre si (no PowerShell: `[guid]::NewGuid().ToString() + [guid]::NewGuid().ToString()`; no Linux/Mac: `openssl rand -hex 32`):
    ```
