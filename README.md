@@ -24,6 +24,7 @@ Marketplace de serviços residenciais (eletricista, encanador, montagem de móve
 | [docs/SECURITY.md](docs/SECURITY.md) | Controles implementados, riscos e pendências |
 | [docs/LEGAL.md](docs/LEGAL.md) | LGPD, CDC, tributário e pontos para advogado/contador |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Fases, critérios de conclusão e checklist de lançamento |
+| [docs/ROTEIRO-TESTES.md](docs/ROTEIRO-TESTES.md) | Roteiro de testes manuais para gravar vídeo: o que fazer no navegador e as consultas no banco (psql) que provam cada proteção |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Decisões e justificativas |
 | [WORKLOG.md](WORKLOG.md) | Registro do que foi feito, testado e bloqueado |
 
@@ -120,7 +121,7 @@ Contas de demonstração (senha `demo-senha-123` para todas):
 
 Para criar pedidos, use CEPs que começam com 054, 050, 040, 041, 045 ou 014 (ex.: `05422-010`). Dica: abra uma janela anônima para entrar com outra conta ao mesmo tempo (cliente numa, profissional na outra).
 
-**Segurança da conta para testar:**
+**Segurança da conta para testar** (passo a passo completo, com as consultas no banco, em [docs/ROTEIRO-TESTES.md](docs/ROTEIRO-TESTES.md)):
 - **Esqueci minha senha** (`/entrar/esqueci`): como ainda não há provedor de e-mail, o link aparece no terminal onde roda o `npm run dev` (linha `[email:console] … link=…`).
 - **Verificação em duas etapas** (`/conta/seguranca`): leia o QR code com o Google Authenticator ou Microsoft Authenticator. Em desenvolvimento o admin de demonstração não é obrigado a ativar; em produção é (`ADMIN_REQUIRE_2FA`). Perdeu o celular e os códigos? `npm run db:reset-2fa -- email@da.conta`.
 

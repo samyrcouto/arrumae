@@ -14,6 +14,12 @@ const { closeDb } = await import("../src/server/db/client");
 
 const email = process.argv[2];
 if (!email) throw new Error("Informe o e-mail: npm run db:reset-2fa -- pessoa@exemplo.com");
-const u = await resetMfaByEmail(email);
-console.log(`2FA removido de ${u.email}. Sessões encerradas; a pessoa entra só com a senha e deve ativar de novo.`);
-await closeDb();
+try {
+  const u = await resetMfaByEmail(email);
+  console.log(`2FA removido de ${u.email}. Sessões encerradas; a pessoa entra só com a senha e deve ativar de novo.`);
+} catch (e) {
+  console.error(e instanceof Error ? e.message : e);
+  process.exitCode = 1;
+} finally {
+  await closeDb();
+}

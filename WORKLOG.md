@@ -185,3 +185,10 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Testes: **79** (22 novos: vetores da RFC 6238, criptografia, adulteração, migração de texto puro, reset, 2FA, reuso, tentativas, obrigatoriedade do admin, sessão), typecheck, lint, E2E com 3 etapas novas (CSP, senha esquecida pelo link do e-mail, ativação do 2FA + login com código) sem erros no navegador.
 - Docs: SECURITY, DECISIONS (D‑020), PRODUCT, ROADMAP, VISAO-GERAL, README, `.env.example`.
 - **Depende do fundador:** provedor de e-mail para o link sair de verdade; gerar e guardar a `DATA_ENCRYPTION_KEY` de produção.
+
+## 2026-10-29 — Roteiro de testes manuais para vídeo
+
+- Fundador pediu os testes para gravar um vídeo, conferindo no banco. Novo `docs/ROTEIRO-TESTES.md`: preparação no Windows (PowerShell + SQL Shell), 10 testes com o passo a passo no navegador, a consulta SQL de cada um, o que deve aparecer e uma caixa de seleção para marcar. Cobre CPF cifrado, CPF repetido (admin), esqueci minha senha, 2FA, código de recuperação, admin obrigado a ativar (`ADMIN_REQUIRE_2FA=true`), sessão de 12 h, auditoria, CSP e testes automáticos.
+- Usa contas novas `@video.arrumae.invalid`: trocar o CPF de um profissional de demonstração aprovado o mandaria de volta para análise (sem documentos para reaprovar).
+- Conferido antes: todas as consultas SQL rodaram no banco do E2E; os Testes 1 e 2 simulados no navegador (modo dev), sem erros; páginas do admin sem rolagem lateral no celular (390 px).
+- `scripts/reset-2fa.ts`: e-mail inexistente agora mostra só a mensagem ("Conta não encontrada."), sem rastreamento de erro.
