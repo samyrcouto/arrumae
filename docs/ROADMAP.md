@@ -1,13 +1,13 @@
 # Roadmap
 
-Status por fase em 24/10/2026. Critério de conclusão em cada fase.
+Status por fase em 29/10/2026. Critério de conclusão em cada fase.
 
 | Fase | Status | Critério de conclusão |
 |---|---|---|
 | 1. Diagnóstico e estratégia | **concluída** | Concorrência, riscos, recorte e stack documentados (BUSINESS, PRODUCT, DECISIONS, LEGAL) |
 | 2. Fundação técnica | **concluída** | App roda localmente; migrations; auth; permissões; testes base |
 | 3. MVP funcional | **concluída** | Fluxos de cliente, profissional e admin ponta a ponta (E2E aprovado) |
-| 4. Segurança e qualidade | **parcial** | 49 testes + E2E aprovados; faltam 2FA admin, reset de senha, antivírus de upload, teste de carga, revisão externa |
+| 4. Segurança e qualidade | **parcial** | 57 testes + E2E aprovados; faltam 2FA admin, reset de senha, antivírus de upload, teste de carga, revisão externa |
 | 5. Piloto e monetização | **em preparação** | Ver checklist abaixo; pagamentos integrados planejados para depois da validação |
 | 6. Produção | **não iniciada** | Depende de contas/credenciais do fundador |
 | 7. Aquisição | **instrumentação pronta** | Landings, UTM, funil e plano de experimentos prontos; nenhuma campanha ativa |
@@ -25,7 +25,7 @@ Status por fase em 24/10/2026. Critério de conclusão em cada fase.
 7. Pagamentos integrados (Asaas → ver BUSINESS.md §4), cupons aplicados, repasses e reembolsos com aprovação humana.
 8. Upload direto assinado e varredura de arquivos órfãos.
 9. Avaliação do cliente pelo profissional (reputação de dois lados).
-10. Monitoramento (Sentry), uptime, alertas de fila (pedidos sem proposta há > 2h).
+10. Monitoramento (Sentry) e uptime. (Alerta de pedido sem proposta há > 2 h: **feito** — evento `request.stale` + workflow 01 do n8n.)
 
 ## Operação manual do piloto (concierge — não automatizar ainda)
 
