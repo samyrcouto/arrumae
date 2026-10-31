@@ -169,6 +169,14 @@ export async function captureVitrine(base) {
         await page.goto(`${base}${item.path}`, { waitUntil: "networkidle" });
         // O cabeçalho é fixo: solta-o para a captura de página inteira não repeti-lo no meio.
         await page.addStyleTag({ content: "header{position:static!important}" });
+        // Rola a página como uma pessoa: seções que entram animadas e imagens preguiçosas aparecem.
+        const height = await page.evaluate(() => document.documentElement.scrollHeight);
+        for (let y = 0; y < height; y += 300) {
+          await page.evaluate((top) => window.scrollTo(0, top), y);
+          await page.waitForTimeout(60);
+        }
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.waitForTimeout(700);
         await page.screenshot({ path: `${OUT}/telas/${item.slug}-${kind}.png`, fullPage: true });
         await ctx.close();
         console.log(`  📸 ${item.slug} (${kind})`);

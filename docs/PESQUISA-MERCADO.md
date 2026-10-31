@@ -204,7 +204,31 @@ Já detalhado em [BUSINESS.md §4](BUSINESS.md#4-pagamentos). Resumo atualizado:
 4. **Com a sua autorização e depois do INPI:** domínio e e-mail.
 5. **Só com o piloto validado:** servidor e banco pagos, pagamento pela plataforma, anúncios.
 
-## 8. Como liberar o acesso aos sites dos concorrentes
+## 8. Análise das páginas iniciais (31/10/2026, sites abertos no navegador)
+
+Com o acesso liberado, as três páginas iniciais foram abertas num navegador real (celular de 390 px e computador de 1280 px). Os números abaixo são **o que cada site afirma na própria página**, não dados verificados.
+
+| | GetNinjas | Triider | Parafuzo |
+|---|---|---|---|
+| Título principal | "Mais de 500 tipos de serviços em um só lugar." | "Uma nova forma de contratar profissionais" | "Serviços domésticos com praticidade e qualidade" |
+| Primeira tela (celular) | Busca "O que você precisa?" + sugestões populares (Diarista, Marido de aluguel, Pintor…); botão "Seja um profissional" no topo; foto de um profissional real com nota | Busca "Serviço ou especialidade" + botão Pesquisar; grade de categorias com ícones logo abaixo | Três provas em lista (volume desde 2014, profissionais "aprovados e segurados", 200 cidades); cartões de serviço com foto e "Disponível para hoje" |
+| Ordem das seções | Categorias → principais serviços (fotos) → app → depoimentos → 3 passos → pedidos frequentes → números → cadastro de profissional → blog → sobre → rodapé gigante de links por serviço e cidade | Busca → categorias → "acompanha teu pedido" (verificação, 6x sem juros, suporte) → serviços populares com nota e **preço médio** → reforma → **guia de preços** → depoimentos → números → onde estamos → guias de profissionais, categorias, estados e preços | Provas → serviços → como contratar (3 passos com tela do app) → **assinaturas com preço** → vantagens → vídeos de profissionais → benefícios aos profissionais → depoimentos → imprensa → parceiros → dúvidas |
+| Prova social exibida | 4 mi serviços/ano, 165 mil clientes/mês, R$ 1 bi/ano; depoimentos | Nota 4,9 com 117 mil avaliações; +200 mil usuários; +30 mil projetos | 2 mi serviços; 15 mil avaliações; selo Reclame Aqui 2025; imprensa |
+| Visual | Source Sans Pro; azul e amarelo; fotos de pessoas reais com camiseta da marca | Roboto + Raleway; laranja; mascote polvo; fotos | Open Sans; verde-água; fotos de banco de imagens |
+| Altura da página (computador) | ~8.800 px | ~7.600 px | ~9.400 px |
+
+**O que os três fazem igual:** busca ou escolha do serviço já na primeira tela; categorias visíveis sem rolar; "como funciona" em 3 passos; seção para recrutar profissionais; páginas por serviço e cidade para o Google; muita prova de volume.
+
+**O que levamos para a nossa home (31/10/2026):**
+- Busca no topo com sugestões populares, mas que vai além da busca: enquanto a pessoa escreve, o **combinado se monta** (serviço, o que entra, como vem o preço, quem vê o telefone). É o nosso diferencial ("combinado é combinado") mostrado funcionando, e não só descrito.
+- Lista completa do que cada serviço faz, com cada item levando ao pedido já preenchido (como os "serviços populares" do Triider), mais o que fica de fora.
+- 3 passos com as telas reais do app (como a Parafuzo).
+- Cartões de bairro × serviço apontando para as nossas páginas por região (como os guias de cidade do GetNinjas e do Triider).
+- Botão fixo "Pedir orçamento grátis" no rodapé do celular.
+
+**O que não levamos, de propósito:** números de volume, notas, depoimentos, selos e imprensa (não temos, e inventar é proibido); preço médio por serviço (só com 30+ serviços concluídos); fotos de banco de imagens (D‑016); botão de baixar app (não existe app). No lugar da prova de volume, a home mostra **o que a equipe confere e o que ainda não faz**, coisa que nenhum dos três diz.
+
+## 9. Como liberar o acesso aos sites dos concorrentes
 
 Para eu abrir os sites (e não depender só de busca), libere estes endereços em **Configurações do ambiente → Acesso à rede → Domínios permitidos** ([documentação](https://code.claude.com/docs/en/cloud-environments#network-access)):
 `www.getninjas.com.br`, `www.triider.com.br`, `www.parafuzo.com`, `www.taskrabbit.com`, `www.thumbtack.com`, `www.angi.com`, `www.urbancompany.com`.

@@ -36,7 +36,7 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-        <Link href="/" aria-label={`${brand.name} — início`}>
+        <Link href="/" aria-label={`${brand.name} — início`} className="shrink-0">
           <Logo />
         </Link>
         <div className="flex items-center gap-2">
@@ -65,13 +65,13 @@ export async function SiteHeader() {
             </>
           ) : (
             <>
-              <nav aria-label="Principal" className="mr-2 hidden items-center gap-1 md:flex">
+              <nav aria-label="Principal" className="mr-2 hidden items-center gap-1 lg:flex">
                 {[
                   ["/#servicos", "Serviços"],
                   ["/como-funciona", "Como funciona"],
                   ["/seja-profissional", "Para profissionais"],
                 ].map(([href, label]) => (
-                  <Link key={href} href={href} className="rounded-full px-3 py-2 font-medium text-ink-soft hover:bg-brand-soft hover:text-ink">
+                  <Link key={href} href={href} className="whitespace-nowrap rounded-full px-3 py-2 font-medium text-ink-soft hover:bg-brand-soft hover:text-ink">
                     {label}
                   </Link>
                 ))}
@@ -79,7 +79,7 @@ export async function SiteHeader() {
               <Link href="/entrar" className="rounded-full px-4 py-2 font-semibold hover:bg-brand-soft">
                 Entrar
               </Link>
-              <Link href="/pedir" className="hidden rounded-full bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-strong sm:block">
+              <Link href="/pedir" className="hidden whitespace-nowrap rounded-full bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-strong sm:block">
                 Pedir orçamento
               </Link>
             </>

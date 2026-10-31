@@ -104,6 +104,7 @@ Nenhuma automação aprova pagamentos, altera comissões, aprova verificações 
 
 | # | Funcionalidade | Critério de aceitação | Status |
 |---|---|---|---|
+| 0 | Home com combinado ao vivo | Escrever o problema mostra o serviço identificado e as regras do combinado; o envio abre o pedido com serviço e resumo preenchidos; exemplos de cada serviço levam ao pedido preenchido | testada (unidade + E2E) |
 | 1 | Acesso sem fricção | Visitante faz o pedido inteiro e cria conta na última etapa, sem sair do formulário | testada (E2E) |
 | 2 | Escolher categoria | Cards por categoria com exemplos e itens fora do escopo | implementada |
 | 3 | Descrever problema, endereço, urgência | Validação no servidor com erros por campo; CEP fora da área recusado | testada |

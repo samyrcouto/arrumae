@@ -1,14 +1,23 @@
 import Link from "next/link";
-import { CategoryArt, HeroScene } from "@/components/illustrations";
+import { CategoryArt } from "@/components/illustrations";
+import { CombinadoLive } from "@/components/home/combinado-live";
+import { FaqIndex } from "@/components/home/faq-index";
+import { RevealOnScroll, StickyRequestBar } from "@/components/home/motion";
+import { StepsPinned } from "@/components/home/steps-pinned";
 import { HeroPro, ProTeam } from "@/components/people";
-import { PhoneFrame } from "@/components/phone-frame";
 import { LinkButton } from "@/components/ui";
-import { brand } from "@/config/brand";
 import { listCategories, listRegions } from "@/server/services/catalog";
 
 export const dynamic = "force-dynamic";
 
-const PROMISES_STRIP = [
+/*
+ * Página inicial. Direção de arte (skill design-taste-frontend, docs/DECISIONS.md D-021):
+ * "o produto se mostra funcionando" — o combinado se monta enquanto a pessoa
+ * escreve o problema, sobre um palco com o recorte do telhado do logo.
+ * Sem números de volume, avaliações ou depoimentos inventados.
+ */
+
+const PROMISES = [
   "Preço antes de agendar",
   "Mudou o preço? Só com o seu OK",
   "Contato protegido",
@@ -18,302 +27,354 @@ const PROMISES_STRIP = [
 
 const STEPS = [
   {
-    n: "1",
-    t: "Conte o que precisa",
-    d: "Escolha o serviço, descreva o problema e mande fotos. Uns 2 minutos, sem instalar nada.",
+    t: "Conte o que precisa.",
+    d: "Escolha o serviço, descreva o problema e mande fotos se quiser. Uns 2 minutos, sem instalar nada.",
     img: "/marketing/app-pedido.webp",
     alt: "Tela do app: formulário de pedido de orçamento",
   },
   {
-    n: "2",
-    t: "Compare propostas",
-    d: "Até 4 profissionais da sua região mandam preço, o que está incluído e horários.",
+    t: "Compare as propostas.",
+    d: "Até 4 profissionais da sua região mandam preço, o que está incluído e os horários livres.",
     img: "/marketing/app-propostas.webp",
     alt: "Tela do app: duas propostas com preço e horário",
   },
   {
-    n: "3",
-    t: "Acompanhe até o fim",
-    d: "Agendou, começou, terminou: cada etapa aparece no app. Você confirma e avalia no final.",
+    t: "Acompanhe até o fim.",
+    d: "Agendou, começou, terminou: cada etapa aparece no app. No final, você confirma e avalia.",
     img: "/marketing/app-acompanhamento.webp",
     alt: "Tela do app: serviço concluído com linha do tempo",
   },
 ];
 
-const COMBINADO = [
-  ["Serviço", "Instalar suporte de TV 55\""],
-  ["Preço", "fechado, antes de agendar"],
-  ["Horário", "você escolhe entre os oferecidos"],
-  ["Mudança de preço", "só com a sua aprovação no app"],
-  ["Seu telefone e endereço", "só para quem você escolher"],
-];
-
-const CHECKS = {
-  yes: [
-    "Documento de identidade com foto (RG ou CNH)",
-    "Comprovante de endereço",
-    "CPF válido e dados de contato",
-    "Histórico de cancelamentos e ausências na plataforma",
-  ],
-  no: ["Checagem de antecedentes criminais", "Garantia financeira ou seguro do serviço", "Pagamento pela plataforma (no piloto, você paga direto ao profissional)"],
-};
-
-const FAQ = [
-  ["Quanto custa usar?", "Pedir orçamento é grátis. Você paga ao profissional o valor da proposta que aceitar. Durante o piloto, o pagamento é feito diretamente a ele — a plataforma ainda não processa pagamentos."],
-  ["E se precisar ver o problema antes?", "A proposta traz a taxa de visita (que pode ser grátis). No local, o profissional propõe o preço final pelo app, e ele só vale se você aprovar."],
+const FAQ: [string, string][] = [
+  ["Quanto custa usar?", "Pedir orçamento é grátis. Você paga ao profissional o valor da proposta que aceitar. No piloto, o pagamento é feito direto a ele; a plataforma ainda não processa pagamentos."],
+  ["E se ele precisar ver o problema antes?", "A proposta traz a taxa de visita, que pode ser grátis. No local, o profissional propõe o preço final pelo app, e ele só vale se você aprovar."],
+  ["E se nenhuma proposta servir?", "Você não é obrigado a aceitar. Pode cancelar o pedido antes de agendar; sem resposta sua, ele expira sozinho em 72 horas."],
   ["E se o profissional não aparecer?", "Passados 30 minutos do horário, você registra a ausência no app. O pedido volta a receber propostas e a ausência fica no histórico do profissional."],
-  ["Quem são os profissionais?", "Autônomos da sua região que passaram pela conferência de documentos da nossa equipe. Você vê o perfil, a experiência e as avaliações de serviços feitos pela plataforma antes de escolher."],
+  ["Quem são os profissionais?", "Autônomos da sua região que passaram pela conferência de documentos da nossa equipe. Antes de escolher, você vê o perfil, a experiência e as avaliações de serviços feitos aqui."],
 ];
+
+/** Pedaços das telas do app, em tamanho real, para cada regra do combinado. */
+function Fragment({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div aria-hidden data-ui className={`rounded-[1.25rem] bg-card p-5 text-[0.9rem] ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+const RULES = [
+  {
+    t: "O preço só muda com o seu OK",
+    d: "Apareceu algo a mais no local? O profissional manda o ajuste pelo app, com o motivo. Sem a sua aprovação, vale o preço combinado.",
+    ui: (
+      <Fragment>
+        <p className="font-semibold">Ajuste de preço</p>
+        <p className="mt-1 text-ink-soft">Sifão rachado: troca da peça + mão de obra.</p>
+        <p className="mt-3 font-display text-2xl font-bold">
+          R$ 180 <span className="text-ink-soft">→</span> R$ 220
+        </p>
+        <div className="mt-4 flex gap-2">
+          <span className="rounded-full border border-line px-4 py-2 font-semibold">Recusar</span>
+          <span className="rounded-full bg-brand px-4 py-2 font-semibold text-white">Aprovar</span>
+        </div>
+      </Fragment>
+    ),
+  },
+  {
+    t: "Seu telefone fica guardado",
+    d: "Antes do agendamento, contatos escritos na conversa são escondidos. Endereço completo e telefone só vão para quem você escolher.",
+    ui: (
+      <Fragment className="space-y-2">
+        <p className="w-fit max-w-[85%] rounded-2xl rounded-bl-sm bg-paper px-3 py-2">Me chama no zap pra gente combinar?</p>
+        <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-brand-soft px-3 py-2">
+          Claro, é <span className="font-semibold text-brand">[contato oculto até o agendamento]</span>
+        </p>
+      </Fragment>
+    ),
+  },
+  {
+    t: "Faltou? Fica registrado",
+    d: "Meia hora depois do horário, você registra a ausência. O pedido volta a receber propostas e o histórico do profissional mostra o que aconteceu.",
+    ui: (
+      <Fragment>
+        <p className="text-ink-soft">Agendado para hoje, 14h às 16h</p>
+        <p className="mt-1 font-semibold">O profissional não chegou?</p>
+        <span className="mt-3 inline-flex rounded-full bg-tape px-4 py-2 font-semibold">Registrar ausência</span>
+      </Fragment>
+    ),
+  },
+  {
+    t: "No máximo 4 propostas",
+    d: "Seu pedido não vira leilão: até 4 profissionais respondem, cada um com preço, o que está incluído e horários.",
+    ui: (
+      <Fragment className="space-y-2">
+        <p className="font-semibold">Propostas recebidas · 2 de 4</p>
+        {[
+          ["Proposta 1", "R$ 150", "amanhã, 9h"],
+          ["Proposta 2", "R$ 165", "sexta, 14h"],
+        ].map(([n, p, h]) => (
+          <p key={n} className="flex items-center justify-between rounded-xl bg-paper px-3 py-2">
+            <span>{n}</span>
+            <span className="text-ink-soft">{h}</span>
+            <span className="font-semibold">{p}</span>
+          </p>
+        ))}
+      </Fragment>
+    ),
+  },
+];
+
+const CHECKED = ["Documento com foto (RG ou CNH)", "Comprovante de endereço", "CPF válido", "Histórico de cancelamentos e ausências"];
+const NOT_YET = ["Antecedentes criminais", "Garantia ou seguro do serviço", "Pagamento pelo site (no piloto, direto ao profissional)"];
 
 export default async function Home() {
   const [categories, regions] = await Promise.all([listCategories(), listRegions()]);
   return (
     <div className="-mt-6 sm:-mt-10">
-      {/* ------------------------------------------------------------ HERO */}
-      <section className="full-bleed dot-grid overflow-hidden border-b border-line">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-8 sm:pt-14 lg:grid-cols-[1.05fr_1fr]">
-          <div>
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-tape/70 bg-tape-soft px-3 py-1 text-sm font-semibold">
-              <span className="size-2 rounded-full bg-clay" /> Piloto em {brand.city}
-            </p>
-            <h1 className="text-[2.6rem] font-extrabold leading-[1.02] sm:text-[3.4rem]">
-              Aquele reparo que você vem adiando?{" "}
-              <span className="relative whitespace-nowrap text-brand">
-                Arrumaê.
-                <svg aria-hidden viewBox="0 0 200 14" preserveAspectRatio="none" className="absolute -bottom-2 left-0 h-3 w-full">
-                  <path d="M3 9c40-6 90-8 194-3" fill="none" stroke="var(--color-tape)" strokeWidth="6" strokeLinecap="round" />
-                </svg>
+      <RevealOnScroll />
+
+      {/* ---------------------------------------------------------------- TOPO */}
+      <section id="topo" className="full-bleed overflow-hidden pt-6 sm:pt-14">
+        <div className="mx-auto grid max-w-6xl gap-5 px-4 sm:gap-8 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-10">
+          <div className="lg:col-span-8">
+            <h1 className="font-display text-[clamp(2.6rem,9.5vw,4.5rem)] font-extrabold leading-[0.98] tracking-[-0.03em]">
+              <span className="block overflow-hidden pb-1">
+                <span className="hero-line block">Reparo em casa?</span>
+              </span>
+              <span className="block overflow-hidden pb-1">
+                <span className="hero-line hero-line-2 block">Arrumaê.</span>
               </span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg text-ink-soft">
-              Eletricista, encanador, montador e pequenos reparos. Você descreve, recebe propostas com preço e horário de
-              profissionais conferidos e acompanha tudo pelo celular.
+          </div>
+          <div className="lg:col-span-5 lg:row-start-2">
+            <p className="hero-after max-w-xl text-[1.0625rem] sm:text-xl">
+              Eletricista, encanador, montador e pequenos reparos em São Paulo. Você descreve o problema, recebe até 4 propostas
+              com preço e horário e escolhe. Piloto em{" "}
+              <a href="#onde" className="font-semibold text-brand underline underline-offset-4">
+                {regions.length} regiões da cidade
+              </a>
+              .
             </p>
-
-            <div className="mt-7 rounded-3xl border border-line bg-card p-4 shadow-[0_18px_40px_-28px_rgba(14,74,87,0.6)] sm:p-5">
-              <p className="mb-3 font-display text-lg font-bold">O que precisa arrumar?</p>
-              <ul className="grid grid-cols-1 gap-2 min-[440px]:grid-cols-2">
-                {categories.map((c) => (
-                  <li key={c.id}>
-                    <Link
-                      href={`/pedir?categoria=${c.slug}`}
-                      className="flex h-full items-center gap-2 rounded-2xl border border-line bg-paper/60 p-2 pr-3 text-[0.95rem] font-semibold leading-tight transition hover:-translate-y-0.5 hover:border-brand hover:bg-brand-soft"
-                    >
-                      <CategoryArt slug={c.slug} className="size-11 shrink-0" />
-                      {c.name}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <Link
-                    href="#servicos"
-                    className="flex h-full items-center justify-center rounded-2xl border-2 border-dashed border-line p-2 text-center text-[0.95rem] font-semibold text-brand hover:border-brand"
-                  >
-                    Ver detalhes de cada serviço ↓
-                  </Link>
-                </li>
-              </ul>
-              <div className="mt-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center">
-                <LinkButton href="/pedir" className="w-full sm:w-auto">Pedir orçamento grátis</LinkButton>
-                <span className="text-sm text-ink-soft">Grátis e sem compromisso.</span>
-              </div>
-            </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-[36rem] self-end">
-            <HeroPro home className="w-full" />
+          {/* Palco com o recorte do telhado (o mesmo "^" do ê do logo) */}
+          <div className="hero-after relative -mx-4 lg:col-span-7 lg:col-start-6 lg:row-start-2 lg:mx-0 lg:-mt-24 lg:mr-[calc(-1*max(1rem,(100vw-72rem)/2+1rem))]">
+            <div className="roof-stage bg-brand px-4 pb-0 pt-[4.5rem] sm:px-8 lg:pl-14 lg:pt-24">
+              <div className="grid gap-6 xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
+                <div className="pb-8">
+                  <CombinadoLive services={categories.map((c) => ({ slug: c.slug, name: c.name, examples: c.examples }))} regionCount={regions.length} />
+                </div>
+                <HeroPro home className="hero-pro mx-auto -mb-1 w-full max-w-[19rem] self-end lg:max-w-[22rem] xl:-ml-6 xl:max-w-none xl:self-start" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* -------------------------------------------------- FAIXA DE PROMESSAS */}
+      {/* ----------------------------------------------------------- PROMESSAS */}
       <section aria-label="Nossas regras" className="full-bleed bg-ink text-white">
-        <ul className="mx-auto flex max-w-6xl gap-x-8 gap-y-2 overflow-x-auto whitespace-nowrap px-4 py-4 text-[0.95rem] font-semibold sm:flex-wrap sm:justify-center">
-          {PROMISES_STRIP.map((p) => (
+        <ul className="mx-auto grid max-w-6xl grid-cols-1 gap-x-8 gap-y-2 px-4 py-5 font-semibold min-[480px]:grid-cols-2 lg:flex lg:flex-wrap lg:justify-between">
+          {PROMISES.map((p) => (
             <li key={p} className="flex items-center gap-2">
-              <svg aria-hidden viewBox="0 0 20 20" className="size-5 shrink-0"><path d="M4 10.5l4 4 8-9" fill="none" stroke="var(--color-tape)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <svg aria-hidden viewBox="0 0 20 20" className="size-5 shrink-0">
+                <path d="M4 10.5l4 4 8-9" fill="none" stroke="var(--color-tape)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
               {p}
             </li>
           ))}
         </ul>
       </section>
 
-      {/* ---------------------------------------------------------- SERVIÇOS */}
-      <section id="servicos" className="scroll-mt-24 py-16">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div>
-            <p className="font-semibold text-clay">Serviços do piloto</p>
-            <h2 className="mt-1 text-3xl font-extrabold sm:text-4xl">O que a gente arruma</h2>
-          </div>
-          <p className="max-w-md text-ink-soft">Começamos com poucos serviços, bem feitos. Cada um tem regras claras do que entra e do que não entra.</p>
-        </div>
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((c) => (
-            <li key={c.id} className="group flex flex-col rounded-[1.6rem] border border-line bg-card p-5 transition hover:-translate-y-1 hover:shadow-[0_24px_40px_-28px_rgba(14,74,87,0.6)]">
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="text-xl font-bold">{c.name}</h3>
-                <CategoryArt slug={c.slug} className="size-20 shrink-0 transition group-hover:rotate-[-4deg]" />
-              </div>
-              <ul className="mt-2 flex-1 space-y-1 text-[0.95rem] text-ink-soft">
-                {c.examples.slice(0, 4).map((e) => (
-                  <li key={e} className="flex gap-2"><span aria-hidden className="text-tape">●</span>{e}</li>
-                ))}
-              </ul>
-              <div className="mt-5 flex items-center gap-3">
-                <LinkButton href={`/pedir?categoria=${c.slug}`} className="min-h-11 px-4 text-[0.95rem]">Pedir orçamento</LinkButton>
-                <Link href={`/servicos/${c.slug}`} className="text-[0.95rem] font-semibold text-brand underline-offset-4 hover:underline">Saiba mais</Link>
-              </div>
-            </li>
-          ))}
-          <li className="flex flex-col justify-center rounded-[1.6rem] border-2 border-dashed border-line p-6 text-ink-soft">
-            <p className="font-display text-xl font-bold text-ink">Precisa de outra coisa?</p>
-            <p className="mt-2 text-[0.95rem]">Pintura, gás, obras e projetos ficam de fora por enquanto. Fale com a gente se quiser ver seu serviço aqui.</p>
-            <Link href="/suporte" className="mt-3 font-semibold text-brand underline">Sugerir um serviço</Link>
-          </li>
-        </ul>
-      </section>
-
-      {/* ------------------------------------------------------ COMO FUNCIONA */}
-      <section className="full-bleed bg-brand-soft/60 py-16">
-        <div className="mx-auto max-w-6xl px-4">
-          <p className="font-semibold text-clay">Como funciona</p>
-          <h2 className="mt-1 text-3xl font-extrabold sm:text-4xl">Do pedido ao “ficou ótimo” em 3 passos</h2>
-          <ol className="mt-10 grid gap-10 md:grid-cols-3">
-            {STEPS.map((s) => (
-              <li key={s.n} className="flex flex-col items-center text-center">
-                <PhoneFrame src={s.img} alt={s.alt} className="w-[62%] max-w-[15rem]" />
-                <span className="-mt-5 grid size-11 place-items-center rounded-full border-2 border-ink bg-tape font-display text-xl font-extrabold">{s.n}</span>
-                <p className="mt-3 text-xl font-bold">{s.t}</p>
-                <p className="mt-1 max-w-xs text-ink-soft">{s.d}</p>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-8 text-center text-xs text-ink-soft">Telas reais do app, com dados de demonstração.</p>
-        </div>
-      </section>
-
-      {/* -------------------------------------------------------- COMBINADO */}
-      <section className="py-16">
-        <div className="grid items-center gap-10 lg:grid-cols-2">
-          <div>
-            <p className="font-semibold text-clay">Nosso jeito</p>
-            <h2 className="mt-1 text-3xl font-extrabold sm:text-4xl">Combinado é combinado</h2>
-            <p className="mt-3 max-w-lg text-lg text-ink-soft">
-              O que mais incomoda em serviço de casa é a surpresa: preço que muda, profissional que some, ninguém a quem
-              recorrer. Aqui, o combinado fica registrado — e o app não deixa ele mudar sem você.
-            </p>
-            <LinkButton href="/como-funciona" variant="secondary" className="mt-6">Ver todas as regras</LinkButton>
-          </div>
-          <div className="relative mx-auto w-full max-w-md">
-            <div className="absolute -right-1.5 -top-2 h-full w-full rotate-2 rounded-3xl bg-tape sm:-right-3 sm:-top-3" aria-hidden />
-            <div className="relative rounded-3xl border-2 border-ink bg-card p-6">
-              <div className="flex items-center justify-between">
-                <p className="font-display text-xl font-extrabold">Combinado</p>
-                <span className="rounded-full bg-paper px-2.5 py-0.5 text-xs font-semibold text-ink-soft">exemplo</span>
-              </div>
-              <div className="my-4 border-t-2 border-dashed border-line" />
-              <dl className="space-y-3">
-                {COMBINADO.map(([k, v]) => (
-                  <div key={k} className="flex items-start gap-3">
-                    <svg aria-hidden viewBox="0 0 24 24" className="mt-0.5 size-6 shrink-0"><circle cx="12" cy="12" r="11" fill="var(--color-brand)" /><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    <div>
-                      <dt className="text-sm text-ink-soft">{k}</dt>
-                      <dd className="font-semibold">{v}</dd>
-                    </div>
-                  </div>
-                ))}
-              </dl>
-              <div className="tape-measure -mx-6 -mb-6 mt-6 rounded-b-[1.4rem]" aria-hidden />
+      {/* ------------------------------------------------------------ SERVIÇOS */}
+      <section id="servicos" className="scroll-mt-24 py-20 sm:py-28">
+        <div className="grid gap-10 lg:grid-cols-12">
+          <div data-reveal className="lg:col-span-4">
+            <div>
+              <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-extrabold leading-[1.05] tracking-[-0.02em]">O que a gente arruma</h2>
+              <p className="mt-4 text-lg">
+                Cinco serviços no piloto, com regra clara do que entra. Toque num exemplo e o pedido já começa preenchido.
+              </p>
+              <p className="mt-4 text-ink-soft">
+                Pintura, gás e obras ficam de fora por enquanto.{" "}
+                <Link href="/suporte" className="font-semibold text-brand underline underline-offset-4">Sugerir um serviço</Link>
+              </p>
             </div>
           </div>
+          <div className="space-y-12 lg:col-span-8">
+            {categories.map((c) => (
+              <div key={c.id} data-reveal>
+                <div className="flex items-center gap-3">
+                  <CategoryArt slug={c.slug} className="size-12 shrink-0" />
+                  <h3 className="text-[1.5rem] font-bold leading-tight">{c.name}</h3>
+                </div>
+                <ul className="mt-3">
+                  {c.examples.map((e) => (
+                    <li key={e}>
+                      <Link
+                        href={`/pedir?categoria=${c.slug}&titulo=${encodeURIComponent(e)}`}
+                        className="group flex min-h-11 items-center justify-between gap-4 rounded-xl px-3 py-2 transition hover:bg-card active:scale-[0.99]"
+                      >
+                        <span>{e}</span>
+                        <span className="shrink-0 font-semibold text-brand transition group-hover:translate-x-1">Pedir →</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                {c.outOfScope.length > 0 && (
+                  <p className="mt-2 max-w-[62ch] px-3 text-ink-soft">Fora deste serviço: {c.outOfScope.join("; ")}.</p>
+                )}
+                <Link href={`/servicos/${c.slug}`} className="mt-2 inline-block px-3 font-semibold text-brand underline-offset-4 hover:underline">
+                  Mais sobre {c.name.toLowerCase()} →
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
+      </section>
+
+      {/* ------------------------------------------------------- COMO FUNCIONA */}
+      <section className="full-bleed bg-card py-20 sm:py-28">
+        <div className="mx-auto max-w-6xl px-4">
+          <h2 data-reveal className="text-[clamp(2rem,4vw,2.75rem)] font-extrabold leading-[1.05] tracking-[-0.02em]">
+            Do pedido ao serviço feito
+          </h2>
+          <StepsPinned steps={STEPS} />
+          <p className="mt-6 text-sm text-ink-soft">Telas reais do app, com dados de demonstração.</p>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------- COMBINADO É COMBINADO */}
+      <section className="py-20 sm:py-28">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <div data-reveal className="lg:col-span-4">
+            <div className="lg:sticky lg:top-28">
+              <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-extrabold leading-[1.05] tracking-[-0.02em]">Combinado é combinado</h2>
+              <p className="mt-4 text-lg">
+                O que mais incomoda em serviço de casa é a surpresa: preço que muda, profissional que some, ninguém a quem recorrer.
+                Aqui o combinado fica registrado, e o app não deixa ele mudar sem você.
+              </p>
+              <LinkButton href="/como-funciona" variant="secondary" className="mt-6">Ver todas as regras</LinkButton>
+            </div>
+          </div>
+          <ul className="space-y-14 lg:col-span-8">
+            {RULES.map((r) => (
+              <li key={r.t} data-reveal className="grid items-start gap-5 sm:grid-cols-[minmax(0,22rem)_1fr]">
+                {r.ui}
+                <div>
+                  <h3 className="text-[1.375rem] font-bold leading-tight">{r.t}</h3>
+                  <p className="mt-2 text-lg">{r.d}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="mt-10 text-sm text-ink-soft">Exemplos ilustrativos das telas do app.</p>
       </section>
 
       {/* ------------------------------------------------- O QUE CONFERIMOS */}
-      <section className="rounded-[2rem] border border-line bg-card p-6 sm:p-10">
-        <h2 className="text-3xl font-extrabold">Transparência sobre os profissionais</h2>
-        <p className="mt-2 max-w-2xl text-ink-soft">Preferimos dizer exatamente o que fazemos — e o que ainda não fazemos.</p>
-        <div className="mt-8 grid gap-8 md:grid-cols-2">
-          <div>
-            <p className="mb-3 font-bold text-ok">✓ O que a equipe confere antes de aprovar</p>
-            <ul className="space-y-2">
-              {CHECKS.yes.map((c) => <li key={c} className="rounded-xl bg-ok-soft px-4 py-2.5">{c}</li>)}
-            </ul>
-          </div>
-          <div>
-            <p className="mb-3 font-bold text-ink-soft">○ O que ainda não fazemos</p>
-            <ul className="space-y-2">
-              {CHECKS.no.map((c) => <li key={c} className="rounded-xl bg-paper px-4 py-2.5 text-ink-soft">{c}</li>)}
-            </ul>
-          </div>
-        </div>
+      <section aria-labelledby="conferimos" className="pb-20 sm:pb-28">
+        <ul className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+          <li data-reveal className="col-span-2 rounded-[1.25rem] bg-tape p-6 sm:p-8">
+            <h2 id="conferimos" className="text-[clamp(1.75rem,3vw,2.5rem)] font-extrabold leading-[1.05] tracking-[-0.02em]">
+              O que a equipe confere
+            </h2>
+            <p className="mt-3 max-w-md">Antes de aprovar um profissional, uma pessoa da equipe olha cada item.</p>
+          </li>
+          {CHECKED.map((c) => (
+            <li key={c} data-reveal className="flex min-h-32 items-start rounded-[1.25rem] bg-ok-soft p-4 font-display text-[1.125rem] font-bold leading-tight text-ok [overflow-wrap:anywhere] sm:min-h-36 sm:p-6 sm:text-[1.375rem]">
+              {c}
+            </li>
+          ))}
+          <li data-reveal className="col-span-2 rounded-[1.25rem] bg-ink p-6 text-white sm:p-8">
+            <h3 className="text-[clamp(1.75rem,3vw,2.5rem)] font-extrabold leading-[1.05] tracking-[-0.02em]">O que ainda não fazemos</h3>
+            <p className="mt-3 max-w-md text-white/85">Preferimos dizer. O selo do perfil mostra só o que foi conferido de verdade.</p>
+          </li>
+          {NOT_YET.map((c) => (
+            <li key={c} data-reveal className="flex min-h-32 items-start rounded-[1.25rem] bg-card p-4 font-display text-[1.125rem] font-bold leading-tight text-ink-soft [overflow-wrap:anywhere] last:col-span-2 sm:min-h-36 sm:p-6 sm:text-[1.375rem]">
+              {c}
+            </li>
+          ))}
+        </ul>
       </section>
 
-      {/* -------------------------------------------------- PROFISSIONAIS */}
-      <section className="full-bleed mt-16 bg-tape">
-        <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-14 lg:grid-cols-[1fr_1.1fr]">
-          <ProTeam className="mx-auto w-full max-w-xl lg:-mb-14 lg:self-end" />
-          <div>
-            <p className="font-semibold">Para profissionais</p>
-            <h2 className="mt-1 text-3xl font-extrabold sm:text-4xl">Pedidos de verdade, sem pagar por contato</h2>
-            <ul className="mt-5 space-y-2 text-lg">
-              <li>• Pedidos da sua região, com descrição e fotos</li>
-              <li>• No máximo 4 propostas por pedido</li>
-              <li>• Preço, horário e mudanças registrados no app</li>
-              <li>• Comissão só sobre serviço concluído — dispensada no piloto</li>
+      {/* ------------------------------------------------------- PROFISSIONAIS */}
+      <section className="full-bleed bg-tape">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-16 lg:grid-cols-[1fr_1.1fr] lg:py-20">
+          <ProTeam className="mx-auto w-full max-w-xl" />
+          <div data-reveal>
+            <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-extrabold leading-[1.05] tracking-[-0.02em]">Sem pagar por contato</h2>
+            <p className="mt-4 text-lg font-semibold">É profissional? Aqui funciona assim:</p>
+            <ul className="mt-2 space-y-2 text-lg">
+              <li>Pedidos da sua região, com descrição e fotos.</li>
+              <li>No máximo 4 propostas por pedido.</li>
+              <li>Preço, horário e mudanças registrados no app.</li>
+              <li>Comissão só sobre serviço concluído, e dispensada no piloto.</li>
             </ul>
             <LinkButton href="/seja-profissional" className="mt-7 bg-ink hover:bg-ink/90">Quero me cadastrar</LinkButton>
           </div>
         </div>
       </section>
 
-      {/* ---------------------------------------------------------- REGIÕES */}
-      <section className="py-16">
-        <div className="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:items-center">
-          <div>
-            <p className="font-semibold text-clay">Onde atendemos</p>
-            <h2 className="mt-1 text-3xl font-extrabold sm:text-4xl">Começando por poucos bairros</h2>
-            <p className="mt-3 text-ink-soft">Atender bem uma região antes de crescer é o que garante resposta rápida. Seu bairro ainda não está aqui? Ele está na fila.</p>
-          </div>
-          <ul className="flex flex-wrap gap-3">
-            {regions.map((r) => (
-              <li key={r.id} className="flex items-center gap-2 rounded-full border border-line bg-card px-4 py-2 font-medium">
-                <svg aria-hidden viewBox="0 0 24 24" className="size-5"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z" fill="var(--color-clay)" /><circle cx="12" cy="9" r="2.6" fill="#fff" /></svg>
-                {r.name}
-              </li>
-            ))}
-          </ul>
+      {/* ---------------------------------------------------------- ONDE */}
+      <section id="onde" className="scroll-mt-24 py-20 sm:py-28">
+        <div data-reveal className="grid gap-4 lg:grid-cols-12">
+          <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-extrabold leading-[1.05] tracking-[-0.02em] lg:col-span-5">Onde atendemos</h2>
+          <p className="max-w-[60ch] text-lg lg:col-span-6 lg:col-start-7">
+            Começamos por poucos bairros para responder rápido. Seu bairro não está aqui? Ele está na fila, e você pode avisar a gente.
+          </p>
         </div>
-      </section>
-
-      {/* -------------------------------------------------------------- FAQ */}
-      <section className="pb-6">
-        <h2 className="text-3xl font-extrabold">Perguntas frequentes</h2>
-        <div className="mt-6 divide-y divide-line rounded-[1.6rem] border border-line bg-card">
-          {FAQ.map(([q, a]) => (
-            <details key={q} className="group p-5 [&_summary::-webkit-details-marker]:hidden">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold">
-                {q}
-                <span aria-hidden className="grid size-8 shrink-0 place-items-center rounded-full bg-tape-soft font-display text-xl transition group-open:rotate-45">+</span>
-              </summary>
-              <p className="mt-3 text-ink-soft">{a}</p>
-            </details>
+        <ul className="mt-10 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {regions.map((r) => (
+            <li key={r.id} data-reveal className="rounded-[1.25rem] bg-card p-6">
+              <h3 className="text-[1.375rem] font-bold leading-tight">{r.name}</h3>
+              <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                {categories.map((c) => (
+                  <li key={c.id}>
+                    <Link href={`/servicos/${c.slug}/${r.slug}`} className="text-brand underline-offset-4 hover:underline">
+                      {c.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
           ))}
-        </div>
+          <li data-reveal className="flex flex-col justify-between rounded-[1.25rem] bg-brand p-6 text-white">
+            <h3 className="text-[1.375rem] font-bold leading-tight">Seu bairro ainda não?</h3>
+            <Link href="/suporte" className="mt-6 font-semibold underline underline-offset-4">Avisar a equipe →</Link>
+          </li>
+        </ul>
       </section>
 
-      {/* -------------------------------------------------------- CTA FINAL */}
-      <section className="mt-12 overflow-hidden rounded-[2rem] bg-brand text-white">
-        <div className="grid items-center gap-6 p-8 sm:p-12 md:grid-cols-[1fr_minmax(0,22rem)]">
-          <div>
-            <h2 className="text-3xl font-extrabold sm:text-4xl">Bora arrumar?</h2>
-            <p className="mt-2 text-white/80">Conte o que precisa e receba propostas com preço e horário.</p>
-            <LinkButton href="/pedir" variant="tape" className="mt-6 text-lg">Pedir orçamento grátis</LinkButton>
-          </div>
-          <HeroScene className="hidden w-full md:block" />
-        </div>
-        <div className="tape-measure" aria-hidden />
+      {/* ------------------------------------------------------------- DÚVIDAS */}
+      <section className="pb-20 sm:pb-28">
+        <h2 data-reveal className="mb-8 text-[clamp(2rem,4vw,2.75rem)] font-extrabold leading-[1.05] tracking-[-0.02em]">Perguntas frequentes</h2>
+        <FaqIndex items={FAQ} />
       </section>
+
+      {/* ----------------------------------------------------- FRASE COM LACUNA */}
+      <section id="fim" className="full-bleed bg-brand text-white">
+        <form action="/pedir" method="get" className="mx-auto max-w-6xl px-4 py-20 sm:py-28">
+          <h2 className="font-display text-[clamp(2.1rem,6vw,4.5rem)] font-extrabold leading-[1.1] tracking-[-0.03em]">
+            <label htmlFor="lacuna">Preciso arrumar</label>{" "}
+            <input
+              id="lacuna"
+              name="titulo"
+              maxLength={80}
+              placeholder="o chuveiro"
+              autoComplete="off"
+              className="my-1 inline-block h-[1.15em] w-full rounded-[0.25em] bg-white/15 px-[0.3em] align-baseline text-white placeholder:text-white/60 focus:bg-white/25 focus:outline-none sm:w-[7em]"
+            />{" "}
+            lá em casa.{" "}
+            <button type="submit" className="rounded-[0.25em] bg-tape px-[0.3em] text-ink transition hover:brightness-95 active:scale-[0.98]">
+              Pedir
+            </button>
+          </h2>
+          <p className="mt-6 max-w-xl text-lg text-white/85">Grátis. Você recebe propostas com preço e horário e só aceita se quiser.</p>
+        </form>
+      </section>
+
+      <StickyRequestBar watchId="topo" hideId="fim" />
     </div>
   );
 }

@@ -2,13 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { RequestWizard } from "@/components/request-wizard";
 import { Alert, Card } from "@/components/ui";
+import { matchService } from "@/lib/service-match";
 import { getCurrentUser } from "@/server/auth/session";
 import { listCategories, listRegions } from "@/server/services/catalog";
 
 export const metadata: Metadata = { title: "Pedir orçamento" };
 
-export default async function NewRequestPage({ searchParams }: { searchParams: Promise<{ categoria?: string }> }) {
+export default async function NewRequestPage({ searchParams }: { searchParams: Promise<{ categoria?: string; titulo?: string }> }) {
   const sp = await searchParams;
+  // Texto digitado na home ("o chuveiro queimou"): vira o resumo e, se der, escolhe o serviço.
+  const title = (sp.titulo ?? "").trim().slice(0, 80);
+  const initialCategory = sp.categoria || matchService(title) || undefined;
   const [user, categories, regions] = await Promise.all([getCurrentUser(), listCategories(), listRegions()]);
   if (user && user.role !== "client")
     return (
@@ -32,7 +36,8 @@ export default async function NewRequestPage({ searchParams }: { searchParams: P
             examples: c.examples,
             outOfScope: c.outOfScope,
           }))}
-          initialCategory={sp.categoria}
+          initialCategory={initialCategory}
+          initialTitle={title}
           loggedIn={!!user}
           regionsText={regions.map((r) => r.name).join(", ")}
         />

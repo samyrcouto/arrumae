@@ -2,7 +2,7 @@
 
 Marketplace de serviços residenciais (eletricista, encanador, montagem de móveis, pequenos reparos e ar‑condicionado) para um piloto em São Paulo. O cliente descreve o problema, recebe até 4 propostas com preço e horário de profissionais com documentos conferidos, agenda, acompanha e avalia — tudo pelo celular, sem instalar app.
 
-> **Estado:** MVP funcional em ambiente local. **Não está publicado** e **não processa pagamentos** (piloto com pagamento direto ao profissional). Segurança de conta pronta (verificação em duas etapas, "esqueci minha senha", CPF cifrado). Veja [`docs/ROADMAP.md`](docs/ROADMAP.md) para o que falta antes do lançamento.
+> **Estado:** MVP funcional em ambiente local. **Não está publicado** e **não processa pagamentos** (piloto com pagamento direto ao profissional). Página inicial remodelada a partir da análise de GetNinjas, Triider e Parafuzo (combinado que se monta enquanto você escreve). Segurança de conta pronta (verificação em duas etapas, "esqueci minha senha", CPF cifrado). Veja [`docs/ROADMAP.md`](docs/ROADMAP.md) para o que falta antes do lançamento.
 
 ## Ver o projeto sem instalar nada
 
@@ -150,7 +150,8 @@ Em produção, crie o admin com `ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:c
 | Botões, cartões, selos, alertas | `src/components/ui.tsx` |
 | Campos de formulário | `src/components/form.tsx` |
 | Cabeçalho, menu e rodapé | `src/components/site-header.tsx` |
-| Página inicial | `src/app/page.tsx` |
+| Página inicial | `src/app/page.tsx`; peças em `src/components/home/` (combinado ao vivo, passos, perguntas, animações). Palco com telhado e animações no fim do `globals.css` |
+| Palavras que identificam cada serviço no texto digitado | `src/lib/service-match.ts` |
 | Landing de serviço por bairro | `src/components/category-landing.tsx` |
 | Pedido de orçamento (3 etapas) | `src/components/request-wizard.tsx` |
 | Ícone do app | `public/icon.svg` |

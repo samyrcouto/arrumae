@@ -30,11 +30,13 @@ function Submit({ loggedIn }: { loggedIn: boolean }) {
 export function RequestWizard({
   categories,
   initialCategory,
+  initialTitle,
   loggedIn,
   regionsText,
 }: {
   categories: Category[];
   initialCategory?: string;
+  initialTitle?: string;
   loggedIn: boolean;
   regionsText: string;
 }) {
@@ -134,7 +136,7 @@ export function RequestWizard({
               </div>
             )}
 
-            <Input label="Resumo do serviço" name="title" placeholder="Ex.: Trocar chuveiro elétrico" maxLength={80} required />
+            <Input label="Resumo do serviço" name="title" placeholder="Ex.: Trocar chuveiro elétrico" maxLength={80} defaultValue={initialTitle} required />
             <Textarea
               label="Descreva o que está acontecendo"
               name="description"

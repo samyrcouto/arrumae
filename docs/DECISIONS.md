@@ -72,3 +72,10 @@ Triagem, resumos e sugestões serão chamadas únicas ao modelo com JSON validad
 - **CPF/CNPJ cifrados pela aplicação** (AES-256-GCM, chave fora do banco), em vez de depender só da criptografia de disco do provedor: um dump ou backup vazado não expõe documentos. Índice cego (HMAC) para achar CPF repetido. Texto puro antigo é regravado no `db:migrate`.
 - **CSP com nonce por requisição** no `proxy.ts`: viável porque todas as páginas já são dinâmicas (D‑004). Estilos inline continuam liberados (risco menor).
 - Recuperação de quem perdeu o celular e os códigos: só por script no servidor (`npm run db:reset-2fa`), nunca por atendimento sem conferir identidade.
+
+### D‑021 — Home remodelada: "o produto se mostra funcionando", com a identidade mantida
+- Análise das páginas de GetNinjas, Triider e Parafuzo (PESQUISA-MERCADO.md §8) e direção de arte pela skill `design-taste-frontend` (direção "The product performs", herói "Fragment on a shaped stage", sorteio 560003893, paleta e fontes da marca mantidas).
+- **Ideia:** o combinado, nossa promessa central, vira a peça viva do topo: a pessoa escreve o problema e o cartão "Seu combinado" se monta; o envio leva a `/pedir` com serviço e resumo preenchidos (`src/lib/service-match.ts`, também usado no servidor).
+- **Identidade:** o palco do topo tem o canto recortado no telhado "^" do ê do logo; petróleo, amarelo-fita, papel e tinta; Bricolage + Inter servidas pelo site; profissionais ilustrados; faixa de trena.
+- **Divergências da skill, de propósito:** sem fotos de banco (D‑016) e sem vídeo; a faixa de trena e a faixa de desenvolvimento usam gradiente (identidade); fundo "papel" mantido. O herói sorteado primeiro (frase gigante com controles de tipografia) foi trocado por não servir a um marketplace e por tirar o profissional ilustrado; a seção de "logos de clientes" virou "o que a equipe confere" (não temos clientes para mostrar).
+- Inspetor da skill: de 13 falhas para 2 defendidas (poucas fotos, por D‑016; título coberto pelo aviso de cookies na primeira visita).

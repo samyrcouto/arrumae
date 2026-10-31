@@ -59,6 +59,17 @@ export async function runFlow(base, { serverLog = () => "" } = {}) {
   };
 
   try {
+    // 0. Home: o combinado se monta enquanto a pessoa escreve e leva ao pedido preenchido
+    step("home: combinado ao vivo leva ao pedido preenchido");
+    const visitor = await newPage();
+    await visitor.goto(`${base}/`);
+    await visitor.getByLabel("O que precisa arrumar?").fill("O chuveiro queimou");
+    await visitor.getByText("Eletricista", { exact: true }).first().waitFor();
+    await visitor.getByRole("button", { name: "Pedir orçamento grátis" }).first().click();
+    await visitor.waitForURL(/\/pedir\?/);
+    assert.match(visitor.url(), /categoria=eletrica/);
+    assert.equal(await visitor.getByLabel("Resumo do serviço").inputValue(), "O chuveiro queimou");
+
     // A. Visitante pede orçamento e cria conta no mesmo fluxo
     step("visitante cria pedido com cadastro embutido");
     const client = await newPage();
