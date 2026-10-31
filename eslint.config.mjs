@@ -19,6 +19,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     ".test-storage/**",
     "storage/**",
+    // Skills do Claude Code (código de terceiros)
+    ".claude/**",
   ]),
 ]);
 
