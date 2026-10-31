@@ -197,3 +197,8 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 
 - Adicionada a skill `design-taste-frontend` (Taste Skill, `Leonxlnx/taste-skill`) em `.claude/skills/`, para direção de arte nas páginas e telas. Código de terceiros, instalado com `npx skills add Leonxlnx/taste-skill`.
 - `.claude/**` incluído nos ignores do ESLint, para os scripts `.mjs` da skill não entrarem no `npm run lint`.
+
+## 2026-10-31 — Comando de revisão de interface para o Claude Code
+
+- Adicionado `.claude/commands/web-interface-guidelines.md` (de `vercel-labs/web-interface-guidelines`): `/web-interface-guidelines <arquivo-ou-padrão>` revisa o código de UI contra as Web Interface Guidelines da Vercel e lista os problemas como `arquivo:linha`.
+- Observação: as regras de texto do comando ("Title Case", aspas curvas em inglês) foram escritas para interfaces em inglês; para o arrumae (pt-BR) vale ignorar essa parte.
