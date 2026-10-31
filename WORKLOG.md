@@ -192,3 +192,8 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 - Usa contas novas `@video.arrumae.invalid`: trocar o CPF de um profissional de demonstração aprovado o mandaria de volta para análise (sem documentos para reaprovar).
 - Conferido antes: todas as consultas SQL rodaram no banco do E2E; os Testes 1 e 2 simulados no navegador (modo dev), sem erros; páginas do admin sem rolagem lateral no celular (390 px).
 - `scripts/reset-2fa.ts`: e-mail inexistente agora mostra só a mensagem ("Conta não encontrada."), sem rastreamento de erro.
+
+## 2026-10-31 — Skill de design para o Claude Code
+
+- Adicionada a skill `design-taste-frontend` (Taste Skill, `Leonxlnx/taste-skill`) em `.claude/skills/`, para direção de arte nas páginas e telas. Código de terceiros, instalado com `npx skills add Leonxlnx/taste-skill`.
+- `.claude/**` incluído nos ignores do ESLint, para os scripts `.mjs` da skill não entrarem no `npm run lint`.
