@@ -202,3 +202,9 @@ Ver `docs/ROADMAP.md` → "Próximas tarefas": reset de senha + e‑mail real, 2
 
 - Adicionado `.claude/commands/web-interface-guidelines.md` (de `vercel-labs/web-interface-guidelines`): `/web-interface-guidelines <arquivo-ou-padrão>` revisa o código de UI contra as Web Interface Guidelines da Vercel e lista os problemas como `arquivo:linha`.
 - Observação: as regras de texto do comando ("Title Case", aspas curvas em inglês) foram escritas para interfaces em inglês; para o arrumae (pt-BR) vale ignorar essa parte.
+
+## 2026-10-31 — Revisão da skill e do comando de design (PRs #1 e #2)
+
+- Os PRs [#1](https://github.com/samyrcouto/arrumae/pull/1) e [#2](https://github.com/samyrcouto/arrumae/pull/2) (outra sessão) já estavam no `main` sem revisão dos scripts. Revisados os 9 scripts da skill: rede só em `assets.mjs` (acervos públicos de imagens: Openverse, Wikimedia, Met, Art Institute, NASA, archive.org, picsum; e Google Fonts), um Chrome sem janela com perfil temporário que ela mesma cria e apaga, gravação só em `.taste-skill/` no projeto e `~/.taste-skill/history.json`. Não lê `.env` nem segredos; nada ofuscado. O comando `/web-interface-guidelines` é só texto.
+- `.taste-skill/` no `.gitignore`. README: seção "Ferramentas do Claude Code para o visual" com os combinados (fontes servidas pelo próprio site, ilustração própria e não fotos de banco, regras de texto em inglês não valem).
+- Verificado depois do merge: typecheck, lint e 79 testes aprovados.

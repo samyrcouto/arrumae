@@ -159,6 +159,19 @@ O estilo usa **Tailwind CSS 4**: as classes ficam direto no JSX (ex.: `bg-brand`
 
 Antes de enviar mudanças, rode `npm run typecheck && npm run lint && npm test`. Para atualizar a vitrine depois de mudar o visual: `npm run vitrine && npm run vitrine:publicar`.
 
+### Ferramentas do Claude Code para o visual
+
+| Ferramenta | Para que serve | Como usar |
+|---|---|---|
+| Skill **design-taste-frontend** (`.claude/skills/`, de [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill)) | Direção de arte para páginas e telas: sugere direções visuais, tipografia e paleta, e confere o resultado em capturas de tela | O Claude Code usa sozinho quando o pedido é de visual (ex.: "deixa a home menos genérica") |
+| Comando **/web-interface-guidelines** (`.claude/commands/`, da Vercel) | Revisa o código da interface (acessibilidade, foco, formulários, desempenho) e lista os problemas por arquivo e linha | `/web-interface-guidelines src/app/page.tsx` |
+
+Combinados para este projeto:
+- **Fontes servidas pelo próprio site** (pacotes `@fontsource`), não pelo Google Fonts: a CSP só aceita fontes do próprio domínio e evitamos mandar dados do visitante a terceiros.
+- **Ilustrações próprias, sem fotos de banco de imagens** (DECISIONS.md D‑016). A skill sabe baixar imagens de acervos públicos; não usar no site sem decidir antes.
+- **Interface em português:** as regras de texto do comando (Title Case, aspas curvas) são para inglês e não valem aqui.
+- Código revisado em 31/10/2026: a skill só abre um Chrome sem janela com perfil temporário, grava em `.taste-skill/` (fora do Git) e só acessa a internet ao buscar imagens e fontes. Não lê segredos.
+
 ## Scripts
 
 | Comando | O que faz |

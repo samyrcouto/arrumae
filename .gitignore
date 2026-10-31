@@ -53,3 +53,6 @@ next-env.d.ts
 
 # vitrine estática gerada (publicada no branch gh-pages)
 /vitrine/
+
+# Pasta de trabalho da skill design-taste-frontend (capturas e relatórios)
+.taste-skill/
